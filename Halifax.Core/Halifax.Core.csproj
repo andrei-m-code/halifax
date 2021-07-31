@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <TargetFramework>net5.0</TargetFramework>
+      <Description>Halifax Service Foundation Core functionality</Description>
+      <Authors>andrei-m-code</Authors>
+      <Company />
+      <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+      <AssemblyVersion>0.0.1.0</AssemblyVersion>
+      <FileVersion>0.0.1.0</FileVersion>
+      <Version>0.0.1</Version>
+      <PackageId>Halifax.Core</PackageId>
+      <PackageProjectUrl>https://github.com/andrei-m-code/halifax</PackageProjectUrl>
+      <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
+      <PackageLicenseExpression>MIT</PackageLicenseExpression>
+      <PackageDescription>.NET Core C# Push Notifications for Android Google Firebase Messaging (FCM) and Apple push notifications (APN).</PackageDescription>
+      <PackageReleaseNotes>
+  v3.0.4
+  - Bugfixes with FcmSender authorization and serialization
+  - CorePush.Tester added to make testing easier
+  
+  v3.0.3
+  - Cancellation tokens added to the interface with CancellationToken.None by default
+  
+  v3.0.2
+  - Reverted Portable.BouncyCastle so that the lib can work in shared envs (like Azure App Service)
+  - Apple certificate cleanup added
+  - Minor code improvements added
+  
+  v3.0.1
+  - Removed Portable.BouncyCastle and System.Security.Cryptography.Cng dependency
+  
+  v3.0.0
+  - Added ApnSettings and FcmSettings
+  - HttpClient has to be injected for FcmSender and ApnSender
+  - Both ApnSender and FcmSender are not IDisposable anymore as HttpClient is injected and managed outside
+  - ApnSender JWT token expiration is managed according to Apple documentation
+      </PackageReleaseNotes>
+      <PackageTags>push-notifications apn fcm firebase android-push-notifications ios-push-notifications</PackageTags>
+      <RepositoryUrl>https://github.com/andrei-m-code/CorePush</RepositoryUrl>
+      <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.0" />
+    </ItemGroup>
+
+</Project>
