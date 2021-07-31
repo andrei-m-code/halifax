@@ -12,8 +12,9 @@
       <PackageId>Halifax.Core</PackageId>
       <PackageProjectUrl>https://github.com/andrei-m-code/halifax</PackageProjectUrl>
       <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
+      <IconUrl>https://raw.githubusercontent.com/andrei-m-code/halifax/main/Icon.png</IconUrl>
       <PackageLicenseExpression>MIT</PackageLicenseExpression>
-      <PackageDescription>.NET Core C# Push Notifications for Android Google Firebase Messaging (FCM) and Apple push notifications (APN).</PackageDescription>
+      <PackageDescription>Core Service Foundation library</PackageDescription>
       <PackageReleaseNotes>
   v3.0.4
   - Bugfixes with FcmSender authorization and serialization
