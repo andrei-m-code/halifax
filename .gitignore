@@ -264,6 +264,8 @@ _Pvt_Extensions
 .paket/paket.exe
 paket-files/
 
+.DS_Store
+
 # FAKE - F# Make
 .fake/
 
