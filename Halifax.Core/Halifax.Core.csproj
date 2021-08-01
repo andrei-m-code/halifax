@@ -4,12 +4,12 @@
       <TargetFramework>net5.0</TargetFramework>
       <Description>Halifax Service Foundation Core functionality</Description>
       <summary>Halifax Service Foundation Core functionality</summary>
-      <iconUrl>https://raw.githubusercontent.com/andrei-m-code/halifax/main/Icon.png</iconUrl>
+      <PackageIcon>Icon.png</PackageIcon>
       <Authors>andrei-m-code</Authors>
       <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-      <AssemblyVersion>0.0.2.0</AssemblyVersion>
-      <FileVersion>0.0.2.0</FileVersion>
-      <Version>0.0.2</Version>
+      <AssemblyVersion>0.0.5.0</AssemblyVersion>
+      <FileVersion>0.0.5.0</FileVersion>
+      <Version>0.0.5</Version>
       <PackageId>Halifax.Core</PackageId>
       <PackageProjectUrl>https://github.com/andrei-m-code/halifax</PackageProjectUrl>
       <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
@@ -18,15 +18,17 @@
       <PackageTags>api service-foundation services microservices correlation-id base</PackageTags>
       <RepositoryType>git</RepositoryType>
       <PackageReleaseNotes>
-v0.0.2
-v0.0.1
-- Initial release
+v0.0.x - Initial release
       </PackageReleaseNotes>
     </PropertyGroup>
 
 
     <ItemGroup>
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="Icon.png" Pack="true" PackagePath="" />
     </ItemGroup>
 
 </Project>
