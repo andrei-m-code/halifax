@@ -5,8 +5,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PeggysCove.Api.Controllers
 {
+    /// <summary>
+    /// Lighthouse controller
+    /// </summary>
     public class LightController : Controller
     {
+        /// <summary>
+        /// Get light status
+        /// </summary>
+        /// <param name="hour">Hour of the day or current UTC time by default</param>
+        /// <returns>The value indicating if the light is on or off</returns>
         [HttpGet("status")]
         public ApiResponse<bool> GetStatus([FromQuery] int? hour)
         {
