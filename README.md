@@ -5,7 +5,27 @@
  
 
 # Halifax Service Foundation Libraries
-Halifax libraries are designed to speed up API service development process by encapsulating common functionality required for all microservices.
+Halifax libraries are designed to speed up API service development process by encapsulating common functionality required for all microservices. In particular:
+- ✅ Exception handling
+- ✅ API models
+- ✅ Swagger
+- ✅ JWT Auth
+- ✅ Logging
+- ✅ CORS
+
+# Installation
+Install the API library using [nuget package](https://www.nuget.org/packages/Halifax.Api) with Package Manager Console:
+
+```
+Install-Package Halifax.Api
+```
+
+Or using .NET CLI:
+
+```
+dotnet add package Halifax.Api
+```
+
 
 # MIT License
 
