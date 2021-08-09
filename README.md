@@ -1,7 +1,7 @@
 | Package | NuGet |
 |-|-|
 | Halifax.Core | [![NuGet](https://img.shields.io/nuget/v/Halifax.Core.svg)](https://www.nuget.org/packages/Halifax.Core/) |
-| Halifax.Api  | [![NuGet](https://img.shields.io/nuget/v/Halifax.Core.svg)](https://www.nuget.org/packages/Halifax.Api/)  |
+| Halifax.Api  | [![NuGet](https://img.shields.io/nuget/v/Halifax.Api.svg)](https://www.nuget.org/packages/Halifax.Api/)  |
  
 
 # Halifax Service Foundation Libraries
