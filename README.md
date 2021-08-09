@@ -4,7 +4,7 @@
 | Halifax.Api  | [![NuGet](https://img.shields.io/nuget/v/Halifax.Api.svg)](https://www.nuget.org/packages/Halifax.Api/)  |
  
 
-# Halifax Service Foundation Libraries
+# Halifax Service Foundation API
 Halifax libraries are designed to speed up API service development process by encapsulating common functionality required for all microservices. In particular:
 - ✅ Exception handling
 - ✅ API models
@@ -26,6 +26,24 @@ Or using .NET CLI:
 dotnet add package Halifax.Api
 ```
 
+# Getting Started
+
+Please refer to the [Peggy's Cove](https://github.com/andrei-m-code/halifax/blob/main/PeggysCove.Api/Startup.cs) example API project Startup.cs file for more details but basically all you need is to have this in your startup class:
+
+    public class Startup
+    {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddHalifax();
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            app.UseHalifax();
+        }
+    }
+
+This enables routing with controllers and exception handling.
 
 # MIT License
 
