@@ -1,5 +1,6 @@
 using Halifax.Api.Extensions;
 using Halifax.Api.Models;
+using Halifax.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,9 @@ namespace Halifax.Api
     {
         public static void AddHalifax(this IServiceCollection services)
         {
+            // Load .env configuration
+            Env.Load();
+            
             services
                 .AddControllers()
                 .AddApplicationPart(typeof(ApiResponse).Assembly);
