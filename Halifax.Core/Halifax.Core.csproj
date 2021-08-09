@@ -31,8 +31,8 @@ v0.0.x - Initial release
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\Icon.png" Pack="true" PackagePath="Icon.png"/>
-        <None Include="..\README.md" Pack="true" PackagePath="README.md"/>
+        <None Include="..\Icon.png" Pack="true" PackagePath="Icon.png" />
+        <None Include="..\README.md" Pack="true" PackagePath="README.md" />
     </ItemGroup>
 
 </Project>
