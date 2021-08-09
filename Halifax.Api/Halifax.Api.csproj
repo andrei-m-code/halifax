@@ -5,12 +5,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-      <PackageReference Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.2.0" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <ProjectReference Include="..\Halifax.Core\Halifax.Core.csproj" />
+        <PackageReference Include="Halifax.Core" Version="0.0.5" />
     </ItemGroup>
-
+    
 </Project>
