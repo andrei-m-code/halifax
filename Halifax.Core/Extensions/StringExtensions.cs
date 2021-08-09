@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -17,6 +18,11 @@ namespace Halifax.Core.Extensions
             return connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries)
                 .Select(t => t.Split(new[] { '=' }, 2))
                 .ToDictionary(t => t[0].Trim(), t => t[1].Trim(), StringComparer.InvariantCultureIgnoreCase);
+        }
+        
+        public static string CapitalizeWords(this string text)
+        {
+            return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(text);
         }
     }
 }
