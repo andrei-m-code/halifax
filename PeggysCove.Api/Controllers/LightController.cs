@@ -28,5 +28,14 @@ namespace PeggysCove.Api.Controllers
 
             return ApiResponse.With(status);
         }
+
+        /// <summary>
+        /// Get App Name
+        /// </summary>
+        [HttpGet("name")]
+        public ApiResponse<string> GetName()
+        {
+            return ApiResponse.With(Env.GetSection<AppSettings>().AppName);
+        }
     }
 }
