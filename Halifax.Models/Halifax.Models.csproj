@@ -4,40 +4,30 @@
         <TargetFramework>net5.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
-        <Title>Halifax Service Foundation - API</Title>
-        <Description>Halifax Service Foundation API library</Description>
-        <Summary>Halifax Service Foundation API library</Summary>
+        <Title>Halifax Service Foundation - Models</Title>
+        <Description>Halifax Service Foundation Models library</Description>
+        <Summary>Halifax Service Foundation Models library</Summary>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>0.0.5.0</AssemblyVersion>
-        <FileVersion>0.0.5.0</FileVersion>
-        <Version>0.0.5</Version>
+        <AssemblyVersion>0.0.1.0</AssemblyVersion>
+        <FileVersion>0.0.1.0</FileVersion>
+        <Version>0.0.1</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
 
         <PackageProjectUrl>https://github.com/andrei-m-code/halifax</PackageProjectUrl>
-        <PackageId>Halifax.Api</PackageId>
+        <PackageId>Halifax.Models</PackageId>
         <PackageIcon>Icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageDescription>Core Service Foundation library</PackageDescription>
+        <PackageDescription>Halifax Service Foundation Models library</PackageDescription>
         <PackageTags>api service-foundation services microservices correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
 v0.0.x - Initial release
         </PackageReleaseNotes>
     </PropertyGroup>
-
-    <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    </ItemGroup>
-    
-    <ItemGroup>
-        <PackageReference Include="Halifax.Core" Version="0.0.7" />
-        <PackageReference Include="Halifax.Models" Version="0.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
-    </ItemGroup>
 
     <ItemGroup>
         <None Include="..\Icon.png" Pack="true" PackagePath="Icon.png" />

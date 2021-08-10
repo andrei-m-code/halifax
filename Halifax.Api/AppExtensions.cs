@@ -1,6 +1,6 @@
 using Halifax.Api.Extensions;
-using Halifax.Api.Models;
 using Halifax.Core;
+using Halifax.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
