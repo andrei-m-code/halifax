@@ -1,6 +1,6 @@
 using System.Net;
-using Halifax.Api.Models;
 using Halifax.Core.Exceptions;
+using Halifax.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 

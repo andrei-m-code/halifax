@@ -1,6 +1,6 @@
 using System;
 
-namespace Halifax.Api.Models
+namespace Halifax.Models
 {
     public record ApiResponseError
     {
