@@ -3,11 +3,11 @@ using Halifax.Core;
 using Halifax.Core.Exceptions;
 using Halifax.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 
 namespace Halifax.Api
 {
