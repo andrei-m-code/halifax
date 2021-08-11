@@ -14,7 +14,7 @@ namespace PeggysCove.Api
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHalifax();
+            services.AddHalifax(builder => builder.SetName("Peggy's Cove!"));
         }
 
         /// <summary>
