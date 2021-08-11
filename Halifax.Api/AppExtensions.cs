@@ -1,4 +1,5 @@
-using Halifax.Api.Extensions;
+using System;
+using Halifax.Api.App;
 using Halifax.Core;
 using Halifax.Models;
 using Microsoft.AspNetCore.Builder;
@@ -9,22 +10,20 @@ namespace Halifax.Api
 {
     public static class AppExtensions
     {
-        public static void AddHalifax(this IServiceCollection services)
+        public static void AddHalifax(this IServiceCollection services, Action<HalifaxBuilder> configure = null)
         {
+            var builder = new HalifaxBuilder();
+            configure?.Invoke(builder);
+                        
             // Load .env configuration
             Env.Load();
             
             services
                 .AddControllers()
                 .AddApplicationPart(typeof(ApiResponse).Assembly);
-            
-            services.AddHalifaxSwagger();
 
-            services.AddCors(opts => opts.AddPolicy("any", builder => builder
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin()
-            ));
+            services.AddSwaggerGen(builder.Swagger);
+            services.AddCors(opts => opts.AddPolicy("HalifaxCors", builder.Cors));
         }
 
         public static void UseHalifax(this IApplicationBuilder app)
@@ -37,9 +36,9 @@ namespace Halifax.Api
                 endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello Halifax!"); });
             });
 
-            app.UseCors("any");
+            app.UseCors("HalifaxCors");
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", Utils.GetAppName()));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", HalifaxBuilder.Instance.Name));
         }
     }
 }

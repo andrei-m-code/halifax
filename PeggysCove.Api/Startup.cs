@@ -1,6 +1,5 @@
 using Halifax.Api;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace PeggysCove.Api
@@ -21,7 +20,7 @@ namespace PeggysCove.Api
         /// <summary>
         /// Registering middlewares 
         /// </summary>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseHalifax();
         }
