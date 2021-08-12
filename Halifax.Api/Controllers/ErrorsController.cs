@@ -1,8 +1,8 @@
-using System.Net;
 using Halifax.Core.Exceptions;
 using Halifax.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Halifax.Api.Controllers
 {

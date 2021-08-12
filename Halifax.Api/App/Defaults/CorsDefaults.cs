@@ -1,5 +1,5 @@
-using System;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using System;
 
 namespace Halifax.Api.App.Defaults
 {

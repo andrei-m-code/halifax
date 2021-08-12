@@ -1,9 +1,9 @@
-using System;
-using System.Text;
 using Halifax.Api.App.Defaults;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Text;
 
 namespace Halifax.Api.App
 {

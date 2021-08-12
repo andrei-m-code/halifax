@@ -1,7 +1,7 @@
-using System;
 using Halifax.Core;
 using Halifax.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace PeggysCove.Api.Controllers
 {
