@@ -1,13 +1,13 @@
 using Halifax.Api.App;
 using Halifax.Core;
 using Halifax.Core.Exceptions;
-using Halifax.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
+using Halifax.Models;
 
 namespace Halifax.Api
 {
@@ -23,7 +23,7 @@ namespace Halifax.Api
             
             services
                 .AddControllers()
-                .AddApplicationPart(typeof(ApiResponse).Assembly);
+                .AddApplicationPart(typeof(AppExtensions).Assembly);
 
             if (builder.TokenValidationParameters != null)
             {
