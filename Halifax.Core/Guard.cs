@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Halifax.Core.Exceptions;
+using Halifax.Core.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Halifax.Core.Exceptions;
-using Halifax.Core.Extensions;
 
 namespace Halifax.Core
 {
