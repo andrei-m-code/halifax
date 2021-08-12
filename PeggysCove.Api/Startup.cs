@@ -1,4 +1,5 @@
 using Halifax.Api;
+using Halifax.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +15,7 @@ namespace PeggysCove.Api
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHalifax(builder => builder.SetName("Peggy's Cove!"));
+            services.AddHalifax(builder => builder.SetName(Env.GetSection<AppSettings>().AppName));
         }
 
         /// <summary>

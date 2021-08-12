@@ -14,12 +14,12 @@ namespace Halifax.Api
     {
         public static void AddHalifax(this IServiceCollection services, Action<HalifaxBuilder> configure = null)
         {
-            var builder = new HalifaxBuilder();
-            configure?.Invoke(builder);
-                        
             // Load .env configuration
             Env.Load();
             
+            var builder = new HalifaxBuilder();
+            configure?.Invoke(builder);
+
             services
                 .AddControllers()
                 .AddApplicationPart(typeof(AppExtensions).Assembly);
