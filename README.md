@@ -45,6 +45,10 @@ Please refer to the [Peggy's Cove](https://github.com/andrei-m-code/halifax/blob
 
 This enables routing with controllers and exception handling.
 
+# Models
+
+It's very beneficial if all API responses follow the same format. In order to achieve it there is a model called `ApiResponse`. It's designed to return response data, empty data or error information in the same consistent format.
+
 # MIT License
 
 Copyright (c) 2020 Andrei M
