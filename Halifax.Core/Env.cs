@@ -7,6 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace Halifax.Core
 {
+    /// <summary>
+    /// Setup environment variables and get config sections using this class
+    /// </summary>
     public static class Env
     {
         private static readonly Dictionary<Type, object> sections = new();
