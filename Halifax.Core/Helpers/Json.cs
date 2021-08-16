@@ -6,33 +6,30 @@ namespace Halifax.Core.Helpers
 {
     public static class Json
     {
-        static Json()
-        {
-            DefaultSettings = new JsonSerializerSettings();
-            DefaultSettings.Converters.Add(new StringEnumConverter());
-            DefaultSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-        }
-
+        // TODO: We need to allow customizations to this later on.
+        private static readonly JsonSerializerSettings settings = GetDefaultSettings();
+        
         public static string Serialize<TObject>(TObject obj, Formatting formatting = Formatting.None) where TObject : class
         {
             return obj != null 
-                ? JsonConvert.SerializeObject(obj, formatting, DefaultSettings) 
+                ? JsonConvert.SerializeObject(obj, formatting, settings) 
                 : null;
         }
 
         public static TObject Deserialize<TObject>(string objString) where TObject : class
         {
             return objString != null 
-                ? JsonConvert.DeserializeObject<TObject>(objString, DefaultSettings) 
+                ? JsonConvert.DeserializeObject<TObject>(objString, settings) 
                 : null;
         }
 
-        public static JsonSerializerSettings DefaultSettings
+        public static JsonSerializerSettings GetDefaultSettings()
         {
-            get;
-            
-            // TODO: We'll need to allow the customizations for it later
-            private set;
+            var result = new JsonSerializerSettings();
+            result.Converters.Add(new StringEnumConverter());
+            result.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            return result;
         }
     }
 }
