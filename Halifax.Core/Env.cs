@@ -82,6 +82,9 @@ namespace Halifax.Core
                 });
         }
 
+        /// <summary>
+        /// Get object representation of a configuration section from env. variables.
+        /// </summary>
         public static TSection GetSection<TSection>(string section = null)
         {
             var configType = typeof(TSection);
