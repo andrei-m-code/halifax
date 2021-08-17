@@ -1,4 +1,5 @@
 using Halifax.Api.App;
+using Halifax.Api.Errors;
 using Halifax.Core;
 using Halifax.Core.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -48,6 +49,7 @@ namespace Halifax.Api
             
             services.AddSwaggerGen(builder.Swagger);
             services.AddCors(opts => opts.AddPolicy("HalifaxCors", builder.Cors));
+            services.AddScoped(typeof(IExceptionHandler), builder.ExceptionHandlerType);
         }
 
         public static void UseHalifax(this IApplicationBuilder app)
