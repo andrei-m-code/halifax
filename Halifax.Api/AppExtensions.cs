@@ -2,6 +2,7 @@ using Halifax.Api.App;
 using Halifax.Api.Errors;
 using Halifax.Core;
 using Halifax.Core.Exceptions;
+using Halifax.Core.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -21,8 +22,11 @@ namespace Halifax.Api
             var builder = new HalifaxBuilder();
             configure?.Invoke(builder);
 
+            Json.ConfigureOptions = builder.ConfigureJsonOptions;
+            
             services
                 .AddControllers()
+                .AddJsonOptions(options => Json.ConfigureOptions(options.JsonSerializerOptions))
                 .AddApplicationPart(typeof(AppExtensions).Assembly);
 
             if (builder.TokenValidationParameters != null)

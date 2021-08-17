@@ -1,6 +1,6 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Halifax.Core.Helpers
 {
@@ -9,20 +9,32 @@ namespace Halifax.Core.Helpers
     /// </summary>
     public static class Json
     {
-        // TODO: We need to allow customizations to this later on.
-        private static readonly JsonSerializerSettings settings = GetDefaultSettings();
-        
+        static Json()
+        {
+            ConfigureOptions = options =>
+            {
+                options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.PropertyNameCaseInsensitive = true;
+                options.IgnoreNullValues = true;
+                options.Converters.Add(new JsonStringEnumConverter());
+            };
+        }
+
         /// <summary>
         /// Serialize object to JSON string
         /// </summary>
         /// <param name="obj">Object to serialize</param>
-        /// <param name="formatting">Formatting (Indented or not)</param>
+        /// <param name="indented">Write indented</param>
         /// <typeparam name="TObject">Object type</typeparam>
         /// <returns>JSON representation of an object</returns>
-        public static string Encode<TObject>(TObject obj, Formatting formatting = Formatting.None) where TObject : class
+        public static string Serialize<TObject>(TObject obj, bool indented = false) where TObject : class
         {
-            return obj != null 
-                ? JsonConvert.SerializeObject(obj, formatting, settings) 
+            var options = new JsonSerializerOptions();
+            ConfigureOptions(options);
+            options.WriteIndented = indented;
+            
+            return obj != null
+                ? JsonSerializer.Serialize(obj, options)
                 : null;
         }
 
@@ -32,24 +44,19 @@ namespace Halifax.Core.Helpers
         /// <param name="jsonString">JSON string representation of an object</param>
         /// <typeparam name="TObject">Object type</typeparam>
         /// <returns>An object that was serialized to JSON</returns>
-        public static TObject Decode<TObject>(string jsonString) where TObject : class
+        public static TObject Deserialize<TObject>(string jsonString) where TObject : class
         {
-            return jsonString != null 
-                ? JsonConvert.DeserializeObject<TObject>(jsonString, settings) 
+            var options = new JsonSerializerOptions();
+            ConfigureOptions(options);
+            
+            return jsonString != null
+                ? JsonSerializer.Deserialize<TObject>(jsonString, options)
                 : null;
         }
 
         /// <summary>
-        /// Get default Halifax json serializer settings
+        /// Default serializer options factory method
         /// </summary>
-        /// <returns>Json serializer settings object</returns>
-        public static JsonSerializerSettings GetDefaultSettings()
-        {
-            var result = new JsonSerializerSettings();
-            result.Converters.Add(new StringEnumConverter());
-            result.ContractResolver = new CamelCasePropertyNamesContractResolver();
-
-            return result;
-        }
+        public static Action<JsonSerializerOptions> ConfigureOptions { get; set; }
     }
 }
