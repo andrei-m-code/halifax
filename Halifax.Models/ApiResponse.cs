@@ -21,10 +21,19 @@ namespace Halifax.Models
         public ApiResponseError Error { get; private init; }
         public bool Success { get; private init; } = true;
 
+        /// <summary>
+        /// Empty API response
+        /// </summary>
         public static ApiResponse Empty => new ApiResponse();
         
+        /// <summary>
+        /// Return API response with the data provided 
+        /// </summary>
         public static ApiResponse<TData> With<TData>(TData data) => new ApiResponse<TData>(data);
 
+        /// <summary>
+        /// Return API response with exception info
+        /// </summary>
         public static ApiResponse With(Exception exception) => new ApiResponse
         {
             Success = false,
