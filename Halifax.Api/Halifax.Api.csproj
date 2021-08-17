@@ -21,7 +21,7 @@
         <PackageIcon>Icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageDescription>Core Service Foundation library</PackageDescription>
+        <PackageDescription>Core Service Foundation API library</PackageDescription>
         <PackageTags>api service-foundation services microservices correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
