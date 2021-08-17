@@ -1,11 +1,12 @@
 using Halifax.Api.App.Defaults;
+using Halifax.Api.Errors;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Text;
-using Halifax.Api.Errors;
-using Microsoft.AspNetCore.Diagnostics;
+using System.Text.Json;
+using Halifax.Core.Helpers;
 
 namespace Halifax.Api.App
 {
@@ -28,6 +29,7 @@ namespace Halifax.Api.App
         internal Action<SwaggerGenOptions> Swagger { get; private set; } = SwaggerDefaults.Value;
         internal TokenValidationParameters TokenValidationParameters { get; set; }
         internal Type ExceptionHandlerType { get; set; } = typeof(DefaultExceptionHandler);
+        internal Action<JsonSerializerOptions> ConfigureJsonOptions { get; set; } = Json.ConfigureOptions;
         
         public HalifaxBuilder SetName(string name)
         {
@@ -71,6 +73,12 @@ namespace Halifax.Api.App
         public HalifaxBuilder ConfigureExceptionHandler<TExceptionHandler>() where TExceptionHandler : IExceptionHandler
         {
             ExceptionHandlerType = typeof(TExceptionHandler);
+            return this;
+        }
+
+        public HalifaxBuilder ConfigureJson(Action<JsonSerializerOptions> configure)
+        {
+            ConfigureJsonOptions = configure;
             return this;
         }
     }
