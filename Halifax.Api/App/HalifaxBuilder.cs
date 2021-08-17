@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Text;
+using Halifax.Api.Errors;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace Halifax.Api.App
 {
@@ -25,6 +27,7 @@ namespace Halifax.Api.App
         internal Action<CorsPolicyBuilder> Cors { get; private set; } = CorsDefaults.Value;
         internal Action<SwaggerGenOptions> Swagger { get; private set; } = SwaggerDefaults.Value;
         internal TokenValidationParameters TokenValidationParameters { get; set; }
+        internal Type ExceptionHandlerType { get; set; } = typeof(DefaultExceptionHandler);
         
         public HalifaxBuilder SetName(string name)
         {
@@ -62,6 +65,12 @@ namespace Halifax.Api.App
         public HalifaxBuilder ConfigureAuthentication(TokenValidationParameters parameters)
         {
             TokenValidationParameters = parameters;   
+            return this;
+        }
+
+        public HalifaxBuilder ConfigureExceptionHandler<TExceptionHandler>() where TExceptionHandler : IExceptionHandler
+        {
+            ExceptionHandlerType = typeof(TExceptionHandler);
             return this;
         }
     }
