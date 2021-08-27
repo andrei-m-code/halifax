@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using Halifax.Api;
 using Halifax.Core;
+using Halifax.Core.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,7 +19,13 @@ namespace PeggysCove.Api
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHalifax(builder => builder.SetName(Env.GetSection<AppSettings>().AppName));
+            var secret = "Hello World !!!!!!!!!!!!!!!!!!!!!!";
+            services.AddHalifax(builder => builder
+                .SetName(Env.GetSection<AppSettings>().AppName)
+                .ConfigureAuthentication(secret, false, false, false));
+
+            var jwt = Jwt.Create(secret, new List<Claim>(), DateTime.UtcNow.AddYears(1));
+            L.Info(jwt);
         }
 
         /// <summary>
