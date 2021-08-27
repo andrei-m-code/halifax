@@ -1,8 +1,8 @@
+using Halifax.Core.Exceptions;
+using Halifax.Models;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Halifax.Core.Exceptions;
-using Halifax.Models;
 
 namespace Halifax.Api.Errors
 {
