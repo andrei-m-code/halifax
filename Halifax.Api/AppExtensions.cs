@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,15 +19,12 @@ namespace Halifax.Api
     {
         public static void AddHalifax(this IServiceCollection services, Action<HalifaxBuilder> configure = null)
         {
+            services.CleanupDefaultLogging();
+
+            L.Info("Starting up Halifax");
+            
             // Load .env configuration
             Env.Load();
-
-            // Shut up default logger
-            // TODO: Can this be done with serilog?
-            services.AddLogging(logging => logging
-                .AddFilter("Microsoft", LogLevel.Error)
-                .AddFilter("System", LogLevel.Error)
-                .AddConsole());
 
             var builder = new HalifaxBuilder();
             configure?.Invoke(builder);
@@ -93,7 +89,7 @@ namespace Halifax.Api
             {
                 serverAddressesFeature.Addresses.Add("http://localhost:5000");
             }
-            serverAddressesFeature.Addresses.Each(address => Console.WriteLine($"Now listening on: {address}"));
+            serverAddressesFeature.Addresses.Each(address => L.Info($"Now listening on: {address}"));
         }
     }
 }
