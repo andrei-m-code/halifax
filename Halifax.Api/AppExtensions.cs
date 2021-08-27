@@ -2,12 +2,16 @@ using Halifax.Api.App;
 using Halifax.Api.Errors;
 using Halifax.Core;
 using Halifax.Core.Exceptions;
+using Halifax.Core.Extensions;
 using Halifax.Core.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Halifax.Api
@@ -18,7 +22,14 @@ namespace Halifax.Api
         {
             // Load .env configuration
             Env.Load();
-            
+
+            // Shut up default logger
+            // TODO: Can this be done with serilog?
+            services.AddLogging(logging => logging
+                .AddFilter("Microsoft", LogLevel.Error)
+                .AddFilter("System", LogLevel.Error)
+                .AddConsole());
+
             var builder = new HalifaxBuilder();
             configure?.Invoke(builder);
 
@@ -75,6 +86,14 @@ namespace Halifax.Api
                 endpoints.MapControllers();
                 endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello Halifax!"); });
             });
+
+            // This is necessary for IDEs to pick up server address and open browser automatically
+            var serverAddressesFeature = app.ServerFeatures.Get<IServerAddressesFeature>();
+            if (!serverAddressesFeature.Addresses.Any())
+            {
+                serverAddressesFeature.Addresses.Add("http://localhost:5000");
+            }
+            serverAddressesFeature.Addresses.Each(address => Console.WriteLine($"Now listening on: {address}"));
         }
     }
 }

@@ -34,7 +34,7 @@ v0.0.x - Initial release
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Halifax.Core" Version="0.0.11" />
+        <PackageReference Include="Halifax.Core" Version="0.0.12" />
         <PackageReference Include="Halifax.Models" Version="0.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
         
