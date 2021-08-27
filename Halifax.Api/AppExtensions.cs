@@ -7,7 +7,6 @@ using Halifax.Core.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -57,7 +56,7 @@ namespace Halifax.Api
                         },
                         OnChallenge = context => 
                         {
-                            throw new HalifaxUnauthorizedException("Request is not authorized");
+                            throw new HalifaxUnauthorizedException("Request is unauthorized");
                         }
                     };
 
