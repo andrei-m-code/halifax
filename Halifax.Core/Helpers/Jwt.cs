@@ -13,6 +13,9 @@ namespace Halifax.Core.Helpers
     {
         public static string Create(string secret, IEnumerable<Claim> claims, DateTime expiration)
         {
+            Guard.NotNull(secret, nameof(secret));
+            Guard.Length(secret, nameof(secret), lower: 16);
+
             var key = Encoding.ASCII.GetBytes(secret);
             var handler = new JwtSecurityTokenHandler();
             var descriptor = new SecurityTokenDescriptor
