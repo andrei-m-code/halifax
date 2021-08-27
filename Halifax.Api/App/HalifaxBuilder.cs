@@ -1,12 +1,12 @@
 using Halifax.Api.App.Defaults;
 using Halifax.Api.Errors;
+using Halifax.Core.Helpers;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Text;
 using System.Text.Json;
-using Halifax.Core.Helpers;
 
 namespace Halifax.Api.App
 {
