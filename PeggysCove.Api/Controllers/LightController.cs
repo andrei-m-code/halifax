@@ -1,5 +1,6 @@
 using Halifax.Core;
 using Halifax.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -8,6 +9,7 @@ namespace PeggysCove.Api.Controllers
     /// <summary>
     /// Lighthouse controller
     /// </summary>
+    [Authorize]
     public class LightController : Controller
     {
         /// <summary>
@@ -16,6 +18,7 @@ namespace PeggysCove.Api.Controllers
         /// <param name="hour">Hour of the day or current UTC time by default</param>
         /// <returns>The value indicating if the light is on or off</returns>
         [HttpGet("status")]
+        [AllowAnonymous]
         public ApiResponse<bool> GetStatus([FromQuery] int? hour)
         {
             if (hour.HasValue)
