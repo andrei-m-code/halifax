@@ -23,11 +23,7 @@ namespace Halifax.Core
 
         public static void Email(string input, string argument = "Email")
         {
-            Guard.Ensure(input.IsEmail(), "");
-            if (!input.IsEmail())
-            {
-                throw new HalifaxException($"{argument} is incorrect");
-            }
+            Guard.Ensure(input.IsEmail(), $"{argument} is invalid");
         }
 
         public static void StringWithEmails(string input, string argument = "Emails string", string separators = " ,;")
