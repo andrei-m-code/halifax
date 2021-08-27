@@ -19,7 +19,7 @@ namespace PeggysCove.Api
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            var secret = "Hello World !!!!!!!!!!!!!!!!!!!!!!";
+            var secret = "Test JWT Token (at least 16 chars)";
             services.AddHalifax(builder => builder
                 .SetName(Env.GetSection<AppSettings>().AppName)
                 .ConfigureAuthentication(secret, false, false, false));
