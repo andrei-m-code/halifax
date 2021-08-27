@@ -1,4 +1,6 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -22,4 +24,14 @@ public static class L
     public static void Warning(string message, Exception exception = null) => Log.Warning(exception, message);
 
     public static void Fatal(string message, Exception exception) => Log.Fatal(exception, message);
+}
+
+public static class ServicesExtensions
+{
+    public static void CleanupDefaultLogging(this IServiceCollection services)
+    {
+        services.AddLogging(logging => logging
+            .AddFilter("Microsoft", LogLevel.Error)
+            .AddFilter("System", LogLevel.Error));
+    }
 }
