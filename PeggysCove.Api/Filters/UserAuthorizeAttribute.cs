@@ -6,9 +6,9 @@ using System.Security.Claims;
 
 namespace PeggysCove.Api.Filters
 {
-    public class UserAuthorizeAttribute : ClaimsFilter
+    public class UserAuthorizeAttribute : ClaimsAuthorizeFilterAttribute
     {
-        protected override bool IsAuthorize(List<Claim> claims)
+        protected override bool IsAuthorized(List<Claim> claims)
         {
             var role = claims.FirstOrDefault(c => c.Type == JwtTokenConstants.RoleClaim)?.Value;
             var idString = claims.FirstOrDefault(c => c.Type == JwtTokenConstants.IdClaim)?.Value;
