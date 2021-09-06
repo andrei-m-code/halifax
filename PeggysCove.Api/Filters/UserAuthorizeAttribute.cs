@@ -1,0 +1,23 @@
+﻿using Halifax.Api.Filters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+
+namespace PeggysCove.Api.Filters
+{
+    public class UserAuthorizeAttribute : ClaimsFilter
+    {
+        protected override bool IsAuthorize(List<Claim> claims)
+        {
+            var role = claims.FirstOrDefault(c => c.Type == JwtTokenConstants.RoleClaim)?.Value;
+            var idString = claims.FirstOrDefault(c => c.Type == JwtTokenConstants.IdClaim)?.Value;
+            var name = claims.FirstOrDefault(c => c.Type == JwtTokenConstants.NameClaim)?.Value;
+            var authenticate = role == JwtTokenConstants.UserRoleClaim
+                && Guid.TryParse(idString, out _)
+                && !string.IsNullOrWhiteSpace(name);
+
+            return authenticate;
+        }
+    }
+}
