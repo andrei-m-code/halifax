@@ -35,10 +35,10 @@ v0.0.x - Initial release
     
     <ItemGroup>
         <PackageReference Include="Halifax.Core" Version="0.0.15" />
-        <PackageReference Include="Halifax.Models" Version="0.0.2" />
+        <PackageReference Include="Halifax.Models" Version="0.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
         
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
     </ItemGroup>
 
     <ItemGroup>
