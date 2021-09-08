@@ -45,6 +45,13 @@ namespace Halifax.Models
     {
         public TData Data { get; set; }
 
+        /// <summary>
+        /// Default constructor for deserializecion
+        /// </summary>
+        public ApiResponse()
+        {
+        }
+
         internal ApiResponse(TData data)
         {
             Data = data;
