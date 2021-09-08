@@ -22,6 +22,13 @@ namespace Halifax.Models
         public bool Success { get; private init; } = true;
 
         /// <summary>
+        /// Default constructor. (it's often needed for deserialization)
+        /// </summary>
+        public ApiResponse()
+        {
+        }
+
+        /// <summary>
         /// Empty API response
         /// </summary>
         public static ApiResponse Empty => new ApiResponse();
@@ -45,7 +52,11 @@ namespace Halifax.Models
     {
         public TData Data { get; set; }
 
-        internal ApiResponse(TData data)
+        public ApiResponse()
+        {
+        }
+
+        public ApiResponse(TData data)
         {
             Data = data;
         }
