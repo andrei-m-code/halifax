@@ -55,6 +55,17 @@ It's very beneficial if all API responses follow the same format. In order to ac
     // Return empty API response
     return ApiResponse.Empty;
 
+When API response is used for all APIs in the project the response will always be of a format:
+
+    {
+        data: {...} // your model
+        success: true/false,
+        error: { // null if successful
+            type: "ArgumentNullException",
+            message: "Email is required",
+            trace: "(126) ArgumentNullException was thrown ... (typical exception stack trace)"
+        }
+    }
 
 # MIT License
 
