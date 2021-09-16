@@ -47,7 +47,25 @@ This enables routing with controllers and exception handling.
 
 # Models
 
-It's very beneficial if all API responses follow the same format. In order to achieve it there is a model called `ApiResponse`. It's designed to return response data, empty data or error information in the same consistent format.
+It's very beneficial if all API responses follow the same format. In order to achieve it there is a model called `ApiResponse`. It's designed to return response data, empty data or error information in the same consistent format. Here are the main use cases:
+
+    // Return API response with your model
+    return ApiResponse.With(model);
+    
+    // Return empty API response
+    return ApiResponse.Empty;
+
+When API response is used for all APIs in the project the response will always be of a format:
+
+    {
+        data: {...} // your model
+        success: true/false,
+        error: { // null if successful
+            type: "ArgumentNullException",
+            message: "Email is required",
+            trace: "(126) ArgumentNullException was thrown ... (typical exception stack trace)"
+        }
+    }
 
 # MIT License
 
