@@ -4,7 +4,7 @@
 | Halifax.Core &nbsp;&nbsp;&nbsp; | [![NuGet](https://img.shields.io/nuget/v/Halifax.Core.svg)](https://www.nuget.org/packages/Halifax.Core/) |
 | Halifax.Models &nbsp;&nbsp;&nbsp; | [![NuGet](https://img.shields.io/nuget/v/Halifax.Models.svg)](https://www.nuget.org/packages/Halifax.Models/) | 
 
-# Halifax Service Foundation API
+# Halifax Service Foundation
 Simplistic libraries for complex projects. Halifax libraries are designed to speed up API service development process by encapsulating common functionality required for all microservices, allowing developers to focus on the business logic instead of copy-pasting the boilerplate code from project to project. The libraries are focussed on the following aspects of any application:
 - ✅ Exception handling
 - ✅ API models
