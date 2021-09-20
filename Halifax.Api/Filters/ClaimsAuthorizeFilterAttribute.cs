@@ -12,12 +12,12 @@ namespace Halifax.Api.Filters
         {
             var claims = context.HttpContext.User?.Claims?.ToList();
 
-            if (claims == null || !IsAuthorized(claims))
+            if (claims == null || !IsAuthorized(claims, context))
             {
                 throw new HalifaxUnauthorizedException("Request is unauthorized");
             }
         }
 
-        protected abstract bool IsAuthorized(List<Claim> claims);
+        protected abstract bool IsAuthorized(List<Claim> claims, ActionExecutingContext context);
     }
 }
