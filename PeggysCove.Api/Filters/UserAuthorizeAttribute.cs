@@ -1,4 +1,5 @@
 ﻿using Halifax.Api.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace PeggysCove.Api.Filters
 {
     public class UserAuthorizeAttribute : ClaimsAuthorizeFilterAttribute
     {
-        protected override bool IsAuthorized(List<Claim> claims)
+        protected override bool IsAuthorized(ActionExecutingContext context, List<Claim> claims)
         {
             var role = claims.FirstOrDefault(c => c.Type == JwtTokenConstants.RoleClaim)?.Value;
             var idString = claims.FirstOrDefault(c => c.Type == JwtTokenConstants.IdClaim)?.Value;
