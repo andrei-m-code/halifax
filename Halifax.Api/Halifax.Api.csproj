@@ -7,6 +7,7 @@
         <Title>Halifax Service Foundation - API</Title>
         <Description>Halifax Service Foundation API library</Description>
         <Summary>Halifax Service Foundation API library</Summary>
+        <PackageDescription>Halifax Service Foundation API library</PackageDescription>
         <Authors>andrei-m-code</Authors>
 
         <AssemblyVersion>0.0.17.0</AssemblyVersion>
@@ -21,7 +22,6 @@
         <PackageIcon>Icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageDescription>Core Service Foundation API library</PackageDescription>
         <PackageTags>api service-foundation services microservices correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
