@@ -69,6 +69,20 @@ namespace Halifax.Core.Helpers
         }
 
         /// <summary>
+        /// Deserialize object from JSON
+        /// </summary>
+        /// <param name="jsonString">JSON string representation of an object</param>
+        /// <param name="options">JSON serializer options</param>
+        /// <typeparam name="TObject">Object type</typeparam>
+        /// <returns>An object that was serialized to JSON</returns>
+        public static TObject Deserialize<TObject>(string jsonString, JsonSerializerOptions options) where TObject : class
+        {
+            return jsonString != null
+                ? JsonSerializer.Deserialize<TObject>(jsonString, options)
+                : null;
+        }
+
+        /// <summary>
         /// Default serializer options factory method
         /// </summary>
         public static Action<JsonSerializerOptions> ConfigureOptions { get; set; }
