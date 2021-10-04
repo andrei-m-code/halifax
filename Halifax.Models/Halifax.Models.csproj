@@ -22,7 +22,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageDescription>Halifax Service Foundation Models library</PackageDescription>
-        <PackageTags>api service-foundation services microservices correlation-id base</PackageTags>
+        <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
 v0.0.x - Initial release
