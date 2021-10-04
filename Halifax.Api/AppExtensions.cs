@@ -31,7 +31,7 @@ namespace Halifax.Api
             Json.ConfigureOptions = builder.ConfigureJsonOptions;
             
             services
-                .AddControllers()
+                .AddControllers(builder.ConfigureMvcOptions)
                 .AddJsonOptions(options => Json.ConfigureOptions(options.JsonSerializerOptions))
                 .AddApplicationPart(typeof(AppExtensions).Assembly);
 
