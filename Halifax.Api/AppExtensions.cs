@@ -30,10 +30,12 @@ namespace Halifax.Api
 
             Json.ConfigureOptions = builder.ConfigureJsonOptions;
             
-            services
-                .AddControllers(builder.ConfigureMvcOptions)
+            var mvcBuilder = services
+                .AddControllers()
                 .AddJsonOptions(options => Json.ConfigureOptions(options.JsonSerializerOptions))
                 .AddApplicationPart(typeof(AppExtensions).Assembly);
+
+            builder.ConfigureMvcBuilder(mvcBuilder);
 
             if (builder.TokenValidationParameters != null)
             {

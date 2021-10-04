@@ -2,7 +2,7 @@ using Halifax.Api.App.Defaults;
 using Halifax.Api.Errors;
 using Halifax.Core.Helpers;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
@@ -31,7 +31,7 @@ namespace Halifax.Api.App
         internal TokenValidationParameters TokenValidationParameters { get; set; }
         internal Type ExceptionHandlerType { get; set; } = typeof(DefaultExceptionHandler);
         internal Action<JsonSerializerOptions> ConfigureJsonOptions { get; set; } = Json.ConfigureOptions;
-        internal Action<MvcOptions> ConfigureMvcOptions { get; set; } = opts => {};
+        internal Action<IMvcBuilder> ConfigureMvcBuilder { get; set; } = opts => {};
         
         public HalifaxBuilder SetName(string name)
         {
@@ -84,9 +84,9 @@ namespace Halifax.Api.App
             return this;
         }
 
-        public HalifaxBuilder ConfigureControllers(Action<MvcOptions> configure)
+        public HalifaxBuilder ConfigureMvc(Action<IMvcBuilder> configure)
         {
-            ConfigureMvcOptions = configure;
+            ConfigureMvcBuilder  = configure;
             return this;
         }
     }
