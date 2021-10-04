@@ -15,7 +15,6 @@ namespace Halifax.Core.Helpers
             {
                 options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.PropertyNameCaseInsensitive = true;
-                options.IgnoreNullValues = true;
                 options.Converters.Add(new JsonStringEnumConverter());
             };
         }
