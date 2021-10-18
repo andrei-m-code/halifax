@@ -29,16 +29,16 @@ namespace Halifax.Core.Helpers
         public static string Decrypt(string secret, string encrypted)
         {
             using var encryptor = Aes.Create();
+            using var pdb = new Rfc2898DeriveBytes(secret, salt);
             using var ms = new MemoryStream();
-
-            var cipherBytes = Convert.FromBase64String(encrypted);
-            var pdb = new Rfc2898DeriveBytes(secret, salt);
 
             encryptor.Key = pdb.GetBytes(32);
             encryptor.IV = pdb.GetBytes(16);
-
-            using var cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write);
-            cs.Write(cipherBytes, 0, cipherBytes.Length);
+            using (var cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+            {
+                var cipherBytes = Convert.FromBase64String(encrypted);
+                cs.Write(cipherBytes, 0, cipherBytes.Length);
+            } // DO NOT remove brackets here!!! It cuts decoded string to 300 symbols. Why?
 
             return Encoding.Unicode.GetString(ms.ToArray());
         }
