@@ -10,9 +10,9 @@
         <PackageDescription>Halifax Service Foundation API library</PackageDescription>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>0.0.22</AssemblyVersion>
-        <FileVersion>0.0.22</FileVersion>
-        <Version>0.0.22</Version>
+        <AssemblyVersion>0.1.0</AssemblyVersion>
+        <FileVersion>0.1.0</FileVersion>
+        <Version>0.1.0</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -25,7 +25,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
-v0.0.x - Initial release
+v0.x.x - Initial release
         </PackageReleaseNotes>
     </PropertyGroup>
 
@@ -34,8 +34,8 @@ v0.0.x - Initial release
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Halifax.Core" Version="0.0.21" />
-        <PackageReference Include="Halifax.Models" Version="0.0.5" />
+        <PackageReference Include="Halifax.Core" Version="0.1.0" />
+        <PackageReference Include="Halifax.Models" Version="0.1.0" />
         
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.11" />        
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
