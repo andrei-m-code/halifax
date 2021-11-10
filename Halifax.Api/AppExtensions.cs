@@ -8,98 +8,94 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Halifax.Api
+namespace Halifax.Api;
+
+public static class AppExtensions
 {
-    public static class AppExtensions
+    public static void AddHalifax(this IServiceCollection services, Action<HalifaxBuilder> configure = null)
     {
-        public static void AddHalifax(this IServiceCollection services, Action<HalifaxBuilder> configure = null)
+        services.CleanupDefaultLogging();
+
+        L.Info("Starting up Halifax");
+
+        // Load .env configuration
+        Env.Load();
+
+        var builder = new HalifaxBuilder();
+        configure?.Invoke(builder);
+
+        Json.ConfigureOptions = builder.ConfigureJsonOptions;
+
+        var mvcBuilder = services
+            .AddControllers()
+            .AddJsonOptions(options => Json.ConfigureOptions(options.JsonSerializerOptions))
+            .AddApplicationPart(typeof(AppExtensions).Assembly);
+
+        builder.ConfigureMvcBuilder(mvcBuilder);
+
+        if (builder.TokenValidationParameters != null)
         {
-            services.CleanupDefaultLogging();
-
-            L.Info("Starting up Halifax");
-            
-            // Load .env configuration
-            Env.Load();
-
-            var builder = new HalifaxBuilder();
-            configure?.Invoke(builder);
-
-            Json.ConfigureOptions = builder.ConfigureJsonOptions;
-            
-            var mvcBuilder = services
-                .AddControllers()
-                .AddJsonOptions(options => Json.ConfigureOptions(options.JsonSerializerOptions))
-                .AddApplicationPart(typeof(AppExtensions).Assembly);
-
-            builder.ConfigureMvcBuilder(mvcBuilder);
-
-            if (builder.TokenValidationParameters != null)
+            services.AddAuthentication(opts =>
             {
-                services.AddAuthentication(opts =>
+                opts.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(opts =>
+            {
+                opts.Events = new JwtBearerEvents
                 {
-                    opts.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(opts =>
-                {
-                    opts.Events = new JwtBearerEvents
+                    OnAuthenticationFailed = context =>
                     {
-                        OnAuthenticationFailed = context => 
-                        {
-                            return Task.CompletedTask;
-                        },
-                        OnTokenValidated = context => 
-                        {
-                            return Task.CompletedTask;
-                        },
-                        OnChallenge = context => 
-                        {
-                            throw new HalifaxUnauthorizedException("Request is unauthorized");
-                        }
-                    };
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        throw new HalifaxUnauthorizedException("Request is unauthorized");
+                    }
+                };
 
-                    opts.RequireHttpsMetadata = true;
-                    opts.SaveToken = true;
-                    opts.TokenValidationParameters = builder.TokenValidationParameters;
-                });
-            }
-            
-            services.AddSwaggerGen(builder.Swagger);
-            services.AddCors(opts => opts.AddPolicy("HalifaxCors", builder.Cors));
-            services.AddScoped(typeof(IExceptionHandler), builder.ExceptionHandlerType);
+                opts.RequireHttpsMetadata = true;
+                opts.SaveToken = true;
+                opts.TokenValidationParameters = builder.TokenValidationParameters;
+            });
         }
 
-        public static void UseHalifax(this IApplicationBuilder app)
+        services.AddSwaggerGen(builder.Swagger);
+        services.AddCors(opts => opts.AddPolicy("HalifaxCors", builder.Cors));
+        services.AddScoped(typeof(IExceptionHandler), builder.ExceptionHandlerType);
+    }
+
+    public static void UseHalifax(this IApplicationBuilder app)
+    {
+        app.UseExceptionHandler("/error");
+        app.UseRouting();
+        app.UseCors("HalifaxCors");
+        app.UseSwagger();
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", HalifaxBuilder.Instance.Name));
+
+        if (HalifaxBuilder.Instance.TokenValidationParameters != null)
         {
-            app.UseExceptionHandler("/error");
-            app.UseRouting();
-            app.UseCors("HalifaxCors");
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", HalifaxBuilder.Instance.Name));
+            app.UseAuthentication();
+            app.UseAuthorization();
+        }
 
-            if (HalifaxBuilder.Instance.TokenValidationParameters != null)
-            {
-                app.UseAuthentication();
-                app.UseAuthorization();
-            }
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
                 // endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello Halifax!"); });
             });
 
-            // This is necessary for IDEs to pick up server address and open browser automatically
-            var serverAddressesFeature = app.ServerFeatures.Get<IServerAddressesFeature>();
-            if (!serverAddressesFeature.Addresses.Any())
-            {
-                serverAddressesFeature.Addresses.Add("http://localhost:5000");
-            }
-            serverAddressesFeature.Addresses.Each(address => L.Info($"Now listening on: {address}"));
+        // This is necessary for IDEs to pick up server address and open browser automatically
+        var serverAddressesFeature = app.ServerFeatures.Get<IServerAddressesFeature>();
+        if (!serverAddressesFeature.Addresses.Any())
+        {
+            serverAddressesFeature.Addresses.Add("http://localhost:5000");
         }
+        serverAddressesFeature.Addresses.Each(address => L.Info($"Now listening on: {address}"));
     }
 }

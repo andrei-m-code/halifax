@@ -1,15 +1,14 @@
-namespace Halifax.Core.Exceptions
+namespace Halifax.Core.Exceptions;
+
+/// <summary>
+/// Halifax unauthorized exception.
+/// </summary>
+public class HalifaxUnauthorizedException : HalifaxException
 {
     /// <summary>
-    /// Halifax unauthorized exception.
+    /// Constructor that takes error message.
     /// </summary>
-    public class HalifaxUnauthorizedException : HalifaxException
+    public HalifaxUnauthorizedException(string errorMessage) : base(errorMessage)
     {
-        /// <summary>
-        /// Constructor that takes error message.
-        /// </summary>
-        public HalifaxUnauthorizedException(string errorMessage) : base(errorMessage)
-        {
-        }
     }
 }

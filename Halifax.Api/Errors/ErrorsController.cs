@@ -1,29 +1,27 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
-namespace Halifax.Api.Errors
+namespace Halifax.Api.Errors;
+
+[ApiExplorerSettings(IgnoreApi = true)]
+public class ErrorsController : ControllerBase
 {
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public class ErrorsController : ControllerBase
+    private readonly IExceptionHandler exceptionHandler;
+
+    public ErrorsController(IExceptionHandler exceptionHandler)
     {
-        private readonly IExceptionHandler exceptionHandler;
+        this.exceptionHandler = exceptionHandler;
+    }
 
-        public ErrorsController(IExceptionHandler exceptionHandler)
-        {
-            this.exceptionHandler = exceptionHandler;
-        }
-        
-        [Route("error")]
-        public async Task<object> Error()
-        {
-            var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
-            var exception = context?.Error;
-            var (response, code) = await exceptionHandler.HandleAsync(exception);
-            
-            Response.StatusCode = (int)code;
+    [Route("error")]
+    public async Task<object> Error()
+    {
+        var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
+        var exception = context?.Error;
+        var (response, code) = await exceptionHandler.HandleAsync(exception);
 
-            return response;
-        }
+        Response.StatusCode = (int)code;
+
+        return response;
     }
 }

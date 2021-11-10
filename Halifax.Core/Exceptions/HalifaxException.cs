@@ -1,17 +1,14 @@
-using System;
+namespace Halifax.Core.Exceptions;
 
-namespace Halifax.Core.Exceptions
+/// <summary>
+/// Generic Halifax Exception
+/// </summary>
+public class HalifaxException : Exception
 {
     /// <summary>
-    /// Generic Halifax Exception
+    /// Constructor that takes error message.
     /// </summary>
-    public class HalifaxException : Exception
+    public HalifaxException(string errorMessage) : base(errorMessage)
     {
-        /// <summary>
-        /// Constructor that takes error message.
-        /// </summary>
-        public HalifaxException(string errorMessage) : base(errorMessage)
-        {
-        }
     }
 }
