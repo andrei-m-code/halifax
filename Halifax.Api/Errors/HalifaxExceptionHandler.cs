@@ -1,26 +1,23 @@
 using Halifax.Core.Exceptions;
 using Halifax.Models;
-using System;
 using System.Net;
-using System.Threading.Tasks;
 
-namespace Halifax.Api.Errors
+namespace Halifax.Api.Errors;
+
+public class DefaultExceptionHandler : IExceptionHandler
 {
-    public class DefaultExceptionHandler : IExceptionHandler
+    public Task<(object Response, HttpStatusCode Code)> HandleAsync(Exception exception)
     {
-        public Task<(object Response, HttpStatusCode Code)> HandleAsync(Exception exception)
+        var code = exception switch
         {
-            var code = exception switch
-            {
-                HalifaxNotFoundException => HttpStatusCode.NotFound,
-                HalifaxUnauthorizedException => HttpStatusCode.Unauthorized,
-                HalifaxException => HttpStatusCode.BadRequest,
-                _ => HttpStatusCode.InternalServerError
-            };
+            HalifaxNotFoundException => HttpStatusCode.NotFound,
+            HalifaxUnauthorizedException => HttpStatusCode.Unauthorized,
+            HalifaxException => HttpStatusCode.BadRequest,
+            _ => HttpStatusCode.InternalServerError
+        };
 
-            var result = (Response: (object) ApiResponse.With(exception), Code: code);
-            
-            return Task.FromResult(result);
-        }
+        var result = (Response: (object)ApiResponse.With(exception), Code: code);
+
+        return Task.FromResult(result);
     }
 }

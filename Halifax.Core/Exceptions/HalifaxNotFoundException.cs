@@ -1,15 +1,14 @@
-namespace Halifax.Core.Exceptions
+namespace Halifax.Core.Exceptions;
+
+/// <summary>
+/// Halifax not found exception.
+/// </summary>
+public class HalifaxNotFoundException : HalifaxException
 {
     /// <summary>
-    /// Halifax not found exception.
+    /// Constructor that takes error message.
     /// </summary>
-    public class HalifaxNotFoundException : HalifaxException
+    public HalifaxNotFoundException(string errorMessage) : base(errorMessage)
     {
-        /// <summary>
-        /// Constructor that takes error message.
-        /// </summary>
-        public HalifaxNotFoundException(string errorMessage) : base(errorMessage)
-        {
-        }
     }
 }
