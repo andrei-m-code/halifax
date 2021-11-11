@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/PeggysCove.Api/bin/Debug/net5.0/PeggysCove.Api.dll",
+            "program": "${workspaceFolder}/PeggysCove.Api/bin/Debug/net6.0/PeggysCove.Api.dll",
             "args": [],
             "cwd": "${workspaceFolder}/PeggysCove.Api",
             "stopAtEntry": false,

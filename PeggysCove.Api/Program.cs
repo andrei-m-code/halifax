@@ -15,3 +15,4 @@ L.Info(jwt);
 
 var app = builder.Build();
 app.UseHalifax();
+app.Run();
