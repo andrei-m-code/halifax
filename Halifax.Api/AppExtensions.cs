@@ -91,11 +91,12 @@ public static class AppExtensions
             });
 
         // This is necessary for IDEs to pick up server address and open browser automatically
-        var serverAddressesFeature = app.ServerFeatures.Get<IServerAddressesFeature>();
-        if (!serverAddressesFeature.Addresses.Any())
-        {
-            serverAddressesFeature.Addresses.Add("http://localhost:5000");
-        }
-        serverAddressesFeature.Addresses.Each(address => L.Info($"Now listening on: {address}"));
+        
+        // var serverAddressesFeature = app.ServerFeatures.Get<IServerAddressesFeature>();
+        // if (!serverAddressesFeature.Addresses.Any())
+        // {
+        //     serverAddressesFeature.Addresses.Add("http://localhost:5000");
+        // }
+        // serverAddressesFeature.Addresses.Each(address => L.Info($"Now listening on: {address}"));
     }
 }
