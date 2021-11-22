@@ -9,6 +9,12 @@ namespace Halifax.Core;
 public static class Env
 {
     private static readonly Dictionary<Type, object> sections = new();
+    private static List<Type> supportedTypes = new List<Type>
+    {
+        typeof(Guid), typeof(Guid?), 
+        typeof(DateTime), typeof(DateTime?), 
+        typeof(TimeSpan), typeof(TimeSpan?)
+    };
 
     /// <summary>
     /// Load environment variables from file (usually for local execution)
@@ -110,6 +116,7 @@ public static class Env
                 .GetProperties()
                 .Where(p => !ctorParameterNames.Contains(p.Name))
                 .Where(p => IsSupportedType(p.PropertyType))
+                .Where(p => p.SetMethod != null)
                 .ToList()
                 .ForEach(property =>
                 {
@@ -170,7 +177,6 @@ public static class Env
 
     private static bool IsSupportedType(Type type)
     {
-        return type == typeof(string)
-               || type.IsPrimitive;
+        return type == typeof(string) || type.IsPrimitive || supportedTypes.Contains(type);
     }
 }
