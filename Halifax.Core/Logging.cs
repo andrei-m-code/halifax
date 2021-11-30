@@ -27,6 +27,9 @@ public static class L
 
 public static class ServicesExtensions
 {
+    /// <summary>
+    /// Cleanup default Microsoft and System logging
+    /// </summary>
     public static void CleanupDefaultLogging(this IServiceCollection services)
     {
         services.AddLogging(logging => logging
