@@ -15,4 +15,4 @@ L.Info(jwt);
 
 var app = builder.Build();
 app.UseHalifax();
-app.Run();
+app.Run("http://*:5000");
