@@ -15,6 +15,7 @@ public static class Json
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             options.PropertyNameCaseInsensitive = true;
             options.Converters.Add(new JsonStringEnumConverter());
+            options.Converters.Add(new UniversalDateTimeConverter());
         };
     }
 
@@ -84,4 +85,17 @@ public static class Json
     /// Default serializer options factory method
     /// </summary>
     public static Action<JsonSerializerOptions> ConfigureOptions { get; set; }
+}
+
+public class UniversalDateTimeConverter : JsonConverter<DateTime>
+{
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return reader.GetDateTime().ToUniversalTime();
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    {
+         writer.WriteStringValue(value.ToUniversalTime());
+    }
 }
