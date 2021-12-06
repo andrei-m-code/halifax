@@ -1,5 +1,8 @@
 namespace Halifax.Models
 {
+    /// <summary>
+    /// Open time interval
+    /// </summary>
     public record Timeframe
     {
         public Timeframe()
