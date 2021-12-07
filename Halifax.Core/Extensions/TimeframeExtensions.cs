@@ -1,4 +1,5 @@
-using Halifax.Models;
+using Halifax.Domain;
+using Halifax.Domain.Exceptions;
 
 namespace Halifax.Core.Exceptions;
 

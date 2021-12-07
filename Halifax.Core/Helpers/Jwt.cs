@@ -1,4 +1,4 @@
-﻿using Halifax.Core.Exceptions;
+﻿using Halifax.Domain.Exceptions;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

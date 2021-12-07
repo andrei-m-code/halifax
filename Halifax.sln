@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Core", "Halifax.Core\Halifax.Core.csproj", "{35709FE0-2BF8-447D-8751-F48177B5D343}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Api", "Halifax.Api\Halifax.Api.csproj", "{9E829AFE-68A2-4A27-AA7A-1557BE16DF46}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeggysCove.Api", "PeggysCove.Api\PeggysCove.Api.csproj", "{2C1F3FBB-BE70-4F61-BF73-849E6AAFC494}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Models", "Halifax.Models\Halifax.Models.csproj", "{75AC9228-2DBE-4F91-8460-1D1ABA803E0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Domain", "Halifax.Domain\Halifax.Domain.csproj", "{F87CA22B-32E3-48DE-9F25-227646EF8BD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +31,9 @@ Global
 		{75AC9228-2DBE-4F91-8460-1D1ABA803E0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75AC9228-2DBE-4F91-8460-1D1ABA803E0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75AC9228-2DBE-4F91-8460-1D1ABA803E0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F87CA22B-32E3-48DE-9F25-227646EF8BD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F87CA22B-32E3-48DE-9F25-227646EF8BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F87CA22B-32E3-48DE-9F25-227646EF8BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F87CA22B-32E3-48DE-9F25-227646EF8BD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

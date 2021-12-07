@@ -1,4 +1,4 @@
-﻿using Halifax.Core.Exceptions;
+﻿using Halifax.Domain.Exceptions;
 using Halifax.Core.Extensions;
 using System.Text.RegularExpressions;
 

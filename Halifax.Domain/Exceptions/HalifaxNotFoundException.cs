@@ -1,4 +1,4 @@
-namespace Halifax.Core.Exceptions;
+namespace Halifax.Domain.Exceptions;
 
 /// <summary>
 /// Halifax not found exception.

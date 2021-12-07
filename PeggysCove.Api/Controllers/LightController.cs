@@ -1,6 +1,6 @@
 using Halifax.Core;
 using Halifax.Core.Helpers;
-using Halifax.Models;
+using Halifax.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PeggysCove.Api.Filters;

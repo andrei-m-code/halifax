@@ -1,12 +1,10 @@
 using Halifax.Api.App;
 using Halifax.Api.Errors;
 using Halifax.Core;
-using Halifax.Core.Exceptions;
-using Halifax.Core.Extensions;
 using Halifax.Core.Helpers;
+using Halifax.Domain.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Halifax.Api;
