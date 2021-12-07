@@ -1,4 +1,4 @@
-namespace Halifax.Models;
+namespace Halifax.Domain;
 
 public record Paging<TObject>
 {

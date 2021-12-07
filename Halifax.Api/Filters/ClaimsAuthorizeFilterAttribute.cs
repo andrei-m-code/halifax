@@ -1,4 +1,4 @@
-﻿using Halifax.Core.Exceptions;
+﻿using Halifax.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
 
