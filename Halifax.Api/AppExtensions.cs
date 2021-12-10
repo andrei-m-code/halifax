@@ -70,9 +70,9 @@ public static class AppExtensions
 
     public static void UseHalifax(this IApplicationBuilder app)
     {
+        app.UseCors("HalifaxCors");
         app.UseExceptionHandler("/error");
         app.UseRouting();
-        app.UseCors("HalifaxCors");
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", HalifaxBuilder.Instance.Name));
 
