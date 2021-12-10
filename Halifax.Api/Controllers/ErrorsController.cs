@@ -1,9 +1,11 @@
 using Halifax.Api.Errors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Halifax.Api.Controllers;
 
+[AllowAnonymous]
 [ApiExplorerSettings(IgnoreApi = true)]
 public class ErrorsController : ControllerBase
 {
