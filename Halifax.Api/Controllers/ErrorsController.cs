@@ -1,7 +1,8 @@
+using Halifax.Api.Errors;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Halifax.Api.Errors;
+namespace Halifax.Api.Controllers;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 public class ErrorsController : ControllerBase
@@ -22,10 +23,10 @@ public class ErrorsController : ControllerBase
 
         // CORS issues when exception happens for some reason...
         // This is a temporary (permanent) fix for now (forever)
-        Response.Headers.TryAdd("Access-Control-Allow-Origin", "*");
-        Response.Headers.TryAdd("Access-Control-Allow-Methods", "*");
-        Response.Headers.TryAdd("Access-Control-Allow-Headers", "*");
-        Response.Headers.TryAdd("Access-Control-Max-Age", "8640");
+        // Response.Headers.TryAdd("Access-Control-Allow-Origin", "*");
+        // Response.Headers.TryAdd("Access-Control-Allow-Methods", "*");
+        // Response.Headers.TryAdd("Access-Control-Allow-Headers", "*");
+        // Response.Headers.TryAdd("Access-Control-Max-Age", "8640");
 
         Response.StatusCode = (int)code;
 
