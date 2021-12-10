@@ -20,6 +20,13 @@ public class ErrorsController : ControllerBase
         var exception = context?.Error;
         var (response, code) = await exceptionHandler.HandleAsync(exception);
 
+        // CORS issues when exception happens for some reason...
+        // This is a temporary (permanent) fix for now (forever)
+        Response.Headers.TryAdd("Access-Control-Allow-Origin", "*");
+        Response.Headers.TryAdd("Access-Control-Allow-Methods", "*");
+        Response.Headers.TryAdd("Access-Control-Allow-Headers", "*");
+        Response.Headers.TryAdd("Access-Control-Max-Age", "8640");
+
         Response.StatusCode = (int)code;
 
         return response;
