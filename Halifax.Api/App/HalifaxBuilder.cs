@@ -25,7 +25,8 @@ public class HalifaxBuilder
     }
 
     internal string Name { get; private set; } = AppDomain.CurrentDomain.FriendlyName;
-    internal Action<CorsPolicyBuilder> Cors { get; private set; } = CorsDefaults.Value;
+    // TODO: Add CORS customization
+    //internal Action<CorsPolicyBuilder> Cors { get; private set; } = CorsDefaults.Value;
     internal Action<SwaggerGenOptions> Swagger { get; private set; } = SwaggerDefaults.Value;
     internal TokenValidationParameters TokenValidationParameters { get; set; }
     internal Type ExceptionHandlerType { get; set; } = typeof(DefaultExceptionHandler);
@@ -38,11 +39,12 @@ public class HalifaxBuilder
         return this;
     }
 
-    public HalifaxBuilder ConfigureCors(Action<CorsPolicyBuilder> corsPolicyBuilder)
-    {
-        Cors = corsPolicyBuilder ?? throw new ArgumentNullException(nameof(corsPolicyBuilder));
-        return this;
-    }
+    // TODO: Add CORS customization
+    // public HalifaxBuilder ConfigureCors(Action<CorsPolicyBuilder> corsPolicyBuilder)
+    // {
+    //     Cors = corsPolicyBuilder ?? throw new ArgumentNullException(nameof(corsPolicyBuilder));
+    //     return this;
+    // }
 
     public HalifaxBuilder ConfigureSwagger(Action<SwaggerGenOptions> swaggerBuilder)
     {
