@@ -64,13 +64,13 @@ public static class AppExtensions
         }
 
         services.AddSwaggerGen(builder.Swagger);
-        services.AddCors(opts => opts.AddPolicy("HalifaxCors", builder.Cors));
+        //services.AddCors(opts => opts.AddPolicy("HalifaxCors", builder.Cors));
         services.AddScoped(typeof(IExceptionHandler), builder.ExceptionHandlerType);
     }
 
     public static void UseHalifax(this IApplicationBuilder app)
     {
-        app.UseCors("HalifaxCors");
+        //app.UseCors("HalifaxCors");
         app.UseExceptionHandler("/error");
         app.UseRouting();
         app.UseSwagger();
