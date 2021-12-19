@@ -72,8 +72,8 @@ public static class Env
                     throw new InvalidOperationException($"Equality sign is missing on line {index}");
                 }
 
-                var name = line[..indexOfEquality];
-                var value = line[(indexOfEquality + 1)..];
+                var name = line[..indexOfEquality].Trim();
+                var value = line[(indexOfEquality + 1)..].Trim();
 
                 if (string.IsNullOrWhiteSpace(name) || !Regex.Match(name, "^[a-zA-Z0-9_]*$", RegexOptions.Singleline).Success)
                 {
