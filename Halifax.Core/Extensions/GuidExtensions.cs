@@ -4,16 +4,13 @@ public static class GuidExtensions
 {
     public static Guid NewIfEmpty(this Guid? guid)
     {
-        if (!guid.HasValue || guid == Guid.Empty)
-        {
-            return Guid.NewGuid();
-        }
-
-        return guid.Value;
+        return guid == Guid.Empty || !guid.HasValue
+            ? Guid.NewGuid()
+            : guid.Value;
     }
 
     public static Guid NewIfEmpty(this Guid guid)
     {
-        return NewIfEmpty(guid);
+        return guid == Guid.Empty ? Guid.NewGuid() : guid;
     }    
 }
