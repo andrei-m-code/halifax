@@ -2,6 +2,13 @@
 
 public static class LinqExtensions
 {
+    public static List<TObject> Each<TObject>(this IEnumerable<TObject> objects, Action<TObject, int> action)
+    {
+        var index = 0;
+        var list = objects.Each(item => action(item, index++));
+        return list;
+    }
+
     public static List<TObject> Each<TObject>(this IEnumerable<TObject> objects, Action<TObject> action)
     {
         var list = objects as List<TObject> ?? objects.ToList();
