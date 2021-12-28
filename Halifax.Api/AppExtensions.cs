@@ -5,6 +5,7 @@ using Halifax.Core.Helpers;
 using Halifax.Domain.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Halifax.Api;
@@ -70,6 +71,12 @@ public static class AppExtensions
 
     public static void UseHalifax(this IApplicationBuilder app)
     {
+        app.Use((context, next) =>
+        {
+            context.Request.EnableBuffering();
+            return next();
+        });
+
         // TODO: Make it configurable
         app.UseCors(b => b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
         app.UseExceptionHandler("/error");
