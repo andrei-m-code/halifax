@@ -70,6 +70,7 @@ public static class AppExtensions
 
     public static void UseHalifax(this IApplicationBuilder app)
     {
+        // TODO: Make it configurable
         app.UseCors(b => b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
         app.UseExceptionHandler("/error");
         app.UseRouting();
