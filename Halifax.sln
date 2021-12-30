@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeggysCove.Api", "PeggysCov
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Domain", "Halifax.Domain\Halifax.Domain.csproj", "{F87CA22B-32E3-48DE-9F25-227646EF8BD3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.HttpClient", "Halifax.HttpClient\Halifax.HttpClient.csproj", "{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,5 +37,9 @@ Global
 		{F87CA22B-32E3-48DE-9F25-227646EF8BD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F87CA22B-32E3-48DE-9F25-227646EF8BD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F87CA22B-32E3-48DE-9F25-227646EF8BD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
