@@ -1,4 +1,7 @@
+using System.Globalization;
+using System.Text;
 using Halifax.Api.Errors;
+using Halifax.Core.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +37,10 @@ public class ErrorsController : ControllerBase
 
     private async Task LogRequestAsync(IExceptionHandlerPathFeature context)
     {
-        var path = context.Path;
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine("Error happened when processing the request:");
+
+        var path = $"{Request.Method}: {context.Path}";
         var body = Request.Body;
         var bodyString = string.Empty;
 
@@ -43,13 +49,23 @@ public class ErrorsController : ControllerBase
             path += Request.QueryString.Value;
         }
 
+        messageBuilder.AppendLine(path);
+
+        Request.Headers
+            .Where(h => h.Key.StartsWith("X-", true, CultureInfo.InvariantCulture))
+            .Each(h => messageBuilder.AppendLine($"{h.Key}: {h.Value.ToString()}"));
+
         if (body.CanRead)
         {
             body.Position = 0;
             using var stream = new StreamReader(Request.Body);
             bodyString = await stream.ReadToEndAsync();
+            if (!string.IsNullOrWhiteSpace(bodyString))
+            {
+                messageBuilder.AppendLine($"BODY: {bodyString}");
+            }
         }
 
-        L.Info($"Error happened when processing the request \r\n{Request.Method}: {path}\r\nBODY: {bodyString}");
+        L.Info(messageBuilder.ToString());
     }
 }

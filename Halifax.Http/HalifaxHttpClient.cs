@@ -1,6 +1,6 @@
 using Halifax.Domain;
 
-namespace Halifax.HttpClient;
+namespace Halifax.Http;
 
 public abstract class HalifaxHttpClient
 {
@@ -13,7 +13,6 @@ public abstract class HalifaxHttpClient
 
     public Task<ApiResponse<TModel>> SendAsync<TModel>(HttpRequestMessage message)
     {
-        
         return null;
     }
 }
