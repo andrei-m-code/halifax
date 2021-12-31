@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeggysCove.Api", "PeggysCov
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Domain", "Halifax.Domain\Halifax.Domain.csproj", "{F87CA22B-32E3-48DE-9F25-227646EF8BD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Http", "Halifax.HttpClient\Halifax.Http.csproj", "{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Http", "Halifax.Http\Halifax.Http.csproj", "{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
