@@ -1,4 +1,4 @@
-| Package | NuGet |
+| Package Name | NuGet |
 |-|-|
 | Halifax.Api &nbsp;&nbsp;&nbsp; | [![NuGet](https://img.shields.io/nuget/v/Halifax.Api.svg)](https://www.nuget.org/packages/Halifax.Api/)  |
 | Halifax.Core &nbsp;&nbsp;&nbsp; | [![NuGet](https://img.shields.io/nuget/v/Halifax.Core.svg)](https://www.nuget.org/packages/Halifax.Core/) |
