@@ -44,18 +44,9 @@ public static class AppExtensions
             {
                 opts.Events = new JwtBearerEvents
                 {
-                    OnAuthenticationFailed = context =>
-                    {
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
-                    {
-                        return Task.CompletedTask;
-                    },
-                    OnChallenge = context =>
-                    {
-                        throw new HalifaxUnauthorizedException("Request is unauthorized");
-                    }
+                    OnAuthenticationFailed = context => Task.CompletedTask,
+                    OnTokenValidated = context => Task.CompletedTask,
+                    OnChallenge = context => throw new HalifaxUnauthorizedException("Request is unauthorized")
                 };
 
                 opts.RequireHttpsMetadata = true;
