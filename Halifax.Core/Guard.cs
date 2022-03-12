@@ -20,7 +20,7 @@ public static class Guard
 
     public static void Email(string input, string argument = "Email")
     {
-        Guard.Ensure(input.IsEmail(), $"{argument} is invalid");
+        Guard.Ensure(input.IsEmail(), $"{argument} ({input}) is invalid");
     }
 
     public static void StringWithEmails(string input, string argument = "Emails string", string separators = " ,;")
