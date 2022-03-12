@@ -68,7 +68,7 @@ public class LightController : Controller
     /// Check User Authorization
     /// </summary>
     /// <returns>User Authorization</returns>
-    [HttpGet("User")]
+    [HttpGet("user")]
     [UserAuthorize]
     public ApiResponse<string> AuthorizeUser()
     {
