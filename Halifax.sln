@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# 
+#
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Core", "Halifax.Core\Halifax.Core.csproj", "{35709FE0-2BF8-447D-8751-F48177B5D343}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Api", "Halifax.Api\Halifax.Api.csproj", "{9E829AFE-68A2-4A27-AA7A-1557BE16DF46}"
@@ -10,6 +10,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Domain", "Halifax.Domain\Halifax.Domain.csproj", "{F87CA22B-32E3-48DE-9F25-227646EF8BD3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Http", "Halifax.Http\Halifax.Http.csproj", "{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{12B75C84-650D-4B72-A8AC-EA4E70B3AE0D}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		LICENSE.md = LICENSE.md
+		Icon.png = Icon.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
