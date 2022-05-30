@@ -14,6 +14,11 @@ public static class GuidExtensions
             : guid.Value;
     }
 
+    /// <summary>
+    /// Returns new Guid if passed in Guid is empty
+    /// </summary>
+    /// <param name="guid">Guid in question</param>
+    /// <returns>Guid or new Guid</returns>
     public static Guid NewIfEmpty(this Guid guid)
     {
         return guid == Guid.Empty ? Guid.NewGuid() : guid;
