@@ -1,4 +1,5 @@
 ﻿using Halifax.Domain.Exceptions;
+using Halifax.Core.Extensions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
 
@@ -12,18 +13,15 @@ public abstract class ClaimsAuthorizeFilterAttribute : ActionFilterAttribute
     {
         var claims = context.HttpContext.User?.Claims?.ToList();
 
-        if (claims == null || !IsAuthorized(context, claims))
+        if (!IsAuthorized(context, claims))
         {
             throw new HalifaxUnauthorizedException(unauthorizedMessage);
         }
     }
-
-    protected void Expect(IEnumerable<Claim> claims, string claimKey, string expectedValue)
+    
+    protected void Expect(IEnumerable<Claim> claims, string claimType, string expectedValue)
     {
-        if (claims?.FirstOrDefault(c => c.Type == claimKey)?.Value != expectedValue)
-        {
-            throw new HalifaxUnauthorizedException(unauthorizedMessage);
-        }
+        claims.ClaimExpected(claimType, expectedValue);
     }
     
     protected abstract bool IsAuthorized(ActionExecutingContext context, List<Claim> claims);
