@@ -8,22 +8,22 @@ public static class ClaimsExtensions
     private static readonly Action<Claim> claimDefaultValueConditionFailed = claim 
         => throw new HalifaxUnauthorizedException("Unauthorized");
     
-    public static List<Claim> ClaimNotNullOrWhiteSpace(
-        this List<Claim> claims, 
+    public static IEnumerable<Claim> ClaimNotNullOrWhiteSpace(
+        this IEnumerable<Claim> claims, 
         string claimType, 
         out string value,
         Action<Claim> valueConditionFailed = null) =>
         claims.ClaimValidate(claimType, out value, v => !string.IsNullOrWhiteSpace(v), valueConditionFailed);
 
-    public static List<Claim> ClaimIsEmail(
-        this List<Claim> claims,
+    public static IEnumerable<Claim> ClaimIsEmail(
+        this IEnumerable<Claim> claims,
         string claimType,
         out string email,
         Action<Claim> valueConditionFailed = null)
         => claims.ClaimValidate(claimType, out email, v => v.IsEmail(), valueConditionFailed);
 
-    public static List<Claim> ClaimIsInt(
-        this List<Claim> claims,
+    public static IEnumerable<Claim> ClaimIsInt(
+        this IEnumerable<Claim> claims,
         string claimType,
         out int parsedValue,
         Action<Claim> valueConditionFailed = null)
@@ -34,8 +34,8 @@ public static class ClaimsExtensions
         return claims;
     }    
     
-    public static List<Claim> ClaimIsDouble(
-        this List<Claim> claims,
+    public static IEnumerable<Claim> ClaimIsDouble(
+        this IEnumerable<Claim> claims,
         string claimType,
         out double parsedValue,
         Action<Claim> valueConditionFailed = null)
@@ -46,8 +46,8 @@ public static class ClaimsExtensions
         return claims;
     } 
     
-    public static List<Claim> ClaimIsGuid(
-        this List<Claim> claims,
+    public static IEnumerable<Claim> ClaimIsGuid(
+        this IEnumerable<Claim> claims,
         string claimType,
         out Guid parsedValue,
         Action<Claim> valueConditionFailed = null)
@@ -58,8 +58,8 @@ public static class ClaimsExtensions
         return claims;
     }
     
-    public static List<Claim> ClaimIsBoolean(
-        this List<Claim> claims,
+    public static IEnumerable<Claim> ClaimIsBoolean(
+        this IEnumerable<Claim> claims,
         string claimType,
         out bool parsedValue,
         Action<Claim> valueConditionFailed = null)
@@ -70,8 +70,8 @@ public static class ClaimsExtensions
         return claims;
     }    
 
-    public static List<Claim> ClaimValidate(
-        this List<Claim> claims, 
+    public static IEnumerable<Claim> ClaimValidate(
+        this IEnumerable<Claim> claims, 
         string claimType,
         out string value,
         Predicate<string> valueCondition,
@@ -84,7 +84,15 @@ public static class ClaimsExtensions
         {
             (valueConditionFailed ?? claimDefaultValueConditionFailed).Invoke(claim);
         }
-        
+
         return claims;
+    }
+
+    public static IEnumerable<Claim> ClaimExpected(
+        this IEnumerable<Claim> claims, 
+        string claimType, 
+        object expectedClaimValue)
+    {
+        return claims.ClaimValidate(claimType, out _, v => v == expectedClaimValue.ToString());
     }
 }
