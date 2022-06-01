@@ -44,7 +44,19 @@ public static class ClaimsExtensions
         claims.ClaimValidate(claimType, out _, v => double.TryParse(v, out parsed), valueConditionFailed);
         parsedValue = parsed;
         return claims;
-    } 
+    }
+    
+    public static IEnumerable<Claim> ClaimIsEnum<TEnum>(
+        this IEnumerable<Claim> claims,
+        string claimType,
+        out TEnum parsedValue,
+        Action<Claim> valueConditionFailed = null) where TEnum : struct
+    {
+        TEnum parsed = default;
+        claims.ClaimValidate(claimType, out _, v => Enum.TryParse(v, out parsed), valueConditionFailed);
+        parsedValue = parsed;
+        return claims;
+    }
     
     public static IEnumerable<Claim> ClaimIsGuid(
         this IEnumerable<Claim> claims,
