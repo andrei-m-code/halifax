@@ -10,9 +10,9 @@
         <Summary>Halifax Service Foundation Core library</Summary>
         <Authors>andrei-m-code</Authors>
         
-        <AssemblyVersion>1.1.4</AssemblyVersion>
-        <FileVersion>1.1.4</FileVersion>
-        <Version>1.1.4</Version>
+        <AssemblyVersion>1.1.5</AssemblyVersion>
+        <FileVersion>1.1.5</FileVersion>
+        <Version>1.1.5</Version>
         
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>

@@ -103,8 +103,9 @@ public static class ClaimsExtensions
     public static IEnumerable<Claim> ClaimExpected(
         this IEnumerable<Claim> claims, 
         string claimType, 
-        object expectedClaimValue)
+        object expectedClaimValue,
+        Action<Claim> valueConditionFailed = null)
     {
-        return claims.ClaimValidate(claimType, out _, v => v == expectedClaimValue.ToString());
+        return claims.ClaimValidate(claimType, out _, v => v == expectedClaimValue.ToString(), valueConditionFailed);
     }
 }
