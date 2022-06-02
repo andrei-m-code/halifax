@@ -6,7 +6,7 @@ public abstract class HalifaxHttpClient
 {
     private readonly HttpClient http;
 
-    public HalifaxHttpClient(HttpClient http)
+    protected HalifaxHttpClient(HttpClient http)
     {
         this.http = http;
     }
