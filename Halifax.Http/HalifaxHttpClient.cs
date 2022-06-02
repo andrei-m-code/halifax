@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 using Halifax.Core.Helpers;
 using Halifax.Domain;
 using Halifax.Domain.Exceptions;
@@ -21,6 +22,19 @@ public abstract class HalifaxHttpClient
         this.http = http;
     }
 
+    protected virtual HttpRequestMessage CreateMessage(HttpMethod method, string url, object body = default)
+    {
+        var message = new HttpRequestMessage(method, url);
+
+        if (body != null)
+        {
+            var json = Json.Serialize(body);
+            message.Content = new StringContent(json, Encoding.UTF8, "application/json");
+        }
+
+        return message;
+    }
+    
     protected virtual async Task<ApiResponse<TModel>> SendAsync<TModel>(
         HttpRequestMessage message, 
         CancellationToken cancellationToken = default)
