@@ -35,7 +35,7 @@ public abstract class HalifaxHttpClient
         return message;
     }
     
-    protected virtual async Task<ApiResponse<TModel>> SendAsync<TModel>(
+    protected virtual async Task<TModel> SendAsync<TModel>(
         HttpRequestMessage message, 
         CancellationToken cancellationToken = default)
     {
@@ -45,7 +45,7 @@ public abstract class HalifaxHttpClient
         if (response.IsSuccessStatusCode)
         {
             var deserialized = DeserializeApiResponseOrThrow<TModel>(content);
-            return deserialized;
+            return deserialized.Data;
         }
 
         throw MapToException(response, content);
