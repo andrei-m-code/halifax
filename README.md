@@ -8,9 +8,10 @@
 # Halifax Service Foundation
 Simplistic libraries for complex projects. Halifax libraries are designed to speed up API service development process by encapsulating common functionality required for all microservices, allowing developers to focus on the business logic instead of copy-pasting the boilerplate code from project to project. The libraries are focussed on the following aspects of any application:
 - ✅ Exception handling
+- ✅ JWT Authentication
 - ✅ API models
+- ✅ HTTP Communication
 - ✅ Swagger
-- ✅ JWT Auth
 - ✅ Logging
 - ✅ CORS
 
@@ -67,6 +68,36 @@ When API response is used for all APIs in the project the response will always b
             trace: "(126) ArgumentNullException was thrown ... (typical exception stack trace)"
         }
     }
+
+# Exceptions
+
+There are 3 main exception types that can be used out of the box:
+- HalifaxException - resulting in 403 bad request. 
+- HalifaxNotFoundException - 404 when resource is not found.
+- HalifaxUnauthorizedException - 401 unauthorized.
+
+These exceptions are handled by Halifax exception handling middleware. Typical use case can look like this:
+
+```csharp
+var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+if (user == null)
+{
+    throw new HalifaxNotFoundException("User not found");
+}
+```
+The resulting HTTP response will have a status code 404 and JSON (using ApiResponse models):
+
+```json
+{
+  "data": null,
+  "success": false,
+  "error": {
+    "message": "User not found"
+  }
+}
+```
+
+For more advanced scenarios you can override DefaultExceptionHandler or implement and register your own IExceptionHandler.
 
 # MIT License
 
