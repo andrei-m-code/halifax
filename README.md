@@ -99,6 +99,10 @@ The resulting HTTP response will have a status code 404 and JSON (using ApiRespo
 
 For more advanced scenarios you can override DefaultExceptionHandler or implement and register your own IExceptionHandler.
 
+# Configuration
+
+TODO: ...
+
 # JWT Authentication
 
 Enable authentication/authorization using the following code. When you AddHalifax dependencies to services on app startup, make this call:
