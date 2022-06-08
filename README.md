@@ -126,6 +126,7 @@ var expiration = DateTime.UtcNow.AddDays(90);
 var token = Jwt.Create("Your_JWT_secret", claims, expiration);
 ```
 
+**TODO**: Discribe how to read token and how to use custom authentication
 
 # MIT License
 
