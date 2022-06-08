@@ -49,7 +49,7 @@ This enables routing with controllers and exception handling.
 
 # Models
 
-It's very beneficial if all API responses follow the same format. In order to achieve it there is a model called `ApiResponse`. It's designed to return response data, empty data or error information in the same consistent format. Here are the main use cases:
+It's very beneficial if all API responses follow the same format. It makes it easier to consume by the clients. In order to achieve it, there is a model called `ApiResponse`. It's designed to return response data, empty data or error information in the same consistent format. Here are the main use cases:
 
     // Return API response with your model
     return ApiResponse.With(model);
@@ -98,6 +98,30 @@ The resulting HTTP response will have a status code 404 and JSON (using ApiRespo
 ```
 
 For more advanced scenarios you can override DefaultExceptionHandler or implement and register your own IExceptionHandler.
+
+# JWT Authentication
+
+Enable authentication/authorization using the following code. When you AddHalifax dependencies to services on app startup, make this call:
+
+```csharp
+services.AddHalifax(builder => builder
+    .ConfigureAuthentication("Your_JWT_secret",
+        validateAudience: false,
+        validateIssuer: false,
+        requireExpirationTime: false));
+```
+When this is enabled all your non-`[AllowAnonymous]` will require "Authentication: Bearer {token}" header. Halifax provides a way to create tokens easily:
+
+```csharp
+var claims = new List<Claim> 
+{
+    new Claim("ClaimType", "ClaimData"),
+    ...
+};
+var expiration = DateTime.UtcNow.AddDays(90);
+var token = Jwt.Create("Your_JWT_secret", claims, expiration);
+```
+
 
 # MIT License
 
