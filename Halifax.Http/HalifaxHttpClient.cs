@@ -8,7 +8,7 @@ namespace Halifax.Http;
 
 public abstract class HalifaxHttpClient
 {
-    private readonly HttpClient http;
+    protected readonly HttpClient http;
     
     private static readonly List<HttpStatusCode> exceptionHttpStatuses = new()
     {
@@ -33,6 +33,19 @@ public abstract class HalifaxHttpClient
         }
 
         return message;
+    }
+    
+    protected virtual async Task SendAsync(
+        HttpRequestMessage message, 
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await http.SendAsync(message, cancellationToken);
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw MapToException(response, content);
+        }
     }
     
     protected virtual async Task<TModel> SendAsync<TModel>(
