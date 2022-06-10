@@ -125,8 +125,23 @@ var claims = new List<Claim>
 var expiration = DateTime.UtcNow.AddDays(90);
 var token = Jwt.Create("Your_JWT_secret", claims, expiration);
 ```
+You can access request token data from `HttpContext.User.Claims`. To verify that claims are correct there is a helper `ClaimsAuthorizeFilterAttribute` to override, it can be used for methods and controllers:
 
-**TODO**: Discribe how to read token and how to use custom authentication
+```csharp
+internal class MyClaimsAuthorize : ClaimsAuthorizeFilterAttribute
+{
+    protected override bool IsAuthorized(ActionExecutingContext context, List<Claim> claims)
+    {
+        // check your claims, return true/false or throw exception.
+        // extension methods that can help:
+        claims
+            .ClaimExpected("ClaimType", "ClaimValue")
+            .ClaimIsEmail("ClaimType", out var email);
+            // etc.
+    }
+}
+```
+If you need to read a token from string, use `Jwt.Read("Your_JWT_secret", token)`.
 
 # MIT License
 
