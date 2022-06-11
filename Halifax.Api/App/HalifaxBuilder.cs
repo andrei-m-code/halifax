@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 using System.Text.Json;
+using Halifax.Core;
 
 namespace Halifax.Api.App;
 
@@ -14,19 +15,22 @@ public class HalifaxBuilder
 {
     internal static HalifaxBuilder Instance { get; set; }
 
-    internal HalifaxBuilder()
+    private IServiceCollection Services { get;  }
+    
+    internal HalifaxBuilder(IServiceCollection services)
     {
         if (Instance != null)
         {
             throw new InvalidOperationException("Halifax app can only be initialized once");
         }
 
+        Services = services;
         Instance = this;
     }
 
     internal string Name { get; private set; } = AppDomain.CurrentDomain.FriendlyName;
-    // TODO: Add CORS customization
-    //internal Action<CorsPolicyBuilder> Cors { get; private set; } = CorsDefaults.Value;
+    
+    internal Action<CorsPolicyBuilder> Cors { get; private set; } = CorsDefaults.Value;
     internal Action<SwaggerGenOptions> Swagger { get; private set; } = SwaggerDefaults.Value;
     internal TokenValidationParameters TokenValidationParameters { get; set; }
     internal Type ExceptionHandlerType { get; set; } = typeof(DefaultExceptionHandler);
@@ -39,12 +43,11 @@ public class HalifaxBuilder
         return this;
     }
 
-    // TODO: Add CORS customization
-    // public HalifaxBuilder ConfigureCors(Action<CorsPolicyBuilder> corsPolicyBuilder)
-    // {
-    //     Cors = corsPolicyBuilder ?? throw new ArgumentNullException(nameof(corsPolicyBuilder));
-    //     return this;
-    // }
+    public HalifaxBuilder ConfigureCors(Action<CorsPolicyBuilder> corsPolicyBuilder)
+    {
+        Cors = corsPolicyBuilder ?? throw new ArgumentNullException(nameof(corsPolicyBuilder));
+        return this;
+    }
 
     public HalifaxBuilder ConfigureSwagger(Action<SwaggerGenOptions> swaggerBuilder)
     {
@@ -88,6 +91,14 @@ public class HalifaxBuilder
     public HalifaxBuilder ConfigureMvc(Action<IMvcBuilder> configure)
     {
         ConfigureMvcBuilder = configure;
+        return this;
+    }
+
+    public HalifaxBuilder AddSettings<TSettings>() where TSettings : class
+    {
+        var section = Env.GetSection<TSettings>();
+        Services.AddSingleton(section);
+        
         return this;
     }
 }
