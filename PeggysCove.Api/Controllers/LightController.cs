@@ -1,10 +1,8 @@
 using Halifax.Core;
-using Halifax.Core.Helpers;
 using Halifax.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PeggysCove.Api.Filters;
-using System.Security.Claims;
 
 namespace PeggysCove.Api.Controllers;
 
@@ -14,6 +12,13 @@ namespace PeggysCove.Api.Controllers;
 [Authorize]
 public class LightController : Controller
 {
+    private readonly AppSettings settings;
+
+    public LightController(AppSettings settings)
+    {
+        this.settings = settings;
+    }
+    
     /// <summary>
     /// Get light status
     /// </summary>
@@ -40,7 +45,7 @@ public class LightController : Controller
     [HttpGet("name")]
     public ApiResponse<string> GetName()
     {
-        return ApiResponse.With(Env.GetSection<AppSettings>().AppName);
+        return ApiResponse.With(settings.AppName);
     }
 
     /// <summary>
@@ -51,17 +56,7 @@ public class LightController : Controller
     [AllowAnonymous]
     public ApiResponse<string> GetUserToken()
     {
-        var secret = "Test JWT Token (at least 16 chars)";
-        var claims = new Claim[]
-        {
-                new(JwtTokenConstants.RoleClaim, JwtTokenConstants.UserRoleClaim),
-                new(JwtTokenConstants.IdClaim,Guid.NewGuid().ToString()),
-                new(JwtTokenConstants.NameClaim, "James Smith")
-        };
-
-        var token = Jwt.Create(secret, claims, DateTime.UtcNow.AddMonths(1));
-
-        return ApiResponse.With(token);
+        return ApiResponse.With(TokenHelper.CreateToken());
     }
 
     /// <summary>
