@@ -96,8 +96,13 @@ public class HalifaxBuilder
 
     public HalifaxBuilder AddSettings<TSettings>() where TSettings : class
     {
-        var section = Env.GetSection<TSettings>();
-        Services.AddSingleton(section);
+        return AddSettings<TSettings>(out _);
+    }
+    
+    public HalifaxBuilder AddSettings<TSettings>(out TSettings settings) where TSettings : class
+    {
+        settings = Env.GetSection<TSettings>();
+        Services.AddSingleton(settings);
         
         return this;
     }
