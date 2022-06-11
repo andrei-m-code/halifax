@@ -99,9 +99,30 @@ The resulting HTTP response will have a status code 404 and JSON (using ApiRespo
 
 For more advanced scenarios you can override DefaultExceptionHandler or implement and register your own IExceptionHandler.
 
-# Configuration
+# App Configuration
 
-TODO: ...
+Halifax libraries are designed to work in containers. The most common way of configuring containers is using Environment Variables. Halifax offers `Halifax.Core.Env` class to work with it. Let's say we have variables:
+
+```dotenv
+# It can also be a .env file in the root of your project
+AppSettings__ConnectionString=localhost
+AppSettings__HttpTimeout=120
+```
+Create class or a record:
+```csharp
+record AppSettings(string ConnectionString, int HttpTimeout);
+```
+Call Env to read Environment Variables and map it to the record:
+
+```csharp
+var settings = Env.GetSection<AppSettings>();
+```
+It can be called as many times as needed with different target types. `Env` caches the result and doesn't read the variables more than once per type. Also, for local runs you can create .env file to override/set environment variables locally and call:
+```csharp
+Env.Load(); // or
+Env.Load("filename", swallowErrors: false);
+```
+Note: supported types are limited to primitives, DateTime, TimeSpan, Guid at the moment. Arrays aren't allowed either. If more types are required, please request it. 
 
 # JWT Authentication
 
