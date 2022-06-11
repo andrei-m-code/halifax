@@ -30,20 +30,18 @@ dotnet add package Halifax.Api
 
 # Getting Started
 
-Please refer to the [Peggy's Cove](https://github.com/andrei-m-code/halifax/blob/main/PeggysCove.Api/Startup.cs) example API project Startup.cs file for more details but basically all you need is to have this in your startup class:
+Please explore [Peggy's Cove](https://github.com/andrei-m-code/halifax/blob/main/PeggysCove.Api/Program.cs) to get started as quickly as possible. For more details on certain topics, read the documentation. Here is what's needed to add Halifax to your project:
 
-    public class Startup
-    {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddHalifax();
-        }
+```csharp
+using Halifax.Api;
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseHalifax();
-        }
-    }
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHalifax();
+var app = builder.Build();
+
+app.UseHalifax();
+app.Run("http://*:5000");
+```
 
 This enables routing with controllers and exception handling.
 
