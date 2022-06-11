@@ -32,7 +32,7 @@ v0.x.x - Initial release
 
     <ItemGroup>
         <PackageReference Include="Halifax.Domain" Version="1.0.1" />
-        <PackageReference Include="Halifax.Core" Version="1.1.5" />
+        <PackageReference Include="Halifax.Core" Version="1.1.6" />
         
         <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     </ItemGroup>
