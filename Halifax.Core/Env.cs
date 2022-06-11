@@ -9,7 +9,7 @@ namespace Halifax.Core;
 public static class Env
 {
     private static readonly Dictionary<Type, object> sections = new();
-    private static List<Type> supportedTypes = new List<Type>
+    private static readonly List<Type> supportedTypes = new()
     {
         typeof(Guid), typeof(Guid?), 
         typeof(DateTime), typeof(DateTime?), 
