@@ -101,10 +101,11 @@ For more advanced scenarios you can override DefaultExceptionHandler or implemen
 
 # App Configuration
 
-Halifax libraries are designed to work in containers. The most common way of configuring containers is using Environment Variables. Halifax offers `Halifax.Core.Env` class to work with it. Let's say we have variables:
+Halifax libraries are designed to work in containers. The most common way of configuring containers is by using Environment Variables. Halifax offers a few ways of working with it. Let's say we have env variables:
 
 ```dotenv
-# It can also be a .env file in the root of your project
+# It can also be a .env file in the root of your project. 
+# Halifax always looks for .env to load it into the process. 
 AppSettings__ConnectionString=localhost
 AppSettings__HttpTimeout=120
 ```
@@ -112,13 +113,24 @@ Create class or a record:
 ```csharp
 record AppSettings(string ConnectionString, int HttpTimeout);
 ```
-Call Env to read Environment Variables and map it to the record:
+When halifax is added, this is how settings are being registered:
+
+```csharp
+services.AddHalifax(builder => builder
+    .AddSettings<AppSettings>()
+    .AddSettings<AppSettings2>());
+```
+These calls do 3 things. They read the environment variables, map them to the setting classes or records and register these instances as singletons so that they can be injected into app services and controllers. 
+
+If there is a place where you can't inject your settings, you can get them from the Env directly. This is a very cheap operation, that can be executed any number of times:
 
 ```csharp
 var settings = Env.GetSection<AppSettings>();
 ```
-It can be called as many times as needed with different target types. `Env` caches the result and doesn't read the variables more than once per type. Also, for local runs you can create .env file to override/set environment variables locally and call:
+If you need to load env variables from the file outside of the Halifax.Api, this is how it can be done:
 ```csharp
+// Here is how to load variables from the console if
+// Halifax.Core is used outside of the Halifax.Api
 Env.Load(); // or
 Env.Load("filename", swallowErrors: false);
 ```

@@ -21,7 +21,7 @@ public static class AppExtensions
         // Load .env configuration
         Env.Load();
 
-        var builder = new HalifaxBuilder();
+        var builder = new HalifaxBuilder(services);
         configure?.Invoke(builder);
 
         Json.ConfigureOptions = builder.ConfigureJsonOptions;
@@ -68,8 +68,7 @@ public static class AppExtensions
             return next();
         });
 
-        // TODO: Make it configurable
-        app.UseCors(b => b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+        app.UseCors(HalifaxBuilder.Instance.Cors);
         app.UseExceptionHandler("/error");
         app.UseRouting();
         app.UseSwagger();
