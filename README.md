@@ -169,6 +169,8 @@ internal class MyClaimsAuthorize : ClaimsAuthorizeFilterAttribute
             .ClaimExpected("ClaimType", "ClaimValue")
             .ClaimIsEmail("ClaimType", out var email);
             // etc.
+        
+        return true; // success
     }
 }
 ```
