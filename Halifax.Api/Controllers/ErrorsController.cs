@@ -62,7 +62,12 @@ public class ErrorsController : ControllerBase
             bodyString = await stream.ReadToEndAsync();
             if (!string.IsNullOrWhiteSpace(bodyString))
             {
-                messageBuilder.AppendLine($"BODY: {bodyString}");
+                if (bodyString.Length > 1000)
+                {
+                    bodyString = bodyString[..1000];
+                }
+
+                messageBuilder.AppendLine($"Body: {bodyString}");
             }
         }
 
