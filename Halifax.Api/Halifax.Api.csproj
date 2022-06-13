@@ -11,9 +11,9 @@
         <PackageDescription>Halifax Service Foundation API library</PackageDescription>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>1.3.8</AssemblyVersion>
-        <FileVersion>1.3.8</FileVersion>
-        <Version>1.3.8</Version>
+        <AssemblyVersion>1.3.9</AssemblyVersion>
+        <FileVersion>1.3.9</FileVersion>
+        <Version>1.3.9</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
