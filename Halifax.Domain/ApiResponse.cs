@@ -29,17 +29,17 @@ public record ApiResponse
     /// <summary>
     /// Empty API response
     /// </summary>
-    public static ApiResponse Empty => new ApiResponse();
+    public static ApiResponse Empty => new();
 
     /// <summary>
     /// Return API response with the data provided 
     /// </summary>
-    public static ApiResponse<TData> With<TData>(TData data) => new ApiResponse<TData>(data);
+    public static ApiResponse<TData> With<TData>(TData data) => new(data);
 
     /// <summary>
     /// Return API response with exception info
     /// </summary>
-    public static ApiResponse With(Exception exception) => new ApiResponse
+    public static ApiResponse With(Exception exception) => new()
     {
         Success = false,
         Error = new ApiResponseError(exception)
