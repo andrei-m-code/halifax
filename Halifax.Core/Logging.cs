@@ -4,23 +4,41 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
+using ILogger = Serilog.ILogger;
 
 public static class L
 {
-    static L()
-    {
-        Log.Logger = new LoggerConfiguration()
-            .Destructure.ToMaximumStringLength(1000)
-            .Destructure.ToMaximumDepth(5)
-            .Destructure.UsingAttributes()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("System", LogEventLevel.Error)
-            .Enrich.FromLogContext()
-            .WriteTo.Console(theme: AnsiConsoleTheme.Literate)
-            //.WriteTo.Console(new JsonFormatter())
-            .CreateLogger();
-    }
+    private static Lazy<ILogger> loggerLazy = new(() => configuration.CreateLogger());
 
+    private static LoggerConfiguration configuration = new LoggerConfiguration()
+        .Destructure.ToMaximumStringLength(1000)
+        .Destructure.ToMaximumDepth(5)
+        .Destructure.UsingAttributes()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+        .MinimumLevel.Override("System", LogEventLevel.Error)
+        .Enrich.FromLogContext()
+        .WriteTo.Console(theme: AnsiConsoleTheme.Literate);
+
+    private static ILogger Log => loggerLazy.Value;
+
+    public static void Configure(Action<LoggerConfiguration> configure)
+    {
+        configure(configuration);
+        if (loggerLazy.IsValueCreated)
+        {
+            loggerLazy = new(() => configuration.CreateLogger());
+        }
+    }
+    
+    public static void Configure(LoggerConfiguration loggerConfiguration)
+    {
+        configuration = loggerConfiguration;
+        if (loggerLazy.IsValueCreated)
+        {
+            loggerLazy = new(() => configuration.CreateLogger());
+        }
+    }
+    
     public static void Info<TPropertyValue>(string messageTemplate, TPropertyValue propertyValue) =>
         Log.Information(messageTemplate, propertyValue);
     
