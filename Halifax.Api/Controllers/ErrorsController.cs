@@ -22,7 +22,6 @@ public class ErrorsController : ControllerBase
     [Route("error")]
     public async Task<object> Error()
     {
-        //var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
         var context = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
         var exception = context?.Error;
 
@@ -62,10 +61,10 @@ public class ErrorsController : ControllerBase
             bodyString = await stream.ReadToEndAsync();
             if (!string.IsNullOrWhiteSpace(bodyString))
             {
-                if (bodyString.Length > 1000)
-                {
-                    bodyString = bodyString[..1000];
-                }
+                // if (bodyString.Length > 1000)
+                // {
+                //     bodyString = bodyString[..1000];
+                // }
 
                 messageBuilder.AppendLine($"Body: {bodyString}");
             }
