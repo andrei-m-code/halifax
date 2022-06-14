@@ -11,7 +11,7 @@ public static class L
     private static Lazy<ILogger> loggerLazy = new(() => configuration.CreateLogger());
 
     private static LoggerConfiguration configuration = new LoggerConfiguration()
-        .Destructure.ToMaximumStringLength(1000)
+        //.Destructure.ToMaximumStringLength(1000)
         .Destructure.ToMaximumDepth(5)
         .Destructure.UsingAttributes()
         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
