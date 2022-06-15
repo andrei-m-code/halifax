@@ -30,7 +30,7 @@ dotnet add package Halifax.Api
 
 # Getting Started
 
-Please explore [Peggy's Cove](https://github.com/andrei-m-code/halifax/blob/main/PeggysCove.Api/Program.cs) to get started as quickly as possible. For more details on certain topics, read the documentation. Here is what's needed to add Halifax to your project:
+Please explore [Peggy's Cove](https://github.com/andrei-m-code/halifax/blob/main/PeggysCove.Api/Program.cs) to get started as quickly as possible. For more details on certain topics, read the documentation. Here is what's needed to add Halifax to your project. In your Program.cs:
 
 ```csharp
 using Halifax.Api;
