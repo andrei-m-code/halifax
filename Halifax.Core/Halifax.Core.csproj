@@ -26,7 +26,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
-v1.2.0 - Logging improvements            
+v1.2.x - Logging improvements            
 v1.1.5 - Claim extensions added
 v1.1.x - Package version updates and minor improvements
 v1.0.x - Stable version
