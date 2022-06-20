@@ -6,6 +6,7 @@ using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using ILogger = Serilog.ILogger;
 
+// ReSharper disable once CheckNamespace
 public static class L
 {
     private static Lazy<ILogger> loggerLazy = new(() => configuration.CreateLogger());
@@ -62,15 +63,6 @@ public static class L
     
     public static void Fatal(Exception exception, string messageTemplate, params object[] propertyValues) =>
         Log.Error(exception, messageTemplate, propertyValues);
-    
-    [Obsolete]
-    public static void Error(string message, Exception exception = null) => Log.Error(exception, message);
-
-    [Obsolete]
-    public static void Warning(string message, Exception exception = null) => Log.Warning(exception, message);
-
-    [Obsolete]
-    public static void Fatal(string message, Exception exception) => Log.Fatal(exception, message);
 }
 
 public static class ServicesExtensions
