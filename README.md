@@ -107,7 +107,7 @@ Halifax libraries are designed to work in containers. The most common way of con
 AppSettings__ConnectionString=localhost
 AppSettings__HttpTimeout=120
 ```
-Create class or a record:
+Create class or a record (Yes, we support immutable records!):
 ```csharp
 record AppSettings(string ConnectionString, int HttpTimeout);
 ```
