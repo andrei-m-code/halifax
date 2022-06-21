@@ -1,14 +1,13 @@
 using Halifax.Domain;
 using Halifax.Domain.Exceptions;
 
-namespace Halifax.Core.Exceptions;
+namespace Halifax.Core.Extensions;
 
 public static class TimeframeExtensions
 {
     /// <summary>
-    /// Validate if timeframe is valid, e.g. From <= To date.
+    /// Validate if timeframe is valid, e.g. From less than To date.
     /// </summary>
-    /// <param name="timeframe"></param>
     public static void Validate(this Timeframe timeframe)
     {
         if (timeframe.From >= timeframe.To)
