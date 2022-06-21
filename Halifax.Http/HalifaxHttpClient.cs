@@ -1,5 +1,7 @@
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using Halifax.Core.Helpers;
 using Halifax.Domain;
 using Halifax.Domain.Exceptions;
@@ -53,6 +55,11 @@ public abstract class HalifaxHttpClient
         using var response = await http.SendAsync(message, cancellationToken);
         var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
+        // TODO: implement async read the response
+        // var opts = new JsonSerializerOptions();
+        // Json.ConfigureOptions(opts);
+        // await response.Content.ReadFromJsonAsync<ApiResponse<object>>(opts, cancellationToken);
+        
         if (!response.IsSuccessStatusCode)
         {
             throw MapToException(response, responseString);
