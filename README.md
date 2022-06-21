@@ -40,14 +40,14 @@ builder.Services.AddHalifax();
 var app = builder.Build();
 
 app.UseHalifax();
-app.Run("http://*:5000");
+app.Run("https://*:5000");
 ```
 
 This enables routing with controllers and exception handling.
 
 # Models
 
-It's very beneficial if all API responses follow the same format. It makes it easier to consume by the clients. In order to achieve it, there is a model called `ApiResponse`. It's designed to return response data, empty data or error information in the same consistent format. Here are the main use cases:
+It's very beneficial when all the API responses follow the same format. It makes it easier to consume by the clients. In order to achieve it, there is a model called `ApiResponse`. It's designed to return response data, empty data or error information in the same consistent format. Here are the main use cases:
 
     // Return API response with your model
     return ApiResponse.With(model);
