@@ -35,35 +35,32 @@ public abstract class HalifaxHttpClient
         return message;
     }
     
-    protected virtual async Task SendAsync(
-        HttpRequestMessage message, 
-        CancellationToken cancellationToken = default)
-    {
-        using var response = await http.SendAsync(message, cancellationToken);
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw MapToException(response, content);
-        }
-    }
-    
     protected virtual async Task<TModel> SendAsync<TModel>(
         HttpRequestMessage message, 
         CancellationToken cancellationToken = default)
     {
-        using var response = await http.SendAsync(message, cancellationToken);
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        
-        if (response.IsSuccessStatusCode)
-        {
-            var deserialized = DeserializeApiResponseOrThrow<TModel>(content);
-            return deserialized.Data;
-        }
+        var (responseString, _) = await SendAsync(message, cancellationToken);
 
-        throw MapToException(response, content);
+        var result = DeserializeApiResponseOrThrow<TModel>(responseString);
+
+        return result;
     }
 
+    protected virtual async Task<(string responseString, HttpStatusCode statusCode)> SendAsync(
+        HttpRequestMessage message, 
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await http.SendAsync(message, cancellationToken);
+        var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw MapToException(response, responseString);
+        }
+        
+        return (responseString, response.StatusCode);
+    }
+    
     protected virtual Exception MapToException(HttpResponseMessage response, string content)
     {
         var code = response.StatusCode;
@@ -93,12 +90,12 @@ public abstract class HalifaxHttpClient
         return new Exception($"Unsuccessful request. {GetType().Name} HTTP {code}");
     }
 
-    protected virtual ApiResponse<TModel> DeserializeApiResponseOrThrow<TModel>(string content)
+    protected virtual TModel DeserializeApiResponseOrThrow<TModel>(string content)
     {
         try
         {
             var deserialized = Json.Deserialize<ApiResponse<TModel>>(content);
-            return deserialized;
+            return deserialized.Data;
         }
         catch
         {
