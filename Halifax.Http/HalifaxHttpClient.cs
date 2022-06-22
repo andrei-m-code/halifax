@@ -37,6 +37,12 @@ public abstract class HalifaxHttpClient
         return message;
     }
 
+    protected virtual async Task<HttpStatusCode> SendAsync(HttpRequestMessage message, CancellationToken cancellationToken = default)
+    {
+        using var response = await http.SendAsync(message, cancellationToken);
+        return response.StatusCode;
+    }
+    
     protected virtual Task<TModel> SendAsync<TModel>(
         HttpRequestMessage message,
         CancellationToken cancellationToken = default) where TModel : class
@@ -99,7 +105,6 @@ public abstract class HalifaxHttpClient
                 L.Error($"Error parsing the response. {response.RequestMessage?.RequestUri}", ex);
                 throw ErrorReadingTheResponse();
             }
-
             
             switch (code)
             {
