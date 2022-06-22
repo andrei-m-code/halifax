@@ -36,78 +36,85 @@ public abstract class HalifaxHttpClient
 
         return message;
     }
+
+    protected virtual Task<TModel> SendAsync<TModel>(
+        HttpRequestMessage message,
+        CancellationToken cancellationToken = default) where TModel : class
+    {
+        var opts = new JsonSerializerOptions();
+        Json.ConfigureOptions(opts);
+        return SendAsync<TModel>(message, opts, cancellationToken);
+    }
     
     protected virtual async Task<TModel> SendAsync<TModel>(
         HttpRequestMessage message, 
-        CancellationToken cancellationToken = default)
-    {
-        var (responseString, _) = await SendAsync(message, cancellationToken);
-
-        var result = DeserializeApiResponseOrThrow<TModel>(responseString);
-
-        return result;
-    }
-
-    protected virtual async Task<(string responseString, HttpStatusCode statusCode)> SendAsync(
-        HttpRequestMessage message, 
-        CancellationToken cancellationToken = default)
+        JsonSerializerOptions jsonSerializerOptions,
+        CancellationToken cancellationToken = default) where TModel : class
     {
         using var response = await http.SendAsync(message, cancellationToken);
-        var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        // TODO: implement async read the response
-        // var opts = new JsonSerializerOptions();
-        // Json.ConfigureOptions(opts);
-        // await response.Content.ReadFromJsonAsync<ApiResponse<object>>(opts, cancellationToken);
-        
-        if (!response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
-            throw MapToException(response, responseString);
+            try
+            {
+                var model = await response.Content.ReadFromJsonAsync<ApiResponse<TModel>>(
+                    jsonSerializerOptions,
+                    cancellationToken);
+                
+                return model?.Data;
+            }
+            catch (Exception ex)
+            {
+                L.Error($"Error parsing the response. {message.RequestUri}", ex);
+                throw ErrorReadingTheResponse();
+            }
         }
+
+        await HandleUnsuccessfulResponseAsync(response);
         
-        return (responseString, response.StatusCode);
+        // exception is thrown in most cases
+        return null;
     }
     
-    protected virtual Exception MapToException(HttpResponseMessage response, string content)
+    protected virtual async Task HandleUnsuccessfulResponseAsync(HttpResponseMessage response)
     {
         var code = response.StatusCode;
         
         if (exceptionHttpStatuses.Contains(code))
         {
-            var model = Json.Deserialize<ApiResponse>(content);
-
-            if (string.IsNullOrWhiteSpace(model.Error?.Message))
+            ApiResponse model;
+            
+            try
             {
-                return ErrorReadingTheResponse();
+                model = await response.Content.ReadFromJsonAsync<ApiResponse>();
+                
+                if (string.IsNullOrWhiteSpace(model?.Error?.Message))
+                {
+                    L.Warning("Response model doesn't have error information");
+                    throw ErrorReadingTheResponse();
+                }
             }
+            catch (Exception ex)
+            {
+                L.Error($"Error parsing the response. {response.RequestMessage?.RequestUri}", ex);
+                throw ErrorReadingTheResponse();
+            }
+
             
             switch (code)
             {
                 case HttpStatusCode.BadRequest:
-                    return new HalifaxException(model.Error.Message);
+                    throw new HalifaxException(model.Error.Message);
                 
                 case HttpStatusCode.NotFound:
-                    return new HalifaxNotFoundException(model.Error.Message);
+                    throw new HalifaxNotFoundException(model.Error.Message);
                 
                 case HttpStatusCode.Unauthorized:
-                    return new HalifaxUnauthorizedException(model.Error.Message);
+                    throw new HalifaxUnauthorizedException(model.Error.Message);
             }
         }
         
-        return new Exception($"Unsuccessful request. {GetType().Name} HTTP {code}");
-    }
-
-    protected virtual TModel DeserializeApiResponseOrThrow<TModel>(string content)
-    {
-        try
-        {
-            var deserialized = Json.Deserialize<ApiResponse<TModel>>(content);
-            return deserialized.Data;
-        }
-        catch
-        {
-            throw ErrorReadingTheResponse();
-        }
+        throw new Exception($"Unsuccessful request. {GetType().Name}. HTTP {code}");
     }
 
     private Exception ErrorReadingTheResponse()
