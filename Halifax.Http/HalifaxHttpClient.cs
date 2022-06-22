@@ -43,19 +43,20 @@ public abstract class HalifaxHttpClient
         return response.StatusCode;
     }
     
-    protected virtual Task<TModel> SendAsync<TModel>(
+    protected virtual async Task<TModel> SendAsync<TModel>(
         HttpRequestMessage message,
-        CancellationToken cancellationToken = default) where TModel : class
+        CancellationToken cancellationToken = default)
     {
         var opts = new JsonSerializerOptions();
         Json.ConfigureOptions(opts);
-        return SendAsync<TModel>(message, opts, cancellationToken);
+        var response = await SendInternalAsync<TModel>(message, opts, cancellationToken);
+        return response.Data;
     }
-    
-    protected virtual async Task<TModel> SendAsync<TModel>(
+
+    private async Task<ApiResponse<TModel>> SendInternalAsync<TModel>(
         HttpRequestMessage message, 
         JsonSerializerOptions jsonSerializerOptions,
-        CancellationToken cancellationToken = default) where TModel : class
+        CancellationToken cancellationToken = default) 
     {
         using var response = await http.SendAsync(message, cancellationToken);
 
@@ -67,7 +68,10 @@ public abstract class HalifaxHttpClient
                     jsonSerializerOptions,
                     cancellationToken);
                 
-                return model?.Data;
+                if (model != null)
+                {
+                    return model;
+                }
             }
             catch (Exception ex)
             {
