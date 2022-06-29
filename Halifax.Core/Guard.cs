@@ -9,6 +9,9 @@ namespace Halifax.Core;
 /// </summary>
 public static class Guard
 {
+    /// <summary>
+    /// Make sure value is not null or white space
+    /// </summary>
     public static void NotNullOrWhiteSpace(string input, string argument, string errorMessage = null)
     {
         if (string.IsNullOrWhiteSpace(input))
@@ -18,11 +21,17 @@ public static class Guard
         }
     }
 
+    /// <summary>
+    /// Make sure value is a valid email
+    /// </summary>
     public static void Email(string input, string argument = "Email")
     {
         Guard.Ensure(input.IsEmail(), $"{argument} ({input}) is invalid");
     }
 
+    /// <summary>
+    /// Check if value is a string with emails
+    /// </summary>
     public static void StringWithEmails(string input, string argument = "Emails string", string separators = " ,;")
     {
         (input ?? string.Empty)
@@ -30,6 +39,9 @@ public static class Guard
             .ToList().ForEach(email => Email(email, $"Email {email}"));
     }
 
+    /// <summary>
+    /// Check if value is URL
+    /// </summary>
     public static void Url(string input, string argument)
     {
         const string pattern = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
@@ -41,6 +53,9 @@ public static class Guard
         }
     }
 
+    /// <summary>
+    /// Check if value length is within the boundaries
+    /// </summary>
     public static void Length(string input, string argument, int? lower = null, int? upper = null)
     {
         if (lower.HasValue && input.Length < lower.Value)
@@ -54,6 +69,9 @@ public static class Guard
         }
     }
 
+    /// <summary>
+    /// Check if value is in range
+    /// </summary>
     public static void Range(int input, string argument, int from, int to)
     {
         if (input > to || input < from)
@@ -62,6 +80,9 @@ public static class Guard
         }
     }
 
+    /// <summary>
+    /// Check if value satisfies the condition
+    /// </summary>
     public static void Ensure(bool condition, string errorMessage)
     {
         if (!condition)
@@ -70,6 +91,9 @@ public static class Guard
         }
     }
 
+    /// <summary>
+    /// Check if value is null
+    /// </summary>
     public static void NotNull(object input, string argument, string errorMessage = null)
     {
         if (input == null)
@@ -79,11 +103,17 @@ public static class Guard
         }
     }
 
+    /// <summary>
+    /// Make sure - not an empty list
+    /// </summary>
     public static void NotEmptyList<TItem>(IEnumerable<TItem> list, string argument)
     {
         Ensure(list?.Any() == true, $"{argument} can't be empty");
     }
 
+    /// <summary>
+    /// Validate the value is a color hash
+    /// </summary>
     public static void Color(string value, string argument)
     {
         NotNull(value, argument);
