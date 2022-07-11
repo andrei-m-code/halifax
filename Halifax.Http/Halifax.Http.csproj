@@ -31,7 +31,7 @@ v1.0.x - Initial release
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Halifax.Domain" Version="1.0.2" />
+        <PackageReference Include="Halifax.Domain" Version="1.0.3" />
         <PackageReference Include="Halifax.Core" Version="1.2.4" />
         
         <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
