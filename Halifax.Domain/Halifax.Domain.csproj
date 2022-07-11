@@ -10,9 +10,9 @@
         <Summary>Halifax Service Foundation Domain library</Summary>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>1.0.2</AssemblyVersion>
-        <FileVersion>1.0.2</FileVersion>
-        <Version>1.0.2</Version>
+        <AssemblyVersion>1.0.3</AssemblyVersion>
+        <FileVersion>1.0.3</FileVersion>
+        <Version>1.0.3</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -26,7 +26,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
-v1.0.2 - Documentation update
+v1.0.x - Documentation update
 v1.0.x - Paging and ApiResponse models, Exceptions
 v0.x.x - Initial release
         </PackageReleaseNotes>
