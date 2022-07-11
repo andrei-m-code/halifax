@@ -3,6 +3,7 @@ using Halifax.Domain.Exceptions;
 
 namespace Halifax.Core.Extensions;
 
+[Obsolete]
 public static class TimeframeExtensions
 {
     /// <summary>

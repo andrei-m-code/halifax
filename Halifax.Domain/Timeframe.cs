@@ -3,6 +3,7 @@ namespace Halifax.Domain;
 /// <summary>
 /// Open time interval
 /// </summary>
+[Obsolete]
 public record Timeframe
 {
     public Timeframe()
