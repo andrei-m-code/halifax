@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using Halifax.Core.Helpers;
@@ -31,7 +32,7 @@ public abstract class HalifaxHttpClient
         if (body != null)
         {
             var json = Json.Serialize(body);
-            message.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            message.Content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
         }
 
         return message;
