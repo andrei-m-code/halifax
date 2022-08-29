@@ -40,7 +40,7 @@ v0.x.x - Initial release
         <PackageReference Include="Serilog" Version="2.11.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
         <PackageReference Include="Destructurama.Attributed" Version="3.0.0" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.22.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.22.1" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     </ItemGroup>
 
