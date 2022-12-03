@@ -6,7 +6,7 @@ namespace Halifax.Api.Errors;
 
 public class DefaultExceptionHandler : IExceptionHandler
 {
-    public Task<(object Response, HttpStatusCode Code)> HandleAsync(Exception exception)
+    public virtual Task<(object Response, HttpStatusCode Code)> HandleAsync(Exception exception)
     {
         var code = exception switch
         {
