@@ -20,7 +20,7 @@ public class HalifaxExceptionHandler : IExceptionHandler
             _ => HttpStatusCode.InternalServerError
         };
 
-        await LogErrorRequestAsync(context);
+        await LogErrorRequestAsync(context, exception);
 
         return 
         (
@@ -29,7 +29,7 @@ public class HalifaxExceptionHandler : IExceptionHandler
         );
     }
     
-    protected virtual async Task LogErrorRequestAsync(HttpContext context)
+    protected virtual async Task LogErrorRequestAsync(HttpContext context, Exception exception)
     {
         var requestString = await context.Request.GetRequestStringAsync();
         L.Info(requestString);
