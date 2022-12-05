@@ -33,7 +33,7 @@ public class HalifaxBuilder
     internal Action<CorsPolicyBuilder> Cors { get; private set; } = CorsDefaults.Value;
     internal Action<SwaggerGenOptions> Swagger { get; private set; } = SwaggerDefaults.Value;
     internal TokenValidationParameters TokenValidationParameters { get; set; }
-    internal Type ExceptionHandlerType { get; set; } = typeof(DefaultExceptionHandler);
+    internal Type ExceptionHandlerType { get; set; } = typeof(HalifaxExceptionHandler);
     internal Action<JsonSerializerOptions> ConfigureJsonOptions { get; set; } = Json.ConfigureOptions;
     internal Action<IMvcBuilder> ConfigureMvcBuilder { get; set; } = opts => { };
 

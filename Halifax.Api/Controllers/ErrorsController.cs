@@ -25,51 +25,10 @@ public class ErrorsController : ControllerBase
         var context = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
         var exception = context?.Error;
 
-        await LogRequestAsync(context);
-
-        var (response, code) = await exceptionHandler.HandleAsync(exception);
+        var (response, code) = await exceptionHandler.HandleAsync(HttpContext, exception);
 
         Response.StatusCode = (int)code;
 
         return response;
-    }
-
-    private async Task LogRequestAsync(IExceptionHandlerPathFeature context)
-    {
-        var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine("Error happened when processing the request:");
-
-        var path = $"{Request.Method}: {context.Path}";
-        var body = Request.Body;
-        var bodyString = string.Empty;
-
-        if (Request.QueryString.HasValue)
-        {
-            path += Request.QueryString.Value;
-        }
-
-        messageBuilder.AppendLine(path);
-
-        Request.Headers
-            .Where(h => h.Key.StartsWith("X-", true, CultureInfo.InvariantCulture))
-            .Each(h => messageBuilder.AppendLine($"{h.Key}: {h.Value.ToString()}"));
-
-        if (body.CanRead)
-        {
-            body.Position = 0;
-            using var stream = new StreamReader(Request.Body);
-            bodyString = await stream.ReadToEndAsync();
-            if (!string.IsNullOrWhiteSpace(bodyString))
-            {
-                // if (bodyString.Length > 1000)
-                // {
-                //     bodyString = bodyString[..1000];
-                // }
-
-                messageBuilder.AppendLine($"Body: {bodyString}");
-            }
-        }
-
-        L.Info(messageBuilder.ToString());
     }
 }
