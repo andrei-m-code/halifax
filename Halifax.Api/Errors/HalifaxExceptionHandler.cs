@@ -1,12 +1,16 @@
 using Halifax.Domain;
 using Halifax.Domain.Exceptions;
 using System.Net;
+using Halifax.Api.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace Halifax.Api.Errors;
 
-public class DefaultExceptionHandler : IExceptionHandler
+public class HalifaxExceptionHandler : IExceptionHandler
 {
-    public virtual Task<(object Response, HttpStatusCode Code)> HandleAsync(Exception exception)
+    public virtual async Task<(object Response, HttpStatusCode Code)> HandleAsync(
+        HttpContext context,
+        Exception exception)
     {
         var code = exception switch
         {
@@ -16,8 +20,18 @@ public class DefaultExceptionHandler : IExceptionHandler
             _ => HttpStatusCode.InternalServerError
         };
 
-        var result = (Response: (object) ApiResponse.With(exception), Code: code);
+        await LogErrorRequestAsync(context);
 
-        return Task.FromResult(result);
+        return 
+        (
+            Response: ApiResponse.With(exception),
+            Code: code
+        );
+    }
+    
+    protected virtual async Task LogErrorRequestAsync(HttpContext context)
+    {
+        var requestString = await context.Request.GetRequestStringAsync();
+        L.Info(requestString);
     }
 }
