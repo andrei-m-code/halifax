@@ -1,7 +1,4 @@
-using System.Globalization;
-using System.Text;
 using Halifax.Api.Errors;
-using Halifax.Core.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;

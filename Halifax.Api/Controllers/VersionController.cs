@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Halifax.Api.Controllers;
 
 [AllowAnonymous]
-public class VersionController
+public class VersionController : Controller
 {
     [HttpGet("halifax/version")]
     public List<string> GetHalifaxVersion()
