@@ -73,8 +73,8 @@ public static class ServicesExtensions
     public static void CleanupDefaultLogging(this IServiceCollection services)
     {
         services.AddLogging(logging => logging
-            .AddFilter("Microsoft", LogLevel.Error)
-            .AddFilter("System", LogLevel.Error));
+            .AddFilter("Microsoft", LogLevel.Critical)
+            .AddFilter("System", LogLevel.Critical));
     }
 }
 
