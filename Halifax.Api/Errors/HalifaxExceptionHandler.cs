@@ -32,6 +32,7 @@ public class HalifaxExceptionHandler : IExceptionHandler
     protected virtual async Task LogErrorRequestAsync(HttpContext context, Exception exception)
     {
         var requestString = await context.Request.GetRequestStringAsync();
-        L.Info(requestString);
+        L.Error(exception, exception.Message);
+        L.Error(requestString);
     }
 }
