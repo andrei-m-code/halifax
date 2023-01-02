@@ -5,6 +5,7 @@ using Halifax.Core.Helpers;
 using Halifax.Domain.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -69,7 +70,15 @@ public static class AppExtensions
         });
 
         app.UseCors(HalifaxBuilder.Instance.Cors);
-        app.UseExceptionHandler("/error");
+        //app.UseExceptionHandler("/error");
+        app.UseExceptionHandler(c => c.Run(async context =>
+        {
+            var handler = c.ApplicationServices.GetService<IExceptionHandler>();
+            var exception = context.Features.Get<IExceptionHandlerPathFeature>().Error;
+            var (response, code) = await handler.HandleAsync(context, exception);
+            context.Response.StatusCode = (int) code;
+            await context.Response.WriteAsJsonAsync(response);
+        }));
         app.UseRouting();
         app.UseSwagger();
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", HalifaxBuilder.Instance.Name));

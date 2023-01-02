@@ -16,16 +16,16 @@ public class ErrorsController : ControllerBase
         this.exceptionHandler = exceptionHandler;
     }
 
-    [Route("error")]
-    public async Task<object> Error()
-    {
-        var context = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-        var exception = context?.Error;
-
-        var (response, code) = await exceptionHandler.HandleAsync(HttpContext, exception);
-
-        Response.StatusCode = (int)code;
-
-        return response;
-    }
+    // [Route("error")]
+    // public async Task<object> Error()
+    // {
+    //     var context = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+    //     var exception = context?.Error;
+    //
+    //     var (response, code) = await exceptionHandler.HandleAsync(HttpContext, exception);
+    //
+    //     Response.StatusCode = (int)code;
+    //
+    //     return response;
+    // }
 }
