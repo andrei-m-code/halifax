@@ -24,4 +24,9 @@ public static class DateTimeHelper
             (!from.HasValue || from <= pointInTime) &&
             (!to.HasValue || to >= pointInTime);
     }
+    
+    /// <summary>
+    /// To ISO UTC date time string
+    /// </summary>
+    public static string ToIsoFormat(this DateTime? from) => from?.ToString("yyyy-MM-ddTHH:mm:ssZ");
 }
