@@ -8,6 +8,8 @@ namespace Halifax.Core.Helpers;
 
 public static class Jwt
 {
+    public const string ExpirationClaimType = "exp";
+    
     public static string Create(string secret, IEnumerable<Claim> claims, DateTime expiration)
     {
         Guard.NotNull(secret, nameof(secret));
