@@ -11,9 +11,9 @@
         <PackageDescription>Halifax Service Foundation API library</PackageDescription>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>2.0.4</AssemblyVersion>
-        <FileVersion>2.0.4</FileVersion>
-        <Version>2.0.4</Version>
+        <AssemblyVersion>2.0.5</AssemblyVersion>
+        <FileVersion>2.0.5</FileVersion>
+        <Version>2.0.5</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -40,7 +40,7 @@ v0.x.x - Initial release
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Halifax.Core" Version="2.0.2" />
+        <PackageReference Include="Halifax.Core" Version="2.0.3" />
         
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />        
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
