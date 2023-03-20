@@ -18,6 +18,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{12B75C84
 		Icon.png = Icon.png
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Core.Tests", "Halifax.Core.Tests\Halifax.Core.Tests.csproj", "{F1922D5A-FCCB-4459-A6AE-E9DD1E852F2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{574AFF86-A2A2-4C0F-BC72-6C961FEDE350}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +52,12 @@ Global
 		{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{622B9B0F-18D5-4C49-9AE6-51D1ECBE2B26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1922D5A-FCCB-4459-A6AE-E9DD1E852F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1922D5A-FCCB-4459-A6AE-E9DD1E852F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1922D5A-FCCB-4459-A6AE-E9DD1E852F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1922D5A-FCCB-4459-A6AE-E9DD1E852F2A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F1922D5A-FCCB-4459-A6AE-E9DD1E852F2A} = {574AFF86-A2A2-4C0F-BC72-6C961FEDE350}
 	EndGlobalSection
 EndGlobal
