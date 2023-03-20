@@ -54,14 +54,14 @@ public static class Jwt
                 return jwtToken.Claims.ToList();
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // ignore
+            L.Warning(ex, "Error reading JWT");
         }
 
         if (throwUnauthorized)
         {
-            throw new HalifaxUnauthorizedException("Request is unauthorized");
+            throw  new HalifaxUnauthorizedException("Request is unauthorized");
         }
 
         return new List<Claim>();
