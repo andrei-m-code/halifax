@@ -90,6 +90,9 @@ public abstract class HalifaxHttpClient
     protected virtual async Task HandleUnsuccessfulResponseAsync(HttpResponseMessage response)
     {
         var code = response.StatusCode;
+        var content = await response.Content.ReadAsStringAsync();
+        
+        L.Warning($"{GetType().Name}: Request error. {code}\r\n{content}");
         
         if (exceptionHttpStatuses.Contains(code))
         {
@@ -97,7 +100,7 @@ public abstract class HalifaxHttpClient
             
             try
             {
-                model = await response.Content.ReadFromJsonAsync<ApiResponse>();
+                model = Json.Deserialize<ApiResponse>(content);
                 
                 if (string.IsNullOrWhiteSpace(model?.Error?.Message))
                 {
