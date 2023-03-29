@@ -12,6 +12,7 @@ public static class L
     private static Lazy<ILogger> loggerLazy = new(() => configuration.CreateLogger());
 
     private static LoggerConfiguration configuration = new LoggerConfiguration()
+        .MinimumLevel.Debug()
         //.Destructure.ToMaximumStringLength(1000)
         .Destructure.ToMaximumDepth(5)
         .Destructure.UsingAttributes()
