@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Linq.Expressions;
+using System.Numerics;
 using System.Reflection;
 using CsvHelper;
 using Ganss.Excel;
@@ -70,7 +71,6 @@ public class ExcelConverter<TObject>
         var rowIndex = 0;
         var valueSets = records.Select(r => properties.Select(p => Convert.ToString(p.GetValue(r))).ToList()).ToList();
         
-        
         if (HasHeader)
         {
             var row = sheet.CreateRow(rowIndex++);
@@ -92,20 +92,82 @@ public class ExcelConverter<TObject>
             }
         }
 
-        foreach (var valueSet in valueSets)
+        foreach (var record in records)
         {
             var row = sheet.CreateRow(rowIndex++);
-            for (var colIndex = 0; colIndex < properties.Count; colIndex++)
+            for (var propertyIndex = 0; propertyIndex < properties.Count; propertyIndex++)
             {
-                var value = valueSet[colIndex];
-                var cell = row.CreateCell(colIndex);
-                cell.SetCellValue(value);
+                var property = properties[propertyIndex];
+                var cell = row.CreateCell(propertyIndex);
+                SetCellValue(property, record, cell);
             }
         }
 
         workbook.Write(stream);
 
         return Task.CompletedTask;
+    }
+
+    private static void SetCellValue(PropertyInfo propertyInfo, TObject record, ICell cell)
+    {
+        var value = propertyInfo.GetValue(record);
+
+        if (value == null)
+        {
+            return;
+        }
+
+        switch (value)
+        {
+            case bool valueBool:
+                cell.SetCellValue(valueBool);
+                break;
+            
+            case string valueString:
+                cell.SetCellValue(valueString);
+                break;
+            
+            case DateOnly valueDateOnly:
+                cell.SetCellValue(valueDateOnly);
+                break;
+            
+            case DateTime valueDateTime:
+                cell.SetCellValue(valueDateTime);
+                break;
+            
+            case byte valueByte:
+                cell.SetCellValue(valueByte);
+                break;
+            
+            case int valueInt:
+                cell.SetCellValue(valueInt);
+                break;
+            
+            case long valueLong:
+                cell.SetCellValue(valueLong);
+                break;
+
+            case double valueDouble:
+                cell.SetCellValue(valueDouble);
+                break;
+            
+            case float valueFloat:
+                cell.SetCellValue(valueFloat);
+                break;
+            
+            case decimal valueDecimal:
+                var convertedDecimal = Convert.ToDouble(valueDecimal);
+                cell.SetCellValue(convertedDecimal);
+                break;
+
+            case short valueShort:
+                cell.SetCellValue(valueShort);
+                break;
+
+            default:
+                cell.SetCellValue(Convert.ToString(value));
+                break;
+        }
     }
 
     private static ICellStyle CreateHeaderStyle(IWorkbook workbook)
