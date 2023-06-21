@@ -3,20 +3,27 @@ using System.Linq.Expressions;
 using System.Reflection;
 using CsvHelper;
 using Ganss.Excel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Halifax.Excel;
 
 public class ExcelConverter<TObject>
 {
+    private const int defaultWidthToStringLengthFactor = 300;
+    public int WidthToStringLengthFactor { get; set; } = defaultWidthToStringLengthFactor;
+    public int MaxCellWidth { get; set; } = 30 * defaultWidthToStringLengthFactor;
+    public int MinCellWidth { get; set; } = 9 * defaultWidthToStringLengthFactor;
+
     public CultureInfo CultureInfo { get; set; } = CultureInfo.InvariantCulture;
     public bool HasHeader { get; set; } = true;
 
-    private readonly List<ColumnMapping<TObject>> Mappings = new();
+    private readonly List<ColumnMapping<TObject>> mappings = new();
 
     public void AddMapping(string columnName, Expression<Func<TObject, object>> propertyExpression)
     {
         var memberInfo = GetExpressionMemberInfo(propertyExpression);
-        Mappings.Add(new ColumnMapping<TObject>
+        mappings.Add(new ColumnMapping<TObject>
         {
             ColumnName = columnName,
             PropertyName = memberInfo.Name,
@@ -49,48 +56,72 @@ public class ExcelConverter<TObject>
 
     public List<TObject> ReadExcel(Stream stream)
     {
-        var excel = GetMapper(stream);
+        var excel = new ExcelMapper(stream) {HeaderRow = HasHeader};
         var records = excel.Fetch<TObject>().ToList();
         return records;
     }
     
-    public async Task<MemoryStream> WriteExcelAsync(IEnumerable<TObject> records)
+    public Task WriteExcelAsync(Stream stream, IEnumerable<TObject> records, string sheetName = "Sheet 0")
     {
-        var memoryStream = new MemoryStream();
-        var excel = GetMapper();
-        await excel.SaveAsync(memoryStream, records);
+        using var workbook = new XSSFWorkbook();
+        var sheet = workbook.CreateSheet(sheetName);
+        var headerStyle = CreateHeaderStyle(workbook);
+        var properties = typeof(TObject).GetProperties().ToList();
+        var rowIndex = 0;
+        var valueSets = records.Select(r => properties.Select(p => Convert.ToString(p.GetValue(r))).ToList()).ToList();
         
-        return memoryStream;
-    }
-
-    private ExcelMapper GetMapper(Stream stream = null)
-    {
-        var excel = stream == null ? new ExcelMapper() : new ExcelMapper(stream);
-        excel.HeaderRow = HasHeader;
-
-        if (Mappings.Any())
+        
+        if (HasHeader)
         {
-            var typeMapper = excel.TypeMapperFactory.Create(typeof(TObject));
-            typeMapper.ColumnsByName.Clear();
-            var type = typeof(TObject);
-            typeof(TObject).GetProperties().ToList().ForEach(property =>
+            var row = sheet.CreateRow(rowIndex++);
+            for (var colIndex = 0; colIndex < properties.Count; colIndex++)
             {
-                var mapping = Mappings.FirstOrDefault(m => m.PropertyName == property.Name);
-                if (mapping != null)
-                {
-                    excel.AddMapping(mapping.ColumnName, mapping.Expression);
-                }
-                else
-                {
-                    excel.AddMapping(type, property.Name, property.Name);    
-                }
-            });
-            Mappings.ForEach(m => excel.AddMapping(m.ColumnName, m.Expression));
+                var cell = row.CreateCell(colIndex);
+                var property = properties[colIndex];
+                var columnMapping = mappings.FirstOrDefault(m => m.PropertyName == property.Name);
+                var value = columnMapping?.ColumnName ?? property.Name;
+                
+                cell.SetCellValue(value);
+                cell.CellStyle = headerStyle;
+
+                var maxLength = valueSets.Select(set => set[colIndex].Length).Max();
+                var width = Math.Max(maxLength*WidthToStringLengthFactor, value.Length*WidthToStringLengthFactor);
+                if (MinCellWidth > 0) width = Math.Max(width, MinCellWidth);
+                if (MaxCellWidth > 0) width = Math.Min(width, MaxCellWidth);
+                sheet.SetColumnWidth(cell.ColumnIndex, width);
+            }
         }
-        
-        return excel;
+
+        foreach (var valueSet in valueSets)
+        {
+            var row = sheet.CreateRow(rowIndex++);
+            for (var colIndex = 0; colIndex < properties.Count; colIndex++)
+            {
+                var value = valueSet[colIndex];
+                var cell = row.CreateCell(colIndex);
+                cell.SetCellValue(value);
+            }
+        }
+
+        workbook.Write(stream);
+
+        return Task.CompletedTask;
     }
 
+    private static ICellStyle CreateHeaderStyle(IWorkbook workbook)
+    {
+        var style = workbook.CreateCellStyle();
+        var font = workbook.CreateFont();
+        font.IsBold = true;
+        style.SetFont(font);
+
+        // Backgrounds don't work properly :/
+        // style.FillBackgroundColor = IndexedColors.LightYellow.Index;
+        // style.FillPattern = FillPattern.SolidForeground;
+        
+        return style;
+    }
+    
     #endregion
 
     #region CSV
@@ -112,27 +143,24 @@ public class ExcelConverter<TObject>
         return results;
     }
 
-    public async Task<MemoryStream> WriteCsvAsync<TObject>(IEnumerable<TObject> records)
+    public async Task WriteCsvAsync(Stream stream, IEnumerable<TObject> records)
     {
-        var memoryStream = new MemoryStream();
-        await using var writer = new StreamWriter(memoryStream);
+        await using var writer = new StreamWriter(stream);
         await using var csvWriter = new CsvWriter(writer, CultureInfo);
     
         ConfigureCsvContext(csvWriter.Context);
         await csvWriter.WriteRecordsAsync(records);
-    
-        return memoryStream;
     }
 
     private void ConfigureCsvContext(CsvContext context)
     {
         context.Configuration.HasHeaderRecord = HasHeader;
         
-        if (Mappings.Any())
+        if (mappings.Any())
         {
             var map = context.AutoMap<TObject>();
             
-            foreach (var mapping in Mappings)
+            foreach (var mapping in mappings)
             {
                 map.Map(mapping.Expression).Name(mapping.ColumnName);
             }
@@ -143,7 +171,7 @@ public class ExcelConverter<TObject>
     
     #endregion
     
-    private static MemberInfo GetExpressionMemberInfo<TObject>(Expression<Func<TObject, object>> expression)
+    private static MemberInfo GetExpressionMemberInfo(Expression<Func<TObject, object>> expression)
     {
         MemberExpression memberExpression;
 
