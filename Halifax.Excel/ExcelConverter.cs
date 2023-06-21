@@ -127,14 +127,6 @@ public class ExcelConverter<TObject>
                 cell.SetCellValue(valueString);
                 break;
             
-            case DateOnly valueDateOnly:
-                cell.SetCellValue(valueDateOnly);
-                break;
-            
-            case DateTime valueDateTime:
-                cell.SetCellValue(valueDateTime);
-                break;
-            
             case byte valueByte:
                 cell.SetCellValue(valueByte);
                 break;
