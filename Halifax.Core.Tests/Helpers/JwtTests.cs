@@ -27,7 +27,7 @@ public class JwtTests
     {
         var jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUZXN0MSI6IkhlbGxvIiwiVGVzdDIiOiJXb3JsZCIsIm5iZiI6MTY4ODkyOTUzNywiZXhwIjoxNjg4OTQzOTQyLCJpYXQiOjE2ODg5Mjk1Mzd9.o7svk12AG8SYoTdLM3HhOa0d8nXjWHumIrtRTaWoVcc";
         var jwtExpiration = DateTimeOffset.FromUnixTimeSeconds(1688943942); 
-        var readClaims = Jwt.Read(secret, jwt, validateExpiration: false);
+        var readClaims = Jwt.Read(secret, jwt, validateLifetime: false);
         VerifyClaims(claims, readClaims, jwtExpiration);
     }
 
