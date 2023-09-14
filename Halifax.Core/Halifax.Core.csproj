@@ -10,9 +10,9 @@
         <Summary>Halifax Service Foundation Core library</Summary>
         <Authors>andrei-m-code</Authors>
         
-        <AssemblyVersion>2.0.5</AssemblyVersion>
-        <FileVersion>2.0.5</FileVersion>
-        <Version>2.0.5</Version>
+        <AssemblyVersion>2.0.6</AssemblyVersion>
+        <FileVersion>2.0.6</FileVersion>
+        <Version>2.0.6</Version>
         
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -26,7 +26,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
-v2.0.x - .NET 7 support
+v2.0.x - .NET 7 support. Improvements and bugfixes
 v1.2.x - Logging improvements            
 v1.1.5 - Claim extensions added
 v1.1.x - Package version updates and minor improvements
@@ -41,7 +41,7 @@ v0.x.x - Initial release
         <PackageReference Include="Serilog" Version="3.0.1" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
         <PackageReference Include="Destructurama.Attributed" Version="3.1.0" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.1" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     </ItemGroup>
 
