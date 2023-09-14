@@ -11,6 +11,7 @@ Simplistic libraries for complex projects. Halifax libraries are designed to spe
 - ✅ Exception handling
 - ✅ JWT Authentication
 - ✅ API models
+- ✅ App Config
 - ✅ HTTP Communication
 - ✅ Swagger
 - ✅ Logging
