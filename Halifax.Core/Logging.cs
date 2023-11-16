@@ -19,7 +19,9 @@ public static class L
         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
         .MinimumLevel.Override("System", LogEventLevel.Error)
         .Enrich.FromLogContext()
-        .WriteTo.Console(theme: AnsiConsoleTheme.Literate);
+        .WriteTo.Console(
+            outputTemplate: "[{Timestamp:M/d, HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
+            theme: AnsiConsoleTheme.Literate);
 
     private static ILogger Log => loggerLazy.Value;
 
