@@ -76,7 +76,7 @@ public class HalifaxBuilder
         return this;
     }
 
-    public HalifaxBuilder ConfigureExceptionHandler<TExceptionHandler>() where TExceptionHandler : IExceptionHandler
+    public HalifaxBuilder ConfigureExceptionHandler<TExceptionHandler>() where TExceptionHandler : IHalifaxExceptionHandler
     {
         ExceptionHandlerType = typeof(TExceptionHandler);
         return this;

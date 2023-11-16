@@ -73,7 +73,7 @@ public static class AppExtensions
         //app.UseExceptionHandler("/error");
         app.UseExceptionHandler(c => c.Run(async context =>
         {
-            var handler = c.ApplicationServices.GetService<IExceptionHandler>();
+            var handler = c.ApplicationServices.GetService<IHalifaxExceptionHandler>();
             var exception = context.Features.Get<IExceptionHandlerPathFeature>().Error;
             var (response, code) = await handler.HandleAsync(context, exception);
             context.Response.StatusCode = (int) code;
