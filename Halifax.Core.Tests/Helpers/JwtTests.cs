@@ -8,7 +8,7 @@ public class JwtTests
     [Test]
     public void CreateAndReadJwt()
     {
-        var secret = "123qwe!@#,./*();zxcZXC000";
+        var secret = "123qwe!@#,./*();zxcZXC0001234567";
         var expiration = DateTimeOffset.Now.AddYears(1);
         var expectedExpiration = expiration.ToUnixTimeSeconds();
         var claimKey1 = "Test1";
