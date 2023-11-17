@@ -15,10 +15,10 @@ public class JwtTests
     [Test]
     public void CreateAndReadJwt()
     {
-        var secret = "123qwe!@#,./*();zxcZXC000";
+        var localSecret = "123qwe!@#,./*();zxcZXC000ZXC12345678";
         var expiration = DateTimeOffset.Now.AddYears(1);
-        var createdJwt = Jwt.Create(secret, claims, expiration.DateTime);
-        var actualClaims = Jwt.Read(secret, createdJwt);
+        var createdJwt = Jwt.Create(localSecret, claims, expiration.DateTime);
+        var actualClaims = Jwt.Read(localSecret, createdJwt);
         Assert.That(actualClaims, Is.Not.Null);
         VerifyClaims(claims, actualClaims, expiration);
     }
