@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Halifax.Api.Errors;
 
-public class HalifaxExceptionHandler : IExceptionHandler
+public class HalifaxExceptionHandler : IHalifaxExceptionHandler
 {
     public virtual async Task<(object Response, HttpStatusCode Code)> HandleAsync(
         HttpContext context,
@@ -22,17 +22,32 @@ public class HalifaxExceptionHandler : IExceptionHandler
 
         await LogErrorRequestAsync(context, exception);
 
-        return 
+        return
         (
             Response: ApiResponse.With(exception),
             Code: code
         );
     }
-    
+
     protected virtual async Task LogErrorRequestAsync(HttpContext context, Exception exception)
     {
         var requestString = await context.Request.GetRequestStringAsync();
         L.Error(exception, exception.Message);
         L.Error(requestString);
+    }
+
+    public async ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return false;
+        }
+
+        await LogErrorRequestAsync(httpContext, exception);
+        
+        return true;
     }
 }
