@@ -15,6 +15,7 @@ public class JwtTests
     [Test]
     public void CreateAndReadJwt()
     {
+        var secret = "123qwe!@#,./*();zxcZXC000";
         var expiration = DateTimeOffset.Now.AddYears(1);
         var createdJwt = Jwt.Create(secret, claims, expiration.DateTime);
         var actualClaims = Jwt.Read(secret, createdJwt);
