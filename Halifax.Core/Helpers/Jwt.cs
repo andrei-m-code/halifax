@@ -33,7 +33,7 @@ public static class Jwt
         bool throwUnauthorized = true,
         bool validateAudience = false,
         bool validateIssuer = false,
-        bool validateExpiration = false)
+        bool validateLifetime = false)
     {
         try
         {
@@ -44,12 +44,13 @@ public static class Jwt
             {
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateAudience = validateAudience,
-                ValidateIssuer = validateIssuer
+                ValidateIssuer = validateIssuer,
+                ValidateLifetime = validateLifetime
             }, out var token);
 
             var jwtToken = (JwtSecurityToken)token;
 
-            if (!validateExpiration || token.ValidTo > DateTime.UtcNow)
+            if (!validateLifetime || token.ValidTo > DateTime.UtcNow)
             {
                 return jwtToken.Claims.ToList();
             }

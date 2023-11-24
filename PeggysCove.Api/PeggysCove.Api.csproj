@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Halifax.Api\Halifax.Api.csproj" />
+    <ProjectReference Include="..\Halifax.Excel\Halifax.Excel.csproj" />
   </ItemGroup>
 
 </Project>

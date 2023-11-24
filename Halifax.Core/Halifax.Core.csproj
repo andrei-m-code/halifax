@@ -27,7 +27,7 @@
 
         <PackageReleaseNotes>
 v3.0.x - .NET 8 support
-v2.0.x - .NET 7 support
+v2.0.x - .NET 7 support. Improvements and bugfixes
 v1.2.x - Logging improvements            
 v1.1.5 - Claim extensions added
 v1.1.x - Package version updates and minor improvements
