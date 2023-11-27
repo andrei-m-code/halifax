@@ -8,6 +8,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 using System.Text.Json;
 using Halifax.Core;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace Halifax.Api.App;
 
@@ -76,7 +77,7 @@ public class HalifaxBuilder
         return this;
     }
 
-    public HalifaxBuilder ConfigureExceptionHandler<TExceptionHandler>() where TExceptionHandler : IHalifaxExceptionHandler
+    public HalifaxBuilder ConfigureExceptionHandler<TExceptionHandler>() where TExceptionHandler : IExceptionHandler
     {
         ExceptionHandlerType = typeof(TExceptionHandler);
         return this;
