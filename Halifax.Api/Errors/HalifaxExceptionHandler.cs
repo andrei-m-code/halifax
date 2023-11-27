@@ -2,16 +2,30 @@ using Halifax.Domain;
 using Halifax.Domain.Exceptions;
 using System.Net;
 using Halifax.Api.Extensions;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 
 namespace Halifax.Api.Errors;
 
-public class HalifaxExceptionHandler : IHalifaxExceptionHandler
+public class HalifaxExceptionHandler : IExceptionHandler
 {
-    public virtual async Task<(object Response, HttpStatusCode Code)> HandleAsync(
-        HttpContext context,
-        Exception exception)
+    protected virtual async Task LogErrorRequestAsync(HttpContext context, Exception exception)
     {
+        var requestString = await context.Request.GetRequestStringAsync();
+        L.Error(exception, exception.Message);
+        L.Error(requestString);
+    }
+
+    public async ValueTask<bool> TryHandleAsync(
+        HttpContext context,
+        Exception exception,
+        CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return false;
+        }
+        
         var code = exception switch
         {
             HalifaxNotFoundException => HttpStatusCode.NotFound,
@@ -21,33 +35,12 @@ public class HalifaxExceptionHandler : IHalifaxExceptionHandler
         };
 
         await LogErrorRequestAsync(context, exception);
-
-        return
-        (
-            Response: ApiResponse.With(exception),
-            Code: code
-        );
-    }
-
-    protected virtual async Task LogErrorRequestAsync(HttpContext context, Exception exception)
-    {
-        var requestString = await context.Request.GetRequestStringAsync();
-        L.Error(exception, exception.Message);
-        L.Error(requestString);
-    }
-
-    public async ValueTask<bool> TryHandleAsync(
-        HttpContext httpContext,
-        Exception exception,
-        CancellationToken cancellationToken)
-    {
-        if (cancellationToken.IsCancellationRequested)
-        {
-            return false;
-        }
-
-        await LogErrorRequestAsync(httpContext, exception);
         
+        context.Response.StatusCode = (int) code;
+        await context.Response.WriteAsJsonAsync(ApiResponse.With(exception), cancellationToken: cancellationToken);
+        
+        // Return false to continue with the default behavior
+        // - or - return true to signal that this exception is handled
         return true;
     }
 }
