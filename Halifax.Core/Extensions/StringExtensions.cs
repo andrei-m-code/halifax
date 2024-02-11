@@ -10,6 +10,11 @@ public static class StringExtensions
         return Regex.IsMatch(input ?? string.Empty, RegexConstants.Email, RegexOptions.IgnoreCase);
     }
 
+    public static bool IsUrl(this string input)
+    {
+        return Uri.TryCreate(input, UriKind.Absolute, out _);
+    }
+
     public static Dictionary<string, string> ParseConnectionString(this string connectionString)
     {
         return connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries)
