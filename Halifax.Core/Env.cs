@@ -9,12 +9,12 @@ namespace Halifax.Core;
 public static class Env
 {
     private static readonly Dictionary<Type, object> sections = new();
-    private static readonly List<Type> supportedTypes = new()
-    {
-        typeof(Guid), typeof(Guid?), 
-        typeof(DateTime), typeof(DateTime?), 
+    private static readonly List<Type> supportedTypes =
+    [
+        typeof(Guid), typeof(Guid?),
+        typeof(DateTime), typeof(DateTime?),
         typeof(TimeSpan), typeof(TimeSpan?)
-    };
+    ];
 
     /// <summary>
     /// Load environment variables from file (usually for local execution)
@@ -66,7 +66,7 @@ public static class Env
             .ForEach(entry =>
             {
                 var (line, index) = entry;
-                var indexOfEquality = line.IndexOf("=", StringComparison.Ordinal);
+                var indexOfEquality = line.IndexOf('=');
                 if (indexOfEquality == -1)
                 {
                     throw new InvalidOperationException($"Equality sign is missing on line {index}");
@@ -90,9 +90,9 @@ public static class Env
     public static TSection GetSection<TSection>(string section = null)
     {
         var configType = typeof(TSection);
-        if (sections.ContainsKey(configType))
+        if (sections.TryGetValue(configType, out var value))
         {
-            return (TSection)sections[configType];
+            return (TSection)value;
         }
 
         section ??= typeof(TSection).Name;
@@ -154,7 +154,7 @@ public static class Env
 
     private static object GetParameter(Type type, string environmentKey, object defaultValue = null)
     {
-        var val = Environment.GetEnvironmentVariable(environmentKey);
+        var val = Environment.GetEnvironmentVariable(environmentKey)?.Trim();
         if (val == null)
         {
             return defaultValue;
