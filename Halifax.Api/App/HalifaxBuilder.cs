@@ -1,5 +1,4 @@
 using Halifax.Api.App.Defaults;
-using Halifax.Api.Errors;
 using Halifax.Core.Helpers;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +7,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 using System.Text.Json;
 using Halifax.Core;
-using Microsoft.AspNetCore.Diagnostics;
 
 namespace Halifax.Api.App;
 
@@ -34,7 +32,8 @@ public class HalifaxBuilder
     internal Action<CorsPolicyBuilder> Cors { get; private set; } = CorsDefaults.Value;
     internal Action<SwaggerGenOptions> Swagger { get; private set; } = SwaggerDefaults.Value;
     internal TokenValidationParameters TokenValidationParameters { get; set; }
-    internal Type ExceptionHandlerType { get; set; } = typeof(HalifaxExceptionHandler);
+
+    internal bool useDefaultExceptionHandler = true;
     internal Action<JsonSerializerOptions> ConfigureJsonOptions { get; set; } = Json.ConfigureOptions;
     internal Action<IMvcBuilder> ConfigureMvcBuilder { get; set; } = opts => { };
 
@@ -77,9 +76,9 @@ public class HalifaxBuilder
         return this;
     }
 
-    public HalifaxBuilder ConfigureExceptionHandler<TExceptionHandler>() where TExceptionHandler : IExceptionHandler
+    public HalifaxBuilder ConfigureExceptionHandler(bool useDefaultHalifaxExceptionHandler = true)
     {
-        ExceptionHandlerType = typeof(TExceptionHandler);
+        this.useDefaultExceptionHandler = useDefaultHalifaxExceptionHandler; 
         return this;
     }
 
