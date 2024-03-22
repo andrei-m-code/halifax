@@ -1,10 +1,10 @@
 using Halifax.Api.App;
+using Halifax.Api.Errors;
 using Halifax.Core;
 using Halifax.Core.Helpers;
 using Halifax.Domain.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -57,7 +57,11 @@ public static class AppExtensions
 
         services.AddSwaggerGen(builder.Swagger);
         services.AddCors();
-        services.AddScoped(typeof(IExceptionHandler), builder.ExceptionHandlerType);
+
+        if (builder.useDefaultExceptionHandler)
+        {
+            services.AddExceptionHandler<HalifaxExceptionHandler>();
+        }
     }
 
     public static void UseHalifax(this IApplicationBuilder app)
