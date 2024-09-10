@@ -9,21 +9,16 @@ using Halifax.Domain.Exceptions;
 
 namespace Halifax.Http;
 
-public abstract class HalifaxHttpClient
+public abstract class HalifaxHttpClient(HttpClient http)
 {
-    protected readonly HttpClient http;
+    protected readonly HttpClient http = http;
     
-    private static readonly List<HttpStatusCode> exceptionHttpStatuses = new()
-    {
+    private static readonly List<HttpStatusCode> exceptionHttpStatuses =
+    [
         HttpStatusCode.NotFound,
         HttpStatusCode.BadRequest,
         HttpStatusCode.Unauthorized
-    };
-
-    protected HalifaxHttpClient(HttpClient http)
-    {
-        this.http = http;
-    }
+    ];
 
     protected virtual HttpRequestMessage CreateMessage(HttpMethod method, string url, object body = default)
     {
