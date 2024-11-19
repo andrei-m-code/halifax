@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>true</ImplicitUsings>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
@@ -11,9 +11,9 @@
         <PackageDescription>Halifax Service Foundation API library</PackageDescription>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>3.2.3</AssemblyVersion>
-        <FileVersion>3.2.3</FileVersion>
-        <Version>3.2.3</Version>
+        <AssemblyVersion>4.0.0</AssemblyVersion>
+        <FileVersion>4.0.0</FileVersion>
+        <Version>4.0.0</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -26,6 +26,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
+v4.0.0 - .NET 9 support
 v3.2.x - Use global exception handler
 v3.1.x - Minor improvements to the APIs
 v3.0.x - .NET 8 support
@@ -43,10 +44,10 @@ v0.x.x - Initial release
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Halifax.Core" Version="3.1.4" />
+        <PackageReference Include="Halifax.Core" Version="4.0.0" />
       
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
