@@ -41,11 +41,11 @@ v0.x.x - Initial release
     <ItemGroup>
         <PackageReference Include="Halifax.Domain" Version="4.0.0" />
         
-        <PackageReference Include="Serilog" Version="4.1.0" />
+        <PackageReference Include="Serilog" Version="4.2.1-dev-02337" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-        <PackageReference Include="Destructurama.Attributed" Version="4.0.0" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+        <PackageReference Include="Destructurama.Attributed" Version="5.1.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.1" />
     </ItemGroup>
 
     <ItemGroup>

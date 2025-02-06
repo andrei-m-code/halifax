@@ -46,8 +46,8 @@ v0.x.x - Initial release
     <ItemGroup>
         <PackageReference Include="Halifax.Core" Version="4.0.0" />
       
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     </ItemGroup>
 
     <ItemGroup>
