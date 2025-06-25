@@ -77,6 +77,27 @@ public static class Json
             : null;
     }
     
+    public static bool TryDeserialize<TObject>(string jsonString, out TObject result) where TObject : class
+    {
+        var options = new JsonSerializerOptions();
+        ConfigureOptions(options);
+        return TryDeserialize<TObject>(jsonString, options, out result);
+    }
+    
+    public static bool TryDeserialize<TObject>(string jsonString, JsonSerializerOptions options, out TObject result) where TObject : class
+    {
+        try
+        {
+            result = Deserialize<TObject>(jsonString, options);
+            return true;
+        }
+        catch
+        {
+            result = null;
+            return false;
+        }
+    }
+    
     /// <summary>
     /// Deserialize object from JSON
     /// </summary>
