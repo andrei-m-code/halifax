@@ -37,8 +37,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CsvHelper" Version="33.0.1" />
-        <PackageReference Include="ExcelMapper" Version="5.2.602" />
+        <PackageReference Include="CsvHelper" Version="33.1.0" />
+        <PackageReference Include="ExcelMapper" Version="6.0.609" />
         <PackageReference Include="NPOI" Version="2.7.3" />
     </ItemGroup>
 </Project>
