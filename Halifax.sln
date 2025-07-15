@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{574AFF86
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Excel", "Halifax.Excel\Halifax.Excel.csproj", "{6E1AE29B-FAFC-401D-A87B-16003A505C43}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halifax.Excel.Tests", "Halifax.Excel.Tests\Halifax.Excel.Tests.csproj", "{E6F415DF-6A0F-4EA7-A3D5-9C2731E56C55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,8 +64,13 @@ Global
 		{6E1AE29B-FAFC-401D-A87B-16003A505C43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E1AE29B-FAFC-401D-A87B-16003A505C43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E1AE29B-FAFC-401D-A87B-16003A505C43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6F415DF-6A0F-4EA7-A3D5-9C2731E56C55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6F415DF-6A0F-4EA7-A3D5-9C2731E56C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6F415DF-6A0F-4EA7-A3D5-9C2731E56C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F415DF-6A0F-4EA7-A3D5-9C2731E56C55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F1922D5A-FCCB-4459-A6AE-E9DD1E852F2A} = {574AFF86-A2A2-4C0F-BC72-6C961FEDE350}
+		{E6F415DF-6A0F-4EA7-A3D5-9C2731E56C55} = {574AFF86-A2A2-4C0F-BC72-6C961FEDE350}
 	EndGlobalSection
 EndGlobal

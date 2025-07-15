@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using System.Linq.Expressions;
-using System.Numerics;
 using System.Reflection;
 using CsvHelper;
+using CsvHelper.Configuration;
 using Ganss.Excel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -18,8 +18,8 @@ public class ExcelConverter<TObject>
 
     public CultureInfo CultureInfo { get; set; } = CultureInfo.InvariantCulture;
     public bool HasHeader { get; set; } = true;
-
-    private readonly List<ColumnMapping<TObject>> mappings = new();
+    
+    private readonly List<ColumnMapping<TObject>> mappings = [];
 
     public void AddMapping(string columnName, Expression<Func<TObject, object>> propertyExpression)
     {
@@ -58,6 +58,15 @@ public class ExcelConverter<TObject>
     public List<TObject> ReadExcel(Stream stream)
     {
         var excel = new ExcelMapper(stream) {HeaderRow = HasHeader};
+
+        if (HasHeader && mappings.Any())
+        {
+            foreach (var mapping in mappings)
+            {
+                excel.AddMapping(mapping.ColumnName, mapping.Expression);
+            }
+        }
+        
         var records = excel.Fetch<TObject>().ToList();
         return records;
     }
@@ -180,15 +189,20 @@ public class ExcelConverter<TObject>
 
     #region CSV
 
+    /// <summary>
+    /// Reads CSV stream into a list of objects.
+    /// NOTE: positional records without public setters aren't supported e.g. record Person(string Name)
+    /// </summary>
     public async Task<List<TObject>> ReadCsvAsync(
         Stream stream, 
         CancellationToken cancellationToken = default)
     {
         using var streamReader = new StreamReader(stream);
         using var csv = new CsvReader(streamReader, CultureInfo);
+
         ConfigureCsvContext(csv.Context);
         var results = new List<TObject>();
-        
+
         await foreach (var chunk in csv.GetRecordsAsync<TObject>(cancellationToken))
         {
             results.Add(chunk);
@@ -201,7 +215,6 @@ public class ExcelConverter<TObject>
     {
         await using var writer = new StreamWriter(stream);
         await using var csvWriter = new CsvWriter(writer, CultureInfo);
-    
         ConfigureCsvContext(csvWriter.Context);
         await csvWriter.WriteRecordsAsync(records);
     }
@@ -209,18 +222,17 @@ public class ExcelConverter<TObject>
     private void ConfigureCsvContext(CsvContext context)
     {
         context.Configuration.HasHeaderRecord = HasHeader;
+        if (mappings.Count == 0) return;
         
-        if (mappings.Any())
+        var map = new DefaultClassMap<TObject>();
+        map.AutoMap(context.Configuration);
+        
+        foreach (var mapping in mappings)
         {
-            var map = context.AutoMap<TObject>();
-            
-            foreach (var mapping in mappings)
-            {
-                map.Map(mapping.Expression).Name(mapping.ColumnName);
-            }
-
-            context.RegisterClassMap(map);
+            map.Map(mapping.Expression).Name(mapping.ColumnName);
         }
+        
+        context.RegisterClassMap(map);
     }
     
     #endregion
