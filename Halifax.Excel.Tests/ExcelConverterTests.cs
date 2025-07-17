@@ -2,6 +2,9 @@
 
 namespace Halifax.Excel.Tests;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
+
 public interface IPerson
 {
     public string Name { get; }
@@ -79,7 +82,7 @@ public class ExcelConverterTests
     }
 
     [Test]
-    public async Task ReadWriteCsv_Record_ConstructorOnly()
+    public void ReadWriteCsv_Record_ConstructorOnly()
     {
         var converter = new ExcelConverter<PersonRecordConstructorOnly>();
         converter.AddMapping("Full Name", p => p.Name);
@@ -92,7 +95,7 @@ public class ExcelConverterTests
     }
     
     [Test]
-    public async Task ReadWriteCsv_Record_PartialConstructor()
+    public Task ReadWriteCsv_Record_PartialConstructor()
     {
         var converter = new ExcelConverter<PersonRecordPartialConstructor>();
         converter.AddMapping("Full Name", p => p.Name);
@@ -102,6 +105,7 @@ public class ExcelConverterTests
             new("John Smith", 34, "ABC Co"),
             new("John Doe", 40, "XYZ Company")
         ];
+        return Task.CompletedTask;
     }
     
     [Test]
