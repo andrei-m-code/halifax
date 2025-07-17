@@ -17,7 +17,6 @@ public class ExcelConverter<TObject>
     public int MinCellWidth { get; set; } = 9 * defaultWidthToStringLengthFactor;
 
     public CultureInfo CultureInfo { get; set; } = CultureInfo.InvariantCulture;
-    public bool HasHeader { get; set; } = true;
     
     private readonly List<ColumnMapping<TObject>> mappings = [];
 
@@ -57,9 +56,9 @@ public class ExcelConverter<TObject>
 
     public List<TObject> ReadExcel(Stream stream)
     {
-        var excel = new ExcelMapper(stream) {HeaderRow = HasHeader};
+        var excel = new ExcelMapper(stream) {HeaderRow = true};
 
-        if (HasHeader && mappings.Any())
+        if (mappings.Any())
         {
             foreach (var mapping in mappings)
             {
@@ -80,25 +79,22 @@ public class ExcelConverter<TObject>
         var rowIndex = 0;
         var valueSets = records.Select(r => properties.Select(p => Convert.ToString(p.GetValue(r))).ToList()).ToList();
         
-        if (HasHeader)
+        var headerRow = sheet.CreateRow(rowIndex++);
+        for (var colIndex = 0; colIndex < properties.Count; colIndex++)
         {
-            var row = sheet.CreateRow(rowIndex++);
-            for (var colIndex = 0; colIndex < properties.Count; colIndex++)
-            {
-                var cell = row.CreateCell(colIndex);
-                var property = properties[colIndex];
-                var columnMapping = mappings.FirstOrDefault(m => m.PropertyName == property.Name);
-                var value = columnMapping?.ColumnName ?? property.Name;
-                
-                cell.SetCellValue(value);
-                cell.CellStyle = headerStyle;
+            var cell = headerRow.CreateCell(colIndex);
+            var property = properties[colIndex];
+            var columnMapping = mappings.FirstOrDefault(m => m.PropertyName == property.Name);
+            var value = columnMapping?.ColumnName ?? property.Name;
+            
+            cell.SetCellValue(value);
+            cell.CellStyle = headerStyle;
 
-                var maxLength = valueSets.Select(set => set[colIndex].Length).Max();
-                var width = Math.Max(maxLength*WidthToStringLengthFactor, value.Length*WidthToStringLengthFactor);
-                if (MinCellWidth > 0) width = Math.Max(width, MinCellWidth);
-                if (MaxCellWidth > 0) width = Math.Min(width, MaxCellWidth);
-                sheet.SetColumnWidth(cell.ColumnIndex, width);
-            }
+            var maxLength = valueSets.Select(set => set[colIndex].Length).Max();
+            var width = Math.Max(maxLength*WidthToStringLengthFactor, value.Length*WidthToStringLengthFactor);
+            if (MinCellWidth > 0) width = Math.Max(width, MinCellWidth);
+            if (MaxCellWidth > 0) width = Math.Min(width, MaxCellWidth);
+            sheet.SetColumnWidth(cell.ColumnIndex, width);
         }
 
         foreach (var record in records)
@@ -190,8 +186,7 @@ public class ExcelConverter<TObject>
     #region CSV
 
     /// <summary>
-    /// Reads CSV stream into a list of objects.
-    /// NOTE: positional records without public setters aren't supported e.g. record Person(string Name)
+    /// Reads CSV stream into a list of objects. CSV must have a header
     /// </summary>
     public async Task<List<TObject>> ReadCsvAsync(
         Stream stream, 
@@ -201,14 +196,28 @@ public class ExcelConverter<TObject>
         using var csv = new CsvReader(streamReader, CultureInfo);
 
         ConfigureCsvContext(csv.Context);
-        var results = new List<TObject>();
+        var records = new List<TObject>();
 
-        await foreach (var chunk in csv.GetRecordsAsync<TObject>(cancellationToken))
+        await csv.ReadAsync();
+        csv.ReadHeader();
+        var header = csv.HeaderRecord!;
+        
+        while (await csv.ReadAsync())
         {
-            results.Add(chunk);
+            var properties = new Dictionary<string, object>();
+            
+            foreach (var headerItem in header)
+            {
+                var mapping = mappings.FirstOrDefault(m => m.ColumnName == headerItem);
+                var propertyName = mapping?.PropertyName ?? headerItem;
+                properties.Add(propertyName, csv[headerItem]);
+            }
+            
+            var record = ObjectActivator.Activate<TObject>(properties);
+            records.Add(record);
         }
-
-        return results;
+        
+        return records;
     }
 
     public async Task WriteCsvAsync(Stream stream, IEnumerable<TObject> records)
@@ -221,7 +230,7 @@ public class ExcelConverter<TObject>
 
     private void ConfigureCsvContext(CsvContext context)
     {
-        context.Configuration.HasHeaderRecord = HasHeader;
+        context.Configuration.HasHeaderRecord = true;
         if (mappings.Count == 0) return;
         
         var map = new DefaultClassMap<TObject>();

@@ -29,6 +29,13 @@ record PersonRecord : IPerson
 
 record PersonRecordConstructorOnly(string Name, int Age, string Company) : IPerson;
 
+record PersonRecordPartialConstructor(string name) : IPerson
+{
+    public string Name { get; set; } = name;
+    public int Age { get; set; }
+    public string Company { get; set; }
+}
+
 public class ExcelConverterTests
 {
     private static readonly string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -71,22 +78,31 @@ public class ExcelConverterTests
         await ReadWriteCsvAsync(converter, people);
     }
 
-    /// <summary>
-    /// This is not supported by CsvHelper yet, we're waiting for them to
-    /// start supporting it and we can uncomment it then.
-    /// </summary>
-    // [Test]
-    // public async Task ReadWriteCsv_Record_ConstructorOnly()
-    // {
-    //     var converter = new ExcelConverter<PersonRecordConstructorOnly>();
-    //     converter.AddMapping("Full Name", p => p.Name);
-    //     converter.AddMapping("Age", p => p.Age);
-    //     List<PersonRecordConstructorOnly> people =
-    //     [
-    //         new("John Smith", 34, "ABC Co"),
-    //         new("John Doe", 40, "XYZ Company")
-    //     ];
-    // }
+    [Test]
+    public async Task ReadWriteCsv_Record_ConstructorOnly()
+    {
+        var converter = new ExcelConverter<PersonRecordConstructorOnly>();
+        converter.AddMapping("Full Name", p => p.Name);
+        converter.AddMapping("Age", p => p.Age);
+        List<PersonRecordConstructorOnly> people =
+        [
+            new("John Smith", 34, "ABC Co"),
+            new("John Doe", 40, "XYZ Company")
+        ];
+    }
+    
+    [Test]
+    public async Task ReadWriteCsv_Record_PartialConstructor()
+    {
+        var converter = new ExcelConverter<PersonRecordPartialConstructor>();
+        converter.AddMapping("Full Name", p => p.Name);
+        converter.AddMapping("Age", p => p.Age);
+        List<PersonRecordConstructorOnly> people =
+        [
+            new("John Smith", 34, "ABC Co"),
+            new("John Doe", 40, "XYZ Company")
+        ];
+    }
     
     [Test]
     public async Task ReadWriteExcel_Class()
@@ -146,11 +162,13 @@ public class ExcelConverterTests
         ExcelConverter<TObject> converter, 
         List<TObject> source) where TObject : IPerson
     {
+        // Write
         using var stream = new MemoryStream();
         await converter.WriteCsvAsync(stream, source);
         await File.WriteAllBytesAsync(filenameCsv, stream.ToArray());
+        
+        // Read
         await using var readStream = File.OpenRead(filenameCsv);
-
         var records = await converter.ReadCsvAsync(readStream);
         CompareLists(source, records);
     }
