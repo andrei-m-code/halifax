@@ -4,7 +4,7 @@ namespace Halifax.Core.Helpers;
 
 public static class ShortId
 {
-    private static readonly object root = new();
+    private static readonly Lock root = new();
     private static readonly Random random = new();
     private const string bigs = "ABCDEFGHIJKLMNOPQRSTUVWXY";
     private const string smalls = "abcdefghjlkmnopqrstuvwxyz";

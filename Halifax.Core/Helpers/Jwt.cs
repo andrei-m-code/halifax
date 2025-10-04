@@ -60,11 +60,8 @@ public static class Jwt
             L.Warning(ex, "Error reading JWT");
         }
 
-        if (throwUnauthorized)
-        {
-            throw  new HalifaxUnauthorizedException("Request is unauthorized");
-        }
-
-        return new List<Claim>();
+        return throwUnauthorized 
+            ? throw new HalifaxUnauthorizedException("Request is unauthorized") 
+            : [];
     }
 }

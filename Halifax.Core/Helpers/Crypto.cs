@@ -12,7 +12,7 @@ public static class Crypto
     public static string Encrypt(string secret, string text)
     {
         var clearBytes = Encoding.Unicode.GetBytes(text);
-        using var encryptor = Aes.Create();
+        using var encryptor = CreateAes();
         var pdb = new Rfc2898DeriveBytes(secret, salt, iterations, algorithm);
         encryptor.Key = pdb.GetBytes(32);
         encryptor.IV = pdb.GetBytes(16);
@@ -29,7 +29,7 @@ public static class Crypto
     {
         var cipherBytes = Convert.FromBase64String(encrypted);
 
-        using var encryptor = Aes.Create();
+        using var encryptor = CreateAes();
         var pdb = new Rfc2898DeriveBytes(secret, salt, iterations, algorithm);
 
         encryptor.Key = pdb.GetBytes(32);
@@ -55,5 +55,14 @@ public static class Crypto
             result = null;
             return false;
         }
+    }
+
+    private static Aes CreateAes()
+    {
+        var encryptor = Aes.Create();
+        encryptor.Mode = CipherMode.CBC;
+        encryptor.Padding = PaddingMode.PKCS7;
+        
+        return encryptor;
     }
 }
