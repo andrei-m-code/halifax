@@ -18,7 +18,7 @@ public static class StringExtensions
     public static Dictionary<string, string> ParseConnectionString(this string connectionString)
     {
         return connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries)
-            .Select(t => t.Split(new[] { '=' }, 2))
+            .Select(t => t.Split(['='], 2))
             .ToDictionary(t => t[0].Trim(), t => t[1].Trim(), StringComparer.InvariantCultureIgnoreCase);
     }
 
