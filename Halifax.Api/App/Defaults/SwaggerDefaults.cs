@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Halifax.Api.App.Defaults;
@@ -20,19 +20,14 @@ internal static class SwaggerDefaults
                     Scheme = "bearer"
                 });
 
-            opts.AddSecurityRequirement(new OpenApiSecurityRequirement
+            opts.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Id = "Bearer",
-                            Type = ReferenceType.SecurityScheme
-                        }
-                    },
-                    new List<string>()
-                }
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Name = "Authorization",
+                Description = "JWT Authorization header using the Bearer scheme."
             });
         }
 
