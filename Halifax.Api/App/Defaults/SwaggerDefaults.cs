@@ -12,15 +12,32 @@ internal static class SwaggerDefaults
 
         if (HalifaxBuilder.Instance.TokenValidationParameters != null)
         {
-            opts.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            opts.AddSecurityDefinition("Bearer JWT", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
+                Scheme = "Bearer",
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
                 Name = "Authorization",
                 Description = "JWT Authorization header using the Bearer scheme."
             });
+            
+            opts.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecuritySchemeReference("bearer", document)
+                    {
+                        Reference = new OpenApiReferenceWithDescription
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer JWT", // Matches Security Definition
+                            HostDocument = document
+                        }
+                    },
+                    []
+                }
+            });
+            
         }
 
         Directory
