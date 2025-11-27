@@ -105,7 +105,7 @@ public static class Json
     /// <param name="cancellationToken"></param>
     /// <typeparam name="TObject">Object type</typeparam>
     /// <returns>An object that was serialized to JSON</returns>
-    public static async Task<object> DeserializeAsync<TObject>(
+    public static async Task<TObject> DeserializeAsync<TObject>(
         Stream utf8Stream, 
         CancellationToken cancellationToken = default) where TObject : class
     {
