@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Scalar.AspNetCore;
 
 namespace Halifax.Api;
 
@@ -55,7 +56,7 @@ public static class AppExtensions
             });
         }
 
-        services.AddSwaggerGen(builder.Swagger);
+        services.AddSwaggerGen(builder.OpenApi);
         services.AddCors();
 
         if (builder.useDefaultExceptionHandler)
@@ -78,8 +79,6 @@ public static class AppExtensions
             .Run(async handler => await Task.CompletedTask));
         
         app.UseRouting();
-        app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", HalifaxBuilder.Instance.Name));
 
         if (HalifaxBuilder.Instance.TokenValidationParameters != null)
         {
@@ -87,9 +86,18 @@ public static class AppExtensions
             app.UseAuthorization();
         }
 
+        app.UseSwagger(c => c.RouteTemplate = "openapi/{documentName}.json");
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.MapScalarApiReference(options =>
+            {
+                options
+                    .WithTitle(HalifaxBuilder.Instance.Name)
+                    .WithOpenApiRoutePattern("/openapi/{documentName}.json")
+                    .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+            });
         });
 
         // This is necessary for IDEs to pick up server address and open browser automatically
