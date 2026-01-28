@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Halifax.Api.App.Defaults;
 
-internal static class SwaggerDefaults
+internal static class OpenApiDefaults
 {
     internal static Action<SwaggerGenOptions> Value { get; } = opts =>
     {
@@ -21,7 +21,7 @@ internal static class SwaggerDefaults
                 Name = "Authorization",
                 Description = "JWT Authorization header using the Bearer scheme."
             });
-            
+
             opts.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
                 {
@@ -30,14 +30,13 @@ internal static class SwaggerDefaults
                         Reference = new OpenApiReferenceWithDescription
                         {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer JWT", // Matches Security Definition
+                            Id = "Bearer JWT",
                             HostDocument = document
                         }
                     },
                     []
                 }
             });
-            
         }
 
         Directory

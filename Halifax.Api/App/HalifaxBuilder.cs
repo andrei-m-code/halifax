@@ -30,7 +30,7 @@ public class HalifaxBuilder
     internal string Name { get; private set; } = AppDomain.CurrentDomain.FriendlyName;
     
     internal Action<CorsPolicyBuilder> Cors { get; private set; } = CorsDefaults.Value;
-    internal Action<SwaggerGenOptions> Swagger { get; private set; } = SwaggerDefaults.Value;
+    internal Action<SwaggerGenOptions> OpenApi { get; private set; } = OpenApiDefaults.Value;
     internal TokenValidationParameters TokenValidationParameters { get; set; }
 
     internal bool useDefaultExceptionHandler = true;
@@ -49,9 +49,9 @@ public class HalifaxBuilder
         return this;
     }
 
-    public HalifaxBuilder ConfigureSwagger(Action<SwaggerGenOptions> swaggerBuilder)
+    public HalifaxBuilder ConfigureOpenApi(Action<SwaggerGenOptions> openApiBuilder)
     {
-        Swagger = swaggerBuilder ?? throw new ArgumentNullException(nameof(swaggerBuilder));
+        OpenApi = openApiBuilder ?? throw new ArgumentNullException(nameof(openApiBuilder));
         return this;
     }
 
