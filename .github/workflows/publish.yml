@@ -1,0 +1,37 @@
+name: Publish to NuGet
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore
+        run: dotnet restore Halifax.sln
+
+      - name: Build
+        run: dotnet build Halifax.sln --no-restore -c Release
+
+      - name: Pack Halifax.Domain
+        run: dotnet pack Halifax.Domain/Halifax.Domain.csproj --no-build -c Release -o out
+
+      - name: Pack Halifax.Core
+        run: dotnet pack Halifax.Core/Halifax.Core.csproj --no-build -c Release -o out
+
+      - name: Pack Halifax.Http
+        run: dotnet pack Halifax.Http/Halifax.Http.csproj --no-build -c Release -o out
+
+      - name: Pack Halifax.Excel
+        run: dotnet pack Halifax.Excel/Halifax.Excel.csproj --no-build -c Release -o out
+
+      - name: Push to NuGet
+        run: dotnet nuget push out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
