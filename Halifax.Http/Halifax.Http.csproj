@@ -11,9 +11,9 @@
         <Summary>Halifax Service Foundation HttpClient library</Summary>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>5.1.0</AssemblyVersion>
-        <FileVersion>5.1.0</FileVersion>
-        <Version>5.1.0</Version>
+        <AssemblyVersion>5.1.1</AssemblyVersion>
+        <FileVersion>5.1.1</FileVersion>
+        <Version>5.1.1</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -27,6 +27,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
+v5.1.1 - Package dependency updates
 v5.1.0 - Correlation ID handler, resilience/retry policies, nullable reference types
 v5.0.x - .NET 10 support
 v4.0.x - .NET 9 support
@@ -42,8 +43,8 @@ v1.0.x - Initial release
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Halifax.Core" Version="5.0.2" />
-        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.6.0" />
+        <PackageReference Include="Halifax.Core" Version="5.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.3.0" />
     </ItemGroup>
 
     <ItemGroup>
