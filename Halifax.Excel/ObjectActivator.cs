@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Halifax.Excel;
@@ -15,7 +16,7 @@ internal static class ObjectActivator
 
         // Find the best matching constructor
         var constructors = targetType.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
-            .OrderByDescending(c => c.GetParameters().Count(p => dict.ContainsKey(p.Name)))
+            .OrderByDescending(c => c.GetParameters().Count(p => p.Name != null && dict.ContainsKey(p.Name)))
             .ToList();
 
         foreach (var ctor in constructors)
@@ -28,15 +29,16 @@ internal static class ObjectActivator
             for (int i = 0; i < parameters.Length; i++)
             {
                 var param = parameters[i];
-                if (dict.TryGetValue(param.Name!, out var value))
+                if (param.Name != null && dict.TryGetValue(param.Name, out var value))
                 {
                     try
                     {
                         args[i] = ConvertValue(value, param.ParameterType);
-                        usedKeys.Add(param.Name!);
+                        usedKeys.Add(param.Name);
                     }
                     catch
                     {
+                        Trace.TraceWarning($"Failed to convert parameter '{param.Name}' to {param.ParameterType.Name}");
                         allMatched = false;
                         break;
                     }
@@ -82,7 +84,7 @@ internal static class ObjectActivator
                 }
                 catch
                 {
-                    // Skip property if conversion fails
+                    Trace.TraceWarning($"Failed to convert property '{prop.Name}' to {prop.PropertyType.Name}");
                 }
             }
         }

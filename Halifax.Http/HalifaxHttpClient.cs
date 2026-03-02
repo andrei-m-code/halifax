@@ -20,7 +20,7 @@ public abstract class HalifaxHttpClient(HttpClient http)
         HttpStatusCode.Unauthorized
     ];
 
-    protected virtual HttpRequestMessage CreateMessage(HttpMethod method, string url, object body = default)
+    protected virtual HttpRequestMessage CreateMessage(HttpMethod method, string url, object? body = null)
     {
         var message = new HttpRequestMessage(method, url);
 
@@ -79,7 +79,7 @@ public abstract class HalifaxHttpClient(HttpClient http)
         await HandleUnsuccessfulResponseAsync(response);
         
         // exception is thrown in most cases
-        return null;
+        return null!;
     }
     
     protected virtual async Task HandleUnsuccessfulResponseAsync(HttpResponseMessage response)

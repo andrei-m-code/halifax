@@ -26,7 +26,7 @@ public static class LinqExtensions
 
     public static async Task<List<TSource>> ToListAsync<TSource>(this IAsyncEnumerable<TSource> source)
     {
-        var result = new List<TSource>();
+        List<TSource> result = [];
 
         await foreach (var element in source)
         {
