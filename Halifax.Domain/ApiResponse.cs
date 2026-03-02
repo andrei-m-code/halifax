@@ -4,7 +4,7 @@ public record ApiResponseError
 {
     public string Type { get; }
     public string Message { get; }
-    public string Trace { get; }
+    public string? Trace { get; }
 
     public ApiResponseError(Exception exception)
     {
@@ -16,7 +16,7 @@ public record ApiResponseError
 
 public record ApiResponse
 {
-    public ApiResponseError Error { get; private init; }
+    public ApiResponseError? Error { get; private init; }
     public bool Success { get; private init; } = true;
 
     /// <summary>
@@ -32,7 +32,7 @@ public record ApiResponse
     public static ApiResponse Empty => new();
 
     /// <summary>
-    /// Return API response with the data provided 
+    /// Return API response with the data provided
     /// </summary>
     public static ApiResponse<TData> With<TData>(TData data) => new(data);
 
@@ -48,7 +48,7 @@ public record ApiResponse
 
 public record ApiResponse<TData> : ApiResponse
 {
-    public TData Data { get; set; }
+    public TData? Data { get; set; }
 
     public ApiResponse()
     {

@@ -1,5 +1,6 @@
 using Halifax.Api.App;
 using Halifax.Api.Errors;
+using Halifax.Api.Middleware;
 using Halifax.Core;
 using Halifax.Core.Helpers;
 using Halifax.Domain.Exceptions;
@@ -13,7 +14,7 @@ namespace Halifax.Api;
 
 public static class AppExtensions
 {
-    public static void AddHalifax(this IServiceCollection services, Action<HalifaxBuilder> configure = null)
+    public static void AddHalifax(this IServiceCollection services, Action<HalifaxBuilder>? configure = null)
     {
         services.CleanupDefaultLogging();
 
@@ -67,20 +68,22 @@ public static class AppExtensions
 
     public static void UseHalifax(this IApplicationBuilder app)
     {
+        app.UseMiddleware<CorrelationIdMiddleware>();
+
         app.Use((context, next) =>
         {
             context.Request.EnableBuffering();
             return next();
         });
 
-        app.UseCors(HalifaxBuilder.Instance.Cors);
-    
+        app.UseCors(HalifaxBuilder.Instance!.Cors);
+
         app.UseExceptionHandler(configure => configure
             .Run(async handler => await Task.CompletedTask));
-        
+
         app.UseRouting();
 
-        if (HalifaxBuilder.Instance.TokenValidationParameters != null)
+        if (HalifaxBuilder.Instance!.TokenValidationParameters != null)
         {
             app.UseAuthentication();
             app.UseAuthorization();
@@ -94,7 +97,7 @@ public static class AppExtensions
             endpoints.MapScalarApiReference(options =>
             {
                 options
-                    .WithTitle(HalifaxBuilder.Instance.Name)
+                    .WithTitle(HalifaxBuilder.Instance!.Name)
                     .WithOpenApiRoutePattern("/openapi/{documentName}.json")
                     .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
             });

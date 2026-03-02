@@ -26,7 +26,7 @@ public static class Json
     /// <param name="indented">Write indented</param>
     /// <typeparam name="TObject">Object type</typeparam>
     /// <returns>JSON representation of an object</returns>
-    public static string Serialize<TObject>(TObject obj, bool indented = false) where TObject : class
+    public static string? Serialize<TObject>(TObject obj, bool indented = false) where TObject : class
     {
         var options = new JsonSerializerOptions();
         ConfigureOptions(options);
@@ -42,27 +42,27 @@ public static class Json
     /// <param name="options">Serialization options</param>
     /// <typeparam name="TObject">Object type</typeparam>
     /// <returns>JSON representation of an object</returns>
-    public static string Serialize<TObject>(TObject obj, JsonSerializerOptions options) where TObject : class
+    public static string? Serialize<TObject>(TObject? obj, JsonSerializerOptions options) where TObject : class
     {
         return obj != null
             ? JsonSerializer.Serialize(obj, options)
             : null;
     }
-    
+
     /// <summary>
     /// Deserialize object from JSON
     /// </summary>
     /// <param name="jsonString">JSON string representation of an object</param>
     /// <typeparam name="TObject">Object type</typeparam>
     /// <returns>An object that was serialized to JSON</returns>
-    public static TObject Deserialize<TObject>(string jsonString) where TObject : class
+    public static TObject? Deserialize<TObject>(string jsonString) where TObject : class
     {
         var options = new JsonSerializerOptions();
         ConfigureOptions(options);
 
         return Deserialize<TObject>(jsonString, options);
     }
-    
+
     /// <summary>
     /// Deserialize object from JSON
     /// </summary>
@@ -70,21 +70,21 @@ public static class Json
     /// <param name="options">JSON serializer options</param>
     /// <typeparam name="TObject">Object type</typeparam>
     /// <returns>An object that was serialized to JSON</returns>
-    public static TObject Deserialize<TObject>(string jsonString, JsonSerializerOptions options) where TObject : class
+    public static TObject? Deserialize<TObject>(string? jsonString, JsonSerializerOptions options) where TObject : class
     {
         return jsonString != null
             ? JsonSerializer.Deserialize<TObject>(jsonString, options)
             : null;
     }
-    
-    public static bool TryDeserialize<TObject>(string jsonString, out TObject result) where TObject : class
+
+    public static bool TryDeserialize<TObject>(string jsonString, out TObject? result) where TObject : class
     {
         var options = new JsonSerializerOptions();
         ConfigureOptions(options);
-        return TryDeserialize<TObject>(jsonString, options, out result);
+        return TryDeserialize(jsonString, options, out result);
     }
-    
-    public static bool TryDeserialize<TObject>(string jsonString, JsonSerializerOptions options, out TObject result) where TObject : class
+
+    public static bool TryDeserialize<TObject>(string jsonString, JsonSerializerOptions options, out TObject? result) where TObject : class
     {
         try
         {
@@ -97,7 +97,7 @@ public static class Json
             return false;
         }
     }
-    
+
     /// <summary>
     /// Deserialize object from JSON
     /// </summary>
@@ -105,8 +105,8 @@ public static class Json
     /// <param name="cancellationToken"></param>
     /// <typeparam name="TObject">Object type</typeparam>
     /// <returns>An object that was serialized to JSON</returns>
-    public static async Task<TObject> DeserializeAsync<TObject>(
-        Stream utf8Stream, 
+    public static async Task<TObject?> DeserializeAsync<TObject>(
+        Stream utf8Stream,
         CancellationToken cancellationToken = default) where TObject : class
     {
         var options = new JsonSerializerOptions();
@@ -123,16 +123,16 @@ public static class Json
     /// <param name="cancellationToken">Cancellation token</param>
     /// <typeparam name="TObject">Object type</typeparam>
     /// <returns>An object that was serialized to JSON</returns>
-    public static async Task<TObject> DeserializeAsync<TObject>(
-        Stream utf8Stream, 
-        JsonSerializerOptions options, 
+    public static async Task<TObject?> DeserializeAsync<TObject>(
+        Stream? utf8Stream,
+        JsonSerializerOptions options,
         CancellationToken cancellationToken = default) where TObject : class
     {
         return utf8Stream == null
             ? null
             : await JsonSerializer.DeserializeAsync<TObject>(utf8Stream, options, cancellationToken);
     }
-    
+
     /// <summary>
     /// Default serializer options factory method
     /// </summary>

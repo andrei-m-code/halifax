@@ -1,4 +1,4 @@
-﻿using Halifax.Domain.Exceptions;
+using Halifax.Domain.Exceptions;
 using Halifax.Core.Extensions;
 using System.Text.RegularExpressions;
 
@@ -7,12 +7,12 @@ namespace Halifax.Core;
 /// <summary>
 /// Validation helper
 /// </summary>
-public static class Guard
+public static partial class Guard
 {
     /// <summary>
     /// Make sure value is not null or white space
     /// </summary>
-    public static void NotNullOrWhiteSpace(string input, string argument, string errorMessage = null)
+    public static void NotNullOrWhiteSpace(string input, string argument, string? errorMessage = null)
     {
         if (string.IsNullOrWhiteSpace(input))
         {
@@ -44,8 +44,7 @@ public static class Guard
     /// </summary>
     public static void Url(string input, string argument)
     {
-        const string pattern = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
-        var valid = Regex.IsMatch(input, pattern, RegexOptions.Compiled | RegexOptions.Singleline);
+        var valid = UrlRegex().IsMatch(input);
 
         if (!valid)
         {
@@ -94,7 +93,7 @@ public static class Guard
     /// <summary>
     /// Check if value is null
     /// </summary>
-    public static void NotNull(object input, string argument, string errorMessage = null)
+    public static void NotNull(object? input, string argument, string? errorMessage = null)
     {
         if (input == null)
         {
@@ -106,7 +105,7 @@ public static class Guard
     /// <summary>
     /// Make sure - not an empty list
     /// </summary>
-    public static void NotEmptyList<TItem>(IEnumerable<TItem> list, string argument)
+    public static void NotEmptyList<TItem>(IEnumerable<TItem>? list, string argument)
     {
         Ensure(list?.Any() == true, $"{argument} can't be empty");
     }
@@ -118,9 +117,15 @@ public static class Guard
     {
         NotNull(value, argument);
 
-        if (!Regex.IsMatch(value, "^#(?:[0-9a-fA-F]{3}){1,2}$"))
+        if (!ColorRegex().IsMatch(value))
         {
             throw new HalifaxException($"{argument} is not a valid color");
         }
     }
+
+    [GeneratedRegex(@"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?", RegexOptions.Singleline)]
+    private static partial Regex UrlRegex();
+
+    [GeneratedRegex(@"^#(?:[0-9a-fA-F]{3}){1,2}$")]
+    private static partial Regex ColorRegex();
 }

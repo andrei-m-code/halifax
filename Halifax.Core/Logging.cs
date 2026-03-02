@@ -9,7 +9,7 @@ using ILogger = Serilog.ILogger;
 // ReSharper disable once CheckNamespace
 public static class L
 {
-    private static Lazy<ILogger> loggerLazy = new(() => configuration.CreateLogger());
+    private static Lazy<ILogger> loggerLazy = new(() => configuration!.CreateLogger());
 
     private static LoggerConfiguration configuration = new LoggerConfiguration()
         .MinimumLevel.Debug()

@@ -9,67 +9,85 @@ namespace Halifax.Http;
 public static class HalifaxHttpClientExtensions
 {
     public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         string defaultBaseUrl) where THalifaxHttpClient : HalifaxHttpClient
     {
-        return services.AddHalifaxHttpClient<THalifaxHttpClient>(
-            defaultBaseUrl, 
-            defaultBearerToken: null, 
-            (Action<IServiceProvider, HttpClient>) null);
-    }
-    
-    public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
-        this IServiceCollection services, 
-        string defaultBaseUrl, 
-        Action<HttpClient> configure) where THalifaxHttpClient : HalifaxHttpClient
-    {
-        return services.AddHalifaxHttpClient<THalifaxHttpClient>(
-            defaultBaseUrl, 
-            null, 
-            (_, client) => configure?.Invoke(client));
-    }
-    
-    public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
-        this IServiceCollection services, 
-        string defaultBaseUrl, 
-        Action<IServiceProvider, HttpClient> configure) where THalifaxHttpClient : HalifaxHttpClient
-    {
-        return services.AddHalifaxHttpClient<THalifaxHttpClient>(
-            defaultBaseUrl, 
-            null, 
-            (provider, client) => configure?.Invoke(provider, client));
+        services.AddHalifaxHttpClientBuilder<THalifaxHttpClient>(
+            defaultBaseUrl,
+            defaultBearerToken: null,
+            configure: null);
+        return services;
     }
 
     public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
-        this IServiceCollection services, 
-        string defaultBaseUrl, 
-        string defaultBearerToken) where THalifaxHttpClient : HalifaxHttpClient
+        this IServiceCollection services,
+        string defaultBaseUrl,
+        Action<HttpClient>? configure) where THalifaxHttpClient : HalifaxHttpClient
     {
-        return services.AddHalifaxHttpClient<THalifaxHttpClient>(
-            defaultBaseUrl, 
-            defaultBearerToken, 
-            (Action<IServiceProvider, HttpClient>) null);
+        services.AddHalifaxHttpClientBuilder<THalifaxHttpClient>(
+            defaultBaseUrl,
+            null,
+            configure != null ? (_, client) => configure(client) : null);
+        return services;
     }
-    
+
     public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
-        this IServiceCollection services, 
-        string defaultBaseUrl, 
-        string defaultBearerToken, 
-        Action<HttpClient> configure) where THalifaxHttpClient : HalifaxHttpClient
+        this IServiceCollection services,
+        string defaultBaseUrl,
+        Action<IServiceProvider, HttpClient>? configure) where THalifaxHttpClient : HalifaxHttpClient
     {
-        return services.AddHalifaxHttpClient<THalifaxHttpClient>(
-            defaultBaseUrl, 
-            defaultBearerToken, 
-            (_, client) => configure?.Invoke(client));
+        services.AddHalifaxHttpClientBuilder<THalifaxHttpClient>(
+            defaultBaseUrl,
+            null,
+            configure);
+        return services;
     }
-    
+
     public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
-        this IServiceCollection services, 
-        string defaultBaseUrl, 
-        string defaultBearerToken, 
-        Action<IServiceProvider, HttpClient> configure) where THalifaxHttpClient : HalifaxHttpClient
+        this IServiceCollection services,
+        string defaultBaseUrl,
+        string? defaultBearerToken) where THalifaxHttpClient : HalifaxHttpClient
     {
-        services.AddHttpClient<THalifaxHttpClient>((provider, client) =>
+        services.AddHalifaxHttpClientBuilder<THalifaxHttpClient>(
+            defaultBaseUrl,
+            defaultBearerToken,
+            configure: null);
+        return services;
+    }
+
+    public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
+        this IServiceCollection services,
+        string defaultBaseUrl,
+        string? defaultBearerToken,
+        Action<HttpClient>? configure) where THalifaxHttpClient : HalifaxHttpClient
+    {
+        services.AddHalifaxHttpClientBuilder<THalifaxHttpClient>(
+            defaultBaseUrl,
+            defaultBearerToken,
+            configure != null ? (_, client) => configure(client) : null);
+        return services;
+    }
+
+    public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
+        this IServiceCollection services,
+        string defaultBaseUrl,
+        string? defaultBearerToken,
+        Action<IServiceProvider, HttpClient>? configure) where THalifaxHttpClient : HalifaxHttpClient
+    {
+        services.AddHalifaxHttpClientBuilder<THalifaxHttpClient>(
+            defaultBaseUrl,
+            defaultBearerToken,
+            configure);
+        return services;
+    }
+
+    public static IHttpClientBuilder AddHalifaxHttpClientBuilder<THalifaxHttpClient>(
+        this IServiceCollection services,
+        string defaultBaseUrl,
+        string? defaultBearerToken,
+        Action<IServiceProvider, HttpClient>? configure) where THalifaxHttpClient : HalifaxHttpClient
+    {
+        return services.AddHttpClient<THalifaxHttpClient>((provider, client) =>
         {
             client.BaseAddress = new Uri(defaultBaseUrl);
 
@@ -80,7 +98,19 @@ public static class HalifaxHttpClientExtensions
 
             configure?.Invoke(provider, client);
         });
+    }
 
-        return services;
+    public static IHttpClientBuilder AddHalifaxHttpClientWithResilience<THalifaxHttpClient>(
+        this IServiceCollection services,
+        string defaultBaseUrl,
+        string? defaultBearerToken = null,
+        Action<IServiceProvider, HttpClient>? configure = null) where THalifaxHttpClient : HalifaxHttpClient
+    {
+        var builder = services.AddHalifaxHttpClientBuilder<THalifaxHttpClient>(
+            defaultBaseUrl,
+            defaultBearerToken,
+            configure);
+        builder.AddStandardResilienceHandler();
+        return builder;
     }
 }

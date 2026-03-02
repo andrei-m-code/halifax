@@ -6,9 +6,9 @@ namespace Halifax.Core;
 /// <summary>
 /// Setup environment variables and get config sections using this class
 /// </summary>
-public static class Env
+public static partial class Env
 {
-    private static readonly Dictionary<Type, object> sections = new();
+    private static readonly Dictionary<Type, object> sections = [];
     private static readonly List<Type> supportedTypes =
     [
         typeof(Guid), typeof(Guid?),
@@ -75,7 +75,7 @@ public static class Env
                 var name = line[..indexOfEquality].Trim();
                 var value = line[(indexOfEquality + 1)..].Trim();
 
-                if (string.IsNullOrWhiteSpace(name) || !Regex.Match(name, "^[a-zA-Z0-9_]*$", RegexOptions.Singleline).Success)
+                if (string.IsNullOrWhiteSpace(name) || !EnvVarNameRegex().IsMatch(name))
                 {
                     throw new InvalidOperationException($"Bad environment variable name {name} on line {index}");
                 }
@@ -87,7 +87,7 @@ public static class Env
     /// <summary>
     /// Get object representation of a configuration section from env. variables.
     /// </summary>
-    public static TSection GetSection<TSection>(string section = null)
+    public static TSection GetSection<TSection>(string? section = null)
     {
         var configType = typeof(TSection);
         if (sections.TryGetValue(configType, out var value))
@@ -106,7 +106,7 @@ public static class Env
             .Select(parameter => GetConstructorParameter(section, parameter))
             .ToArray();
 
-        var instance = (TSection)Activator.CreateInstance(typeof(TSection), parameters);
+        var instance = (TSection?)Activator.CreateInstance(typeof(TSection), parameters);
 
         if (instance != null)
         {
@@ -125,18 +125,18 @@ public static class Env
                 });
         }
 
-        sections.Add(configType, instance);
+        sections.Add(configType, instance!);
 
-        return instance;
+        return instance!;
     }
 
-    private static object GetPropertyParameter(string section, object instance, PropertyInfo property)
+    private static object? GetPropertyParameter(string section, object instance, PropertyInfo property)
     {
         var environmentKey = $"{section}__{property.Name}";
         return GetParameter(property.PropertyType, environmentKey, property.GetValue(instance));
     }
 
-    private static object GetConstructorParameter(string section, ParameterInfo parameter)
+    private static object? GetConstructorParameter(string section, ParameterInfo parameter)
     {
         var environmentKey = $"{section}__{parameter.Name}";
         var val = Environment.GetEnvironmentVariable(environmentKey);
@@ -152,7 +152,7 @@ public static class Env
         return GetParameter(type, environmentKey);
     }
 
-    private static object GetParameter(Type type, string environmentKey, object defaultValue = null)
+    private static object? GetParameter(Type type, string environmentKey, object? defaultValue = null)
     {
         var val = Environment.GetEnvironmentVariable(environmentKey)?.Trim();
         if (val == null)
@@ -179,4 +179,7 @@ public static class Env
     {
         return type == typeof(string) || type.IsPrimitive || supportedTypes.Contains(type);
     }
+
+    [GeneratedRegex(@"^[a-zA-Z0-9_]*$", RegexOptions.Singleline)]
+    private static partial Regex EnvVarNameRegex();
 }

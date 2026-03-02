@@ -8,9 +8,9 @@ internal static class OpenApiDefaults
 {
     internal static Action<SwaggerGenOptions> Value { get; } = opts =>
     {
-        opts.SwaggerDoc("v1", new OpenApiInfo { Title = HalifaxBuilder.Instance.Name, Version = "v1" });
+        opts.SwaggerDoc("v1", new OpenApiInfo { Title = HalifaxBuilder.Instance!.Name, Version = "v1" });
 
-        if (HalifaxBuilder.Instance.TokenValidationParameters != null)
+        if (HalifaxBuilder.Instance!.TokenValidationParameters != null)
         {
             opts.AddSecurityDefinition("Bearer JWT", new OpenApiSecurityScheme
             {

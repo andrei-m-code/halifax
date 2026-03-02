@@ -14,7 +14,7 @@ public record Paging<TObject>
         Total = total;
     }
 
-    public List<TObject> Items { get; init; }
+    public List<TObject> Items { get; init; } = [];
     public int Skip { get; init; }
     public int Take { get; init; }
     public int Total { get; init; }
@@ -35,7 +35,7 @@ public record PagingQuery
 {
     public int Skip { get; set; } = 0;
     public int Take { get; set; } = 10;
-    public string OrderBy { get; set; }
+    public string? OrderBy { get; set; }
     public OrderDirection OrderDirection { get; set; }
 }
 

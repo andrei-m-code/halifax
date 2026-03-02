@@ -90,7 +90,7 @@ public class ExcelConverter<TObject>
             cell.SetCellValue(value);
             cell.CellStyle = headerStyle;
 
-            var maxLength = valueSets.Select(set => set[colIndex].Length).Max();
+            var maxLength = valueSets.Select(set => (set[colIndex] ?? string.Empty).Length).Max();
             var width = Math.Max(maxLength*WidthToStringLengthFactor, value.Length*WidthToStringLengthFactor);
             if (MinCellWidth > 0) width = Math.Max(width, MinCellWidth);
             if (MaxCellWidth > 0) width = Math.Min(width, MaxCellWidth);
@@ -210,7 +210,7 @@ public class ExcelConverter<TObject>
             {
                 var mapping = mappings.FirstOrDefault(m => m.ColumnName == headerItem);
                 var propertyName = mapping?.PropertyName ?? headerItem;
-                properties.Add(propertyName, csv[headerItem]);
+                properties.Add(propertyName, csv[headerItem]!);
             }
             
             var record = ObjectActivator.Activate<TObject>(properties);
@@ -238,7 +238,7 @@ public class ExcelConverter<TObject>
         
         foreach (var mapping in mappings)
         {
-            map.Map(mapping.Expression).Name(mapping.ColumnName);
+            map.Map((Expression<Func<TObject, object?>>)(object)mapping.Expression).Name(mapping.ColumnName);
         }
         
         context.RegisterClassMap(map);

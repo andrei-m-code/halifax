@@ -6,11 +6,11 @@ namespace Halifax.Core.Tests.Helpers;
 public class JwtTests
 {
     private const string secret = "JWT-Secret-123qweRTY123123ZZZXXXYYYCCC11122233344455";
-    private readonly List<Claim> claims = new()
-    {
+    private readonly List<Claim> claims =
+    [
         new("Test1", "Hello"),
         new("Test2", "World")
-    };
+    ];
 
     [Test]
     public void CreateAndReadJwt()

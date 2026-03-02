@@ -11,7 +11,7 @@ public abstract class ClaimsAuthorizeFilterAttribute : ActionFilterAttribute
     
     public override void OnActionExecuting(ActionExecutingContext context)
     {
-        var claims = context.HttpContext.User?.Claims?.ToList();
+        var claims = context.HttpContext.User?.Claims?.ToList() ?? [];
 
         if (!IsAuthorized(context, claims))
         {
