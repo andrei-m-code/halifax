@@ -101,7 +101,6 @@ public static class AppExtensions
         });
 
         // This is necessary for IDEs to pick up server address and open browser automatically
-        
         // var serverAddressesFeature = app.ServerFeatures.Get<IServerAddressesFeature>();
         // if (!serverAddressesFeature.Addresses.Any())
         // {
