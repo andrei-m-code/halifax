@@ -52,7 +52,7 @@ public static class Crypto
         }
         catch
         {
-            result = null;
+            result = null!;
             return false;
         }
     }

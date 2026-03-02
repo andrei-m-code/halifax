@@ -28,5 +28,5 @@ public static class DateTimeHelper
     /// <summary>
     /// To ISO UTC date time string
     /// </summary>
-    public static string ToIsoFormat(this DateTime? from) => from?.ToString("yyyy-MM-ddTHH:mm:ssZ");
+    public static string? ToIsoFormat(this DateTime? from) => from?.ToString("yyyy-MM-ddTHH:mm:ssZ");
 }

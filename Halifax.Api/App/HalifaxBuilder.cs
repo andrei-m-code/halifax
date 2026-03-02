@@ -12,7 +12,7 @@ namespace Halifax.Api.App;
 
 public class HalifaxBuilder
 {
-    internal static HalifaxBuilder Instance { get; set; }
+    internal static HalifaxBuilder? Instance { get; set; }
 
     private IServiceCollection Services { get;  }
     
@@ -31,7 +31,7 @@ public class HalifaxBuilder
     
     internal Action<CorsPolicyBuilder> Cors { get; private set; } = CorsDefaults.Value;
     internal Action<SwaggerGenOptions> OpenApi { get; private set; } = OpenApiDefaults.Value;
-    internal TokenValidationParameters TokenValidationParameters { get; set; }
+    internal TokenValidationParameters? TokenValidationParameters { get; set; }
 
     internal bool useDefaultExceptionHandler = true;
     internal Action<JsonSerializerOptions> ConfigureJsonOptions { get; set; } = Json.ConfigureOptions;

@@ -1,13 +1,12 @@
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace Halifax.Core.Extensions;
 
 public static class StringExtensions
 {
-    public static bool IsEmail(this string input)
+    public static bool IsEmail(this string? input)
     {
-        return Regex.IsMatch(input ?? string.Empty, RegexConstants.Email, RegexOptions.IgnoreCase);
+        return RegexConstants.EmailRegex().IsMatch(input ?? string.Empty);
     }
 
     public static bool IsUrl(this string input)
