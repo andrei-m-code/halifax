@@ -3,29 +3,32 @@
 Simplistic libraries for complex projects. Halifax eliminates boilerplate in .NET API services — standardized responses, JWT auth, configuration, logging, and more — so you can focus on business logic.
 
 [![CI](https://github.com/andrei-m-code/halifax/actions/workflows/ci.yml/badge.svg)](https://github.com/andrei-m-code/halifax/actions/workflows/ci.yml)
+[![NuGet](https://img.shields.io/nuget/v/Halifax.Api.svg?label=Halifax.Api)](https://www.nuget.org/packages/Halifax.Api/)
 
-| Package | NuGet |
-|---|---|
-| Halifax.Api | [![NuGet](https://img.shields.io/nuget/v/Halifax.Api.svg)](https://www.nuget.org/packages/Halifax.Api/) |
-| Halifax.Core | [![NuGet](https://img.shields.io/nuget/v/Halifax.Core.svg)](https://www.nuget.org/packages/Halifax.Core/) |
-| Halifax.Domain | [![NuGet](https://img.shields.io/nuget/v/Halifax.Domain.svg)](https://www.nuget.org/packages/Halifax.Domain/) |
-| Halifax.Http | [![NuGet](https://img.shields.io/nuget/v/Halifax.Http.svg)](https://www.nuget.org/packages/Halifax.Http/) |
-| Halifax.Excel | [![NuGet](https://img.shields.io/nuget/v/Halifax.Excel.svg)](https://www.nuget.org/packages/Halifax.Excel/) |
+| Package | NuGet | Description |
+|---|---|---|
+| Halifax.Api | [![NuGet](https://img.shields.io/nuget/v/Halifax.Api.svg)](https://www.nuget.org/packages/Halifax.Api/) | ASP.NET Core integration, middleware, Swagger |
+| Halifax.Core | [![NuGet](https://img.shields.io/nuget/v/Halifax.Core.svg)](https://www.nuget.org/packages/Halifax.Core/) | JWT, config, validation, crypto, logging, JSON |
+| Halifax.Domain | [![NuGet](https://img.shields.io/nuget/v/Halifax.Domain.svg)](https://www.nuget.org/packages/Halifax.Domain/) | Response models, exceptions, pagination |
+| Halifax.Http | [![NuGet](https://img.shields.io/nuget/v/Halifax.Http.svg)](https://www.nuget.org/packages/Halifax.Http/) | Typed HttpClient with resilience policies |
+| Halifax.Excel | [![NuGet](https://img.shields.io/nuget/v/Halifax.Excel.svg)](https://www.nuget.org/packages/Halifax.Excel/) | Excel/CSV import and export |
 
 ## Features
 
-- **Standardized API responses** — consistent `ApiResponse` wrapper for all endpoints
+- **Standardized API responses** — consistent `ApiResponse<T>` wrapper for all endpoints
 - **Exception handling** — throw typed exceptions, get proper HTTP status codes automatically
 - **JWT authentication** — configure auth in one line, create and validate tokens easily
 - **Environment configuration** — load `.env` files, map to strongly-typed classes/records
 - **Input validation** — fluent `Guard` helpers for common checks
-- **HTTP client base class** — typed `HttpClient` with automatic error mapping
+- **Correlation IDs** — automatic `X-Correlation-Id` propagation across services
+- **HTTP client base class** — typed `HttpClient` with automatic error mapping and resilience policies
 - **OpenAPI + Scalar UI** — Swagger docs with interactive API explorer out of the box
 - **Logging** — Serilog-based structured logging
 - **CORS** — configurable cross-origin policy
 - **Excel/CSV** — import and export with column mapping
 - **Cryptography** — AES-256 encrypt/decrypt helpers
 - **Short IDs** — thread-safe random ID generation
+- **Nullable reference types** — fully annotated across all packages
 
 ## Quick Start
 
@@ -44,7 +47,7 @@ app.UseHalifax();
 app.Run("https://*:5000");
 ```
 
-This gives you controller routing, exception handling, Swagger, Scalar UI, CORS, and structured logging. Explore the [Peggy's Cove](https://github.com/andrei-m-code/halifax/blob/main/PeggysCove.Api/Program.cs) sample project for a full working example.
+This gives you controller routing, exception handling, Swagger, Scalar UI, CORS, correlation IDs, and structured logging. Explore the [Peggy's Cove](https://github.com/andrei-m-code/halifax/blob/main/PeggysCove.Api/Program.cs) sample project for a full working example.
 
 ## API Responses
 
@@ -192,7 +195,17 @@ class AdminOnly : ClaimsAuthorizeFilterAttribute
 public ApiResponse GetAdminData() => ApiResponse.With("secret");
 ```
 
-Available claim extensions: `ClaimExpected`, `ClaimNotNullOrWhiteSpace`, `ClaimIsEmail`, `ClaimIsInt`, `ClaimIsDouble`, `ClaimIsEnum<T>`, `ClaimIsGuid`, `ClaimIsBoolean`.
+Available claim extensions: `ClaimExpected`, `ClaimNotNullOrWhiteSpace`, `ClaimIsEmail`, `ClaimIsInt`, `ClaimIsDouble`, `ClaimIsEnum<T>`, `ClaimIsGuid`, `ClaimIsBoolean`, `ClaimIs<T>` (for any `IParsable<T>` type).
+
+## Correlation IDs
+
+Halifax automatically propagates correlation IDs across your services. The `CorrelationIdMiddleware` is enabled by default when you call `UseHalifax()`:
+
+- Reads the incoming `X-Correlation-Id` header, or generates a new GUID if absent
+- Sets `HttpContext.TraceIdentifier` for logging and downstream use
+- Adds `X-Correlation-Id` to the response headers
+
+For service-to-service calls, the `CorrelationIdDelegatingHandler` automatically forwards the correlation ID to outgoing HTTP requests made through `HalifaxHttpClient`.
 
 ## Validation
 
@@ -240,6 +253,26 @@ services.AddHalifaxHttpClient<PaymentClient>(
 ```
 
 Error responses (400, 401, 404) from downstream services are automatically mapped to the corresponding Halifax exceptions.
+
+### Resilience Policies
+
+Add retry, circuit breaker, and timeout policies using the built-in resilience support:
+
+```csharp
+// Standard resilience (retry + circuit breaker + timeout)
+services.AddHalifaxHttpClientWithResilience<PaymentClient>(
+    defaultBaseUrl: "https://payments.api.com");
+
+// Or get the IHttpClientBuilder for custom configuration
+services.AddHalifaxHttpClientBuilder<PaymentClient>(
+    defaultBaseUrl: "https://payments.api.com",
+    defaultBearerToken: null,
+    configure: null)
+    .AddStandardResilienceHandler(options =>
+    {
+        options.Retry.MaxRetryAttempts = 3;
+    });
+```
 
 ## Excel & CSV
 
@@ -290,6 +323,16 @@ Pre-configured serialization (camelCase, case-insensitive, enums as strings, UTC
 ```csharp
 var json = Json.Serialize(obj);
 var obj = Json.Deserialize<MyType>(json);
+Json.TryDeserialize<MyType>(json, out var result);
+```
+
+### DateTime Helpers
+
+```csharp
+DateTimeHelper.ValidateRange(from, to);           // throws if from > to
+DateTimeHelper.IsIn(from, to, pointInTime);        // true if within range
+DateTime? date = DateTime.UtcNow;
+date.ToIsoFormat();                                // "2024-03-15T10:30:00Z"
 ```
 
 ### Logging
@@ -300,6 +343,20 @@ Global structured logging via Serilog:
 L.Info("User created", userId);
 L.Warning("Timeout exceeded");
 L.Error(exception, "Failed to process");
+```
+
+## Version Endpoint
+
+Halifax exposes a built-in `GET /halifax/version` endpoint that returns the loaded Halifax assembly versions:
+
+```json
+{
+  "data": [
+    { "name": "Halifax.Api", "version": "5.2.1" },
+    { "name": "Halifax.Core", "version": "5.1.1" }
+  ],
+  "success": true
+}
 ```
 
 ## Full Configuration Example
@@ -320,15 +377,15 @@ builder.Services.AddHalifax(h => h
 
 ## Package Overview
 
-| Package | Purpose | Dependencies |
-|---|---|---|
-| **Halifax.Domain** | Response models, exceptions, pagination | None |
-| **Halifax.Core** | JWT, config, validation, crypto, logging, JSON | Halifax.Domain, Serilog, System.IdentityModel.Tokens.Jwt |
-| **Halifax.Api** | ASP.NET Core integration, middleware, Swagger | Halifax.Core, Swashbuckle, Scalar, JwtBearer |
-| **Halifax.Http** | Typed HttpClient base class | Halifax.Core |
-| **Halifax.Excel** | Excel/CSV import and export | CsvHelper, ExcelMapper, NPOI |
+| Package | Dependencies |
+|---|---|
+| **Halifax.Domain** | None |
+| **Halifax.Core** | Halifax.Domain, Serilog, System.IdentityModel.Tokens.Jwt |
+| **Halifax.Api** | Halifax.Core, Swashbuckle, Scalar, JwtBearer |
+| **Halifax.Http** | Halifax.Core, Microsoft.Extensions.Http.Resilience |
+| **Halifax.Excel** | CsvHelper, ExcelMapper, NPOI |
 
-All packages target **.NET 10**.
+All packages target **.NET 10** with nullable reference types enabled.
 
 ## MIT License
 
