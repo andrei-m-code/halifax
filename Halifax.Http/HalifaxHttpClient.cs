@@ -26,7 +26,7 @@ public abstract class HalifaxHttpClient(HttpClient http)
 
         if (body != null)
         {
-            var json = Json.Serialize(body);
+            var json = Json.Serialize(body)!;
             message.Content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
         }
 
@@ -91,8 +91,8 @@ public abstract class HalifaxHttpClient(HttpClient http)
         
         if (exceptionHttpStatuses.Contains(code))
         {
-            ApiResponse model;
-            
+            ApiResponse? model;
+
             try
             {
                 model = Json.Deserialize<ApiResponse>(content);
