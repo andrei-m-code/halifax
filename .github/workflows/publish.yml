@@ -27,6 +27,9 @@ jobs:
       - name: Pack Halifax.Core
         run: dotnet pack Halifax.Core/Halifax.Core.csproj --no-build -c Release -o out
 
+      - name: Pack Halifax.Api
+        run: dotnet pack Halifax.Api/Halifax.Api.csproj --no-build -c Release -o out
+
       - name: Pack Halifax.Http
         run: dotnet pack Halifax.Http/Halifax.Http.csproj --no-build -c Release -o out
 
