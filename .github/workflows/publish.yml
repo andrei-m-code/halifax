@@ -15,26 +15,37 @@ jobs:
         with:
           dotnet-version: '10.x'
 
-      - name: Restore
-        run: dotnet restore Halifax.sln
+      - name: Create local NuGet source
+        run: |
+          mkdir -p local-packages
+          dotnet nuget add source $(pwd)/local-packages --name local
 
-      - name: Build
-        run: dotnet build Halifax.sln --no-restore -c Release
+      - name: Build and pack Halifax.Domain
+        run: |
+          dotnet restore Halifax.Domain/Halifax.Domain.csproj
+          dotnet pack Halifax.Domain/Halifax.Domain.csproj -c Release -o out
+          cp out/Halifax.Domain.*.nupkg local-packages/
 
-      - name: Pack Halifax.Domain
-        run: dotnet pack Halifax.Domain/Halifax.Domain.csproj --no-build -c Release -o out
+      - name: Build and pack Halifax.Core
+        run: |
+          dotnet restore Halifax.Core/Halifax.Core.csproj
+          dotnet pack Halifax.Core/Halifax.Core.csproj -c Release -o out
+          cp out/Halifax.Core.*.nupkg local-packages/
 
-      - name: Pack Halifax.Core
-        run: dotnet pack Halifax.Core/Halifax.Core.csproj --no-build -c Release -o out
+      - name: Build and pack Halifax.Api
+        run: |
+          dotnet restore Halifax.Api/Halifax.Api.csproj
+          dotnet pack Halifax.Api/Halifax.Api.csproj -c Release -o out
 
-      - name: Pack Halifax.Api
-        run: dotnet pack Halifax.Api/Halifax.Api.csproj --no-build -c Release -o out
+      - name: Build and pack Halifax.Http
+        run: |
+          dotnet restore Halifax.Http/Halifax.Http.csproj
+          dotnet pack Halifax.Http/Halifax.Http.csproj -c Release -o out
 
-      - name: Pack Halifax.Http
-        run: dotnet pack Halifax.Http/Halifax.Http.csproj --no-build -c Release -o out
-
-      - name: Pack Halifax.Excel
-        run: dotnet pack Halifax.Excel/Halifax.Excel.csproj --no-build -c Release -o out
+      - name: Build and pack Halifax.Excel
+        run: |
+          dotnet restore Halifax.Excel/Halifax.Excel.csproj
+          dotnet pack Halifax.Excel/Halifax.Excel.csproj -c Release -o out
 
       - name: Push to NuGet
         run: dotnet nuget push out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
