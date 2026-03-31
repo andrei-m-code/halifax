@@ -22,30 +22,30 @@ jobs:
 
       - name: Build and pack Halifax.Domain
         run: |
-          dotnet restore Halifax.Domain/Halifax.Domain.csproj
-          dotnet pack Halifax.Domain/Halifax.Domain.csproj -c Release -o out
+          dotnet build Halifax.Domain/Halifax.Domain.csproj -c Release
+          dotnet pack Halifax.Domain/Halifax.Domain.csproj -c Release --no-build -o out
           cp out/Halifax.Domain.*.nupkg local-packages/
 
       - name: Build and pack Halifax.Core
         run: |
-          dotnet restore Halifax.Core/Halifax.Core.csproj
-          dotnet pack Halifax.Core/Halifax.Core.csproj -c Release -o out
+          dotnet build Halifax.Core/Halifax.Core.csproj -c Release
+          dotnet pack Halifax.Core/Halifax.Core.csproj -c Release --no-build -o out
           cp out/Halifax.Core.*.nupkg local-packages/
 
       - name: Build and pack Halifax.Api
         run: |
-          dotnet restore Halifax.Api/Halifax.Api.csproj
-          dotnet pack Halifax.Api/Halifax.Api.csproj -c Release -o out
+          dotnet build Halifax.Api/Halifax.Api.csproj -c Release
+          dotnet pack Halifax.Api/Halifax.Api.csproj -c Release --no-build -o out
 
       - name: Build and pack Halifax.Http
         run: |
-          dotnet restore Halifax.Http/Halifax.Http.csproj
-          dotnet pack Halifax.Http/Halifax.Http.csproj -c Release -o out
+          dotnet build Halifax.Http/Halifax.Http.csproj -c Release
+          dotnet pack Halifax.Http/Halifax.Http.csproj -c Release --no-build -o out
 
       - name: Build and pack Halifax.Excel
         run: |
-          dotnet restore Halifax.Excel/Halifax.Excel.csproj
-          dotnet pack Halifax.Excel/Halifax.Excel.csproj -c Release -o out
+          dotnet build Halifax.Excel/Halifax.Excel.csproj -c Release
+          dotnet pack Halifax.Excel/Halifax.Excel.csproj -c Release --no-build -o out
 
       - name: Push to NuGet
         run: dotnet nuget push out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
