@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using CsvHelper;
@@ -17,7 +17,7 @@ public class ExcelConverter<TObject>
     public int MinCellWidth { get; set; } = 9 * defaultWidthToStringLengthFactor;
 
     public CultureInfo CultureInfo { get; set; } = CultureInfo.InvariantCulture;
-    
+
     private readonly List<ColumnMapping<TObject>> mappings = [];
 
     public void AddMapping(string columnName, Expression<Func<TObject, object>> propertyExpression)
@@ -30,16 +30,17 @@ public class ExcelConverter<TObject>
             Expression = propertyExpression
         });
     }
-    
+
     public async Task<List<TObject>> ReadAsync(
-        Stream stream, 
-        string contentType, 
+        Stream stream,
+        string contentType,
         CancellationToken cancellationToken = default)
     {
         stream = stream ?? throw new ArgumentNullException(nameof(stream));
         contentType = (contentType ?? throw new ArgumentNullException(nameof(contentType))).ToLower();
 
-        if (contentType.Contains("vnd") || contentType.Contains("office") || contentType.Contains("excel"))
+        if (contentType.Contains("application/vnd.openxmlformats-officedocument") ||
+            contentType.Contains("application/vnd.ms-excel"))
         {
             return ReadExcel(stream);
         }
@@ -58,18 +59,18 @@ public class ExcelConverter<TObject>
     {
         var excel = new ExcelMapper(stream) {HeaderRow = true};
 
-        if (mappings.Any())
+        if (mappings.Count > 0)
         {
             foreach (var mapping in mappings)
             {
                 excel.AddMapping(mapping.ColumnName, mapping.Expression);
             }
         }
-        
+
         var records = excel.Fetch<TObject>().ToList();
         return records;
     }
-    
+
     public Task WriteExcelAsync(Stream stream, IEnumerable<TObject> records, string sheetName = "Sheet 0")
     {
         using var workbook = new XSSFWorkbook();
@@ -78,7 +79,7 @@ public class ExcelConverter<TObject>
         var properties = typeof(TObject).GetProperties().ToList();
         var rowIndex = 0;
         var valueSets = records.Select(r => properties.Select(p => Convert.ToString(p.GetValue(r))).ToList()).ToList();
-        
+
         var headerRow = sheet.CreateRow(rowIndex++);
         for (var colIndex = 0; colIndex < properties.Count; colIndex++)
         {
@@ -86,11 +87,13 @@ public class ExcelConverter<TObject>
             var property = properties[colIndex];
             var columnMapping = mappings.FirstOrDefault(m => m.PropertyName == property.Name);
             var value = columnMapping?.ColumnName ?? property.Name;
-            
+
             cell.SetCellValue(value);
             cell.CellStyle = headerStyle;
 
-            var maxLength = valueSets.Select(set => (set[colIndex] ?? string.Empty).Length).Max();
+            var maxLength = valueSets.Count > 0
+                ? valueSets.Select(set => (set[colIndex] ?? string.Empty).Length).Max()
+                : 0;
             var width = Math.Max(maxLength*WidthToStringLengthFactor, value.Length*WidthToStringLengthFactor);
             if (MinCellWidth > 0) width = Math.Max(width, MinCellWidth);
             if (MaxCellWidth > 0) width = Math.Min(width, MaxCellWidth);
@@ -127,19 +130,27 @@ public class ExcelConverter<TObject>
             case bool valueBool:
                 cell.SetCellValue(valueBool);
                 break;
-            
+
             case string valueString:
                 cell.SetCellValue(valueString);
                 break;
-            
+
+            case DateTime valueDateTime:
+                cell.SetCellValue(valueDateTime);
+                break;
+
+            case DateTimeOffset valueDateTimeOffset:
+                cell.SetCellValue(valueDateTimeOffset.DateTime);
+                break;
+
             case byte valueByte:
                 cell.SetCellValue(valueByte);
                 break;
-            
+
             case int valueInt:
                 cell.SetCellValue(valueInt);
                 break;
-            
+
             case long valueLong:
                 cell.SetCellValue(valueLong);
                 break;
@@ -147,11 +158,11 @@ public class ExcelConverter<TObject>
             case double valueDouble:
                 cell.SetCellValue(valueDouble);
                 break;
-            
+
             case float valueFloat:
                 cell.SetCellValue(valueFloat);
                 break;
-            
+
             case decimal valueDecimal:
                 var convertedDecimal = Convert.ToDouble(valueDecimal);
                 cell.SetCellValue(convertedDecimal);
@@ -174,13 +185,12 @@ public class ExcelConverter<TObject>
         font.IsBold = true;
         style.SetFont(font);
 
-        // Backgrounds don't work properly :/
-        // style.FillBackgroundColor = IndexedColors.LightYellow.Index;
-        // style.FillPattern = FillPattern.SolidForeground;
-        
+        style.FillForegroundColor = IndexedColors.LightYellow.Index;
+        style.FillPattern = FillPattern.SolidForeground;
+
         return style;
     }
-    
+
     #endregion
 
     #region CSV
@@ -189,7 +199,7 @@ public class ExcelConverter<TObject>
     /// Reads CSV stream into a list of objects. CSV must have a header
     /// </summary>
     public async Task<List<TObject>> ReadCsvAsync(
-        Stream stream, 
+        Stream stream,
         CancellationToken cancellationToken = default)
     {
         using var streamReader = new StreamReader(stream);
@@ -201,22 +211,22 @@ public class ExcelConverter<TObject>
         await csv.ReadAsync();
         csv.ReadHeader();
         var header = csv.HeaderRecord!;
-        
+
         while (await csv.ReadAsync())
         {
             var properties = new Dictionary<string, object>();
-            
+
             foreach (var headerItem in header)
             {
                 var mapping = mappings.FirstOrDefault(m => m.ColumnName == headerItem);
                 var propertyName = mapping?.PropertyName ?? headerItem;
                 properties.Add(propertyName, csv[headerItem]!);
             }
-            
+
             var record = ObjectActivator.Activate<TObject>(properties);
             records.Add(record);
         }
-        
+
         return records;
     }
 
@@ -232,20 +242,20 @@ public class ExcelConverter<TObject>
     {
         context.Configuration.HasHeaderRecord = true;
         if (mappings.Count == 0) return;
-        
+
         var map = new DefaultClassMap<TObject>();
         map.AutoMap(context.Configuration);
-        
+
         foreach (var mapping in mappings)
         {
             map.Map((Expression<Func<TObject, object?>>)(object)mapping.Expression).Name(mapping.ColumnName);
         }
-        
+
         context.RegisterClassMap(map);
     }
-    
+
     #endregion
-    
+
     private static MemberInfo GetExpressionMemberInfo(Expression<Func<TObject, object>> expression)
     {
         MemberExpression memberExpression;
