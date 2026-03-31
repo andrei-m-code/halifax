@@ -12,7 +12,9 @@ internal static class ObjectActivator
 
         var targetType = typeof(TDestination);
         var comparer = StringComparer.OrdinalIgnoreCase;
-        var dict = new Dictionary<string, object>(data, comparer);
+        var dict = new Dictionary<string, object>(comparer);
+        foreach (var kvp in data)
+            dict[kvp.Key] = kvp.Value;
 
         // Find the best matching constructor
         var constructors = targetType.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
