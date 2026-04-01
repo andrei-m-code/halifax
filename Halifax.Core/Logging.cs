@@ -6,6 +6,9 @@ using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using ILogger = Serilog.ILogger;
 
+/// <summary>
+/// Serilog-based logging facade with pre-configured console output.
+/// </summary>
 // ReSharper disable once CheckNamespace
 public static class L
 {
@@ -25,6 +28,10 @@ public static class L
 
     private static ILogger Log => loggerLazy.Value;
 
+    /// <summary>
+    /// Configures the logger by modifying the existing <see cref="LoggerConfiguration"/>.
+    /// </summary>
+    /// <param name="configure">Action to modify the logger configuration.</param>
     public static void Configure(Action<LoggerConfiguration> configure)
     {
         configure(configuration);
@@ -34,6 +41,10 @@ public static class L
         }
     }
     
+    /// <summary>
+    /// Replaces the logger configuration entirely.
+    /// </summary>
+    /// <param name="loggerConfiguration">The new logger configuration.</param>
     public static void Configure(LoggerConfiguration loggerConfiguration)
     {
         configuration = loggerConfiguration;
@@ -43,31 +54,42 @@ public static class L
         }
     }
     
+    /// <summary>Logs an information message with a single property value.</summary>
     public static void Info<TPropertyValue>(string messageTemplate, TPropertyValue propertyValue) =>
         Log.Information(messageTemplate, propertyValue);
     
-    public static void Info(string messageTemplate, params object[] propertyValues) => 
+    /// <summary>Logs an information message.</summary>
+    public static void Info(string messageTemplate, params object[] propertyValues) =>
         Log.Information(messageTemplate, propertyValues);
 
+    /// <summary>Logs a warning message.</summary>
     public static void Warning(string messageTemplate, params object[] propertyValues) =>
         Log.Warning(messageTemplate, propertyValues);
     
+    /// <summary>Logs a warning message with an exception.</summary>
     public static void Warning(Exception exception, string messageTemplate, params object[] propertyValues) =>
         Log.Warning(exception, messageTemplate, propertyValues);
     
+    /// <summary>Logs an error message.</summary>
     public static void Error(string messageTemplate, params object[] propertyValues) =>
         Log.Error(messageTemplate, propertyValues);
     
+    /// <summary>Logs an error message with an exception.</summary>
     public static void Error(Exception exception, string messageTemplate, params object[] propertyValues) =>
         Log.Error(exception, messageTemplate, propertyValues);
 
+    /// <summary>Logs a fatal error message.</summary>
     public static void Fatal(string messageTemplate, params object[] propertyValues) =>
         Log.Error(messageTemplate, propertyValues);
     
+    /// <summary>Logs a fatal error message with an exception.</summary>
     public static void Fatal(Exception exception, string messageTemplate, params object[] propertyValues) =>
         Log.Error(exception, messageTemplate, propertyValues);
 }
 
+/// <summary>
+/// Extension methods for <see cref="IServiceCollection"/> logging configuration.
+/// </summary>
 public static class ServicesExtensions
 {
     /// <summary>
@@ -81,4 +103,7 @@ public static class ServicesExtensions
     }
 }
 
+/// <summary>
+/// Marks a property to be excluded from structured log output.
+/// </summary>
 public class NotLoggedAttribute : Destructurama.Attributed.NotLoggedAttribute {}

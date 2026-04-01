@@ -8,6 +8,7 @@ namespace Halifax.Http;
 /// </summary>
 public static class HalifaxHttpClientExtensions
 {
+    /// <summary>Registers a typed HTTP client with a base URL.</summary>
     public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
         this IServiceCollection services,
         string defaultBaseUrl) where THalifaxHttpClient : HalifaxHttpClient
@@ -19,6 +20,7 @@ public static class HalifaxHttpClientExtensions
         return services;
     }
 
+    /// <summary>Registers a typed HTTP client with a base URL and client configuration action.</summary>
     public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
         this IServiceCollection services,
         string defaultBaseUrl,
@@ -31,6 +33,7 @@ public static class HalifaxHttpClientExtensions
         return services;
     }
 
+    /// <summary>Registers a typed HTTP client with a base URL and service-provider-aware configuration action.</summary>
     public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
         this IServiceCollection services,
         string defaultBaseUrl,
@@ -43,6 +46,7 @@ public static class HalifaxHttpClientExtensions
         return services;
     }
 
+    /// <summary>Registers a typed HTTP client with a base URL and optional bearer token.</summary>
     public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
         this IServiceCollection services,
         string defaultBaseUrl,
@@ -55,6 +59,7 @@ public static class HalifaxHttpClientExtensions
         return services;
     }
 
+    /// <summary>Registers a typed HTTP client with a base URL, optional bearer token, and client configuration action.</summary>
     public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
         this IServiceCollection services,
         string defaultBaseUrl,
@@ -68,6 +73,7 @@ public static class HalifaxHttpClientExtensions
         return services;
     }
 
+    /// <summary>Registers a typed HTTP client with a base URL, optional bearer token, and service-provider-aware configuration.</summary>
     public static IServiceCollection AddHalifaxHttpClient<THalifaxHttpClient>(
         this IServiceCollection services,
         string defaultBaseUrl,
@@ -81,6 +87,9 @@ public static class HalifaxHttpClientExtensions
         return services;
     }
 
+    /// <summary>
+    /// Registers a typed HTTP client and returns the <see cref="IHttpClientBuilder"/> for further configuration (e.g. adding handlers).
+    /// </summary>
     public static IHttpClientBuilder AddHalifaxHttpClientBuilder<THalifaxHttpClient>(
         this IServiceCollection services,
         string defaultBaseUrl,
@@ -100,6 +109,9 @@ public static class HalifaxHttpClientExtensions
         });
     }
 
+    /// <summary>
+    /// Registers a typed HTTP client with the standard resilience handler (retries, circuit breaker, timeouts).
+    /// </summary>
     public static IHttpClientBuilder AddHalifaxHttpClientWithResilience<THalifaxHttpClient>(
         this IServiceCollection services,
         string defaultBaseUrl,

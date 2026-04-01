@@ -7,8 +7,14 @@ using Microsoft.AspNetCore.Http;
 
 namespace Halifax.Api.Errors;
 
+/// <summary>
+/// Global exception handler that maps Halifax exceptions to HTTP status codes and logs error details.
+/// </summary>
 public class HalifaxExceptionHandler : IExceptionHandler
 {
+    /// <summary>
+    /// Logs the error request details. Override to customize error logging behavior.
+    /// </summary>
     protected virtual async Task LogErrorRequestAsync(HttpContext context, Exception exception)
     {
         var requestString = await context.Request.GetRequestStringAsync();
@@ -16,6 +22,7 @@ public class HalifaxExceptionHandler : IExceptionHandler
         L.Error(requestString);
     }
 
+    /// <inheritdoc />
     public async ValueTask<bool> TryHandleAsync(
         HttpContext context,
         Exception exception,

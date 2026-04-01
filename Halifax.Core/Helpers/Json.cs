@@ -77,6 +77,9 @@ public static class Json
             : null;
     }
 
+    /// <summary>
+    /// Attempts to deserialize a JSON string. Returns false on failure.
+    /// </summary>
     public static bool TryDeserialize<TObject>(string jsonString, out TObject? result) where TObject : class
     {
         var options = new JsonSerializerOptions();
@@ -84,6 +87,9 @@ public static class Json
         return TryDeserialize(jsonString, options, out result);
     }
 
+    /// <summary>
+    /// Attempts to deserialize a JSON string with custom options. Returns false on failure.
+    /// </summary>
     public static bool TryDeserialize<TObject>(string jsonString, JsonSerializerOptions options, out TObject? result) where TObject : class
     {
         try
@@ -139,13 +145,18 @@ public static class Json
     public static Action<JsonSerializerOptions> ConfigureOptions { get; set; }
 }
 
+/// <summary>
+/// JSON converter that normalizes DateTime values to UTC on both read and write.
+/// </summary>
 public class UniversalDateTimeConverter : JsonConverter<DateTime>
 {
+    /// <inheritdoc />
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         return reader.GetDateTime().ToUniversalTime();
     }
 
+    /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
     {
          writer.WriteStringValue(value.ToUniversalTime());

@@ -6,10 +6,20 @@ using System.Text;
 
 namespace Halifax.Core.Helpers;
 
+/// <summary>
+/// Utility for creating and reading JWT tokens using symmetric HMAC-SHA256 signing.
+/// </summary>
 public static class Jwt
 {
+    /// <summary>The standard JWT expiration claim type.</summary>
     public const string ExpirationClaimType = "exp";
-    
+
+    /// <summary>
+    /// Creates a signed JWT token.
+    /// </summary>
+    /// <param name="secret">The signing secret. Must be at least 16 characters.</param>
+    /// <param name="claims">The claims to include in the token.</param>
+    /// <param name="expiration">The token expiration time.</param>
     public static string Create(string secret, IEnumerable<Claim> claims, DateTime expiration)
     {
         Guard.NotNull(secret, nameof(secret));
@@ -29,6 +39,15 @@ public static class Jwt
         return token.RawData;
     }
 
+    /// <summary>
+    /// Reads and validates a JWT token, returning its claims.
+    /// </summary>
+    /// <param name="secret">The signing secret used to validate the token.</param>
+    /// <param name="jwt">The JWT string to read.</param>
+    /// <param name="throwUnauthorized">Whether to throw on invalid tokens. If false, returns an empty list.</param>
+    /// <param name="validateAudience">Whether to validate the audience claim.</param>
+    /// <param name="validateIssuer">Whether to validate the issuer claim.</param>
+    /// <param name="validateLifetime">Whether to validate the token expiration.</param>
     public static List<Claim> Read(string secret, string jwt,
         bool throwUnauthorized = true,
         bool validateAudience = false,

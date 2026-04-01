@@ -9,17 +9,43 @@ using NPOI.XSSF.UserModel;
 
 namespace Halifax.Excel;
 
+/// <summary>
+/// Converts between strongly-typed objects and Excel (.xlsx) or CSV files.
+/// Supports custom column name mappings and automatic type conversion.
+/// </summary>
+/// <typeparam name="TObject">The type of object to read from or write to Excel/CSV.</typeparam>
 public class ExcelConverter<TObject>
 {
     private const int defaultWidthToStringLengthFactor = 300;
+
+    /// <summary>
+    /// Multiplier used to calculate column width from string length. Default is 300.
+    /// </summary>
     public int WidthToStringLengthFactor { get; set; } = defaultWidthToStringLengthFactor;
+
+    /// <summary>
+    /// Maximum column width in Excel output. Default is 9000 (30 * 300).
+    /// </summary>
     public int MaxCellWidth { get; set; } = 30 * defaultWidthToStringLengthFactor;
+
+    /// <summary>
+    /// Minimum column width in Excel output. Default is 2700 (9 * 300).
+    /// </summary>
     public int MinCellWidth { get; set; } = 9 * defaultWidthToStringLengthFactor;
 
+    /// <summary>
+    /// Culture used for CSV parsing and writing. Default is <see cref="CultureInfo.InvariantCulture"/>.
+    /// </summary>
     public CultureInfo CultureInfo { get; set; } = CultureInfo.InvariantCulture;
 
     private readonly List<ColumnMapping<TObject>> mappings = [];
 
+    /// <summary>
+    /// Maps a custom column name to a property on <typeparamref name="TObject"/>.
+    /// Used during both reading and writing to translate between column headers and object properties.
+    /// </summary>
+    /// <param name="columnName">The column name in the Excel or CSV file.</param>
+    /// <param name="propertyExpression">A lambda expression selecting the property to map.</param>
     public void AddMapping(string columnName, Expression<Func<TObject, object>> propertyExpression)
     {
         var memberInfo = GetExpressionMemberInfo(propertyExpression);
@@ -31,6 +57,14 @@ public class ExcelConverter<TObject>
         });
     }
 
+    /// <summary>
+    /// Reads objects from a stream, automatically selecting Excel or CSV format based on the content type.
+    /// </summary>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="contentType">The MIME content type (e.g. "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or "text/csv").</param>
+    /// <param name="cancellationToken">Cancellation token for CSV reading.</param>
+    /// <returns>A list of deserialized objects.</returns>
+    /// <exception cref="NotSupportedException">Thrown when the content type is not recognized.</exception>
     public async Task<List<TObject>> ReadAsync(
         Stream stream,
         string contentType,
@@ -55,6 +89,11 @@ public class ExcelConverter<TObject>
 
     #region Excel
 
+    /// <summary>
+    /// Reads objects from an Excel (.xlsx) stream. The stream must contain a header row.
+    /// </summary>
+    /// <param name="stream">The Excel stream to read from.</param>
+    /// <returns>A list of deserialized objects.</returns>
     public List<TObject> ReadExcel(Stream stream)
     {
         var excel = new ExcelMapper(stream) {HeaderRow = true};
@@ -71,6 +110,13 @@ public class ExcelConverter<TObject>
         return records;
     }
 
+    /// <summary>
+    /// Writes objects to an Excel (.xlsx) stream with a bold header row and auto-sized columns.
+    /// The stream will be closed after writing.
+    /// </summary>
+    /// <param name="stream">The stream to write to.</param>
+    /// <param name="records">The objects to write as rows.</param>
+    /// <param name="sheetName">The name of the worksheet. Default is "Sheet 0".</param>
     public Task WriteExcelAsync(Stream stream, IEnumerable<TObject> records, string sheetName = "Sheet 0")
     {
         using var workbook = new XSSFWorkbook();
@@ -196,8 +242,12 @@ public class ExcelConverter<TObject>
     #region CSV
 
     /// <summary>
-    /// Reads CSV stream into a list of objects. CSV must have a header
+    /// Reads objects from a CSV stream. The CSV must contain a header row.
+    /// Column name mappings are applied to translate headers to property names.
     /// </summary>
+    /// <param name="stream">The CSV stream to read from.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A list of deserialized objects.</returns>
     public async Task<List<TObject>> ReadCsvAsync(
         Stream stream,
         CancellationToken cancellationToken = default)
@@ -230,6 +280,12 @@ public class ExcelConverter<TObject>
         return records;
     }
 
+    /// <summary>
+    /// Writes objects to a CSV stream with a header row.
+    /// The stream will be closed after writing.
+    /// </summary>
+    /// <param name="stream">The stream to write to.</param>
+    /// <param name="records">The objects to write as rows.</param>
     public async Task WriteCsvAsync(Stream stream, IEnumerable<TObject> records)
     {
         await using var writer = new StreamWriter(stream);

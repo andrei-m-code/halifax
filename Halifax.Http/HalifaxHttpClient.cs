@@ -9,8 +9,13 @@ using Halifax.Domain.Exceptions;
 
 namespace Halifax.Http;
 
+/// <summary>
+/// Base class for typed HTTP clients that communicate with Halifax-style APIs.
+/// Handles JSON serialization, error mapping, and response parsing using <see cref="ApiResponse{TData}"/>.
+/// </summary>
 public abstract class HalifaxHttpClient(HttpClient http)
 {
+    /// <summary>The underlying <see cref="HttpClient"/> instance.</summary>
     protected readonly HttpClient http = http;
     
     private static readonly List<HttpStatusCode> exceptionHttpStatuses =
@@ -20,6 +25,7 @@ public abstract class HalifaxHttpClient(HttpClient http)
         HttpStatusCode.Unauthorized
     ];
 
+    /// <summary>Creates an HTTP request message, optionally serializing a body as JSON.</summary>
     protected virtual HttpRequestMessage CreateMessage(HttpMethod method, string url, object? body = null)
     {
         var message = new HttpRequestMessage(method, url);
@@ -33,12 +39,14 @@ public abstract class HalifaxHttpClient(HttpClient http)
         return message;
     }
 
+    /// <summary>Sends a request and returns the HTTP status code.</summary>
     protected virtual async Task<HttpStatusCode> SendAsync(HttpRequestMessage message, CancellationToken cancellationToken = default)
     {
         using var response = await http.SendAsync(message, cancellationToken);
         return response.StatusCode;
     }
     
+    /// <summary>Sends a request and deserializes the response data from an <see cref="ApiResponse{TData}"/> wrapper.</summary>
     protected virtual async Task<TModel> SendAsync<TModel>(
         HttpRequestMessage message,
         CancellationToken cancellationToken = default)
@@ -82,6 +90,7 @@ public abstract class HalifaxHttpClient(HttpClient http)
         return null!;
     }
     
+    /// <summary>Handles unsuccessful HTTP responses by mapping status codes to Halifax exceptions.</summary>
     protected virtual async Task HandleUnsuccessfulResponseAsync(HttpResponseMessage response)
     {
         var code = response.StatusCode;
