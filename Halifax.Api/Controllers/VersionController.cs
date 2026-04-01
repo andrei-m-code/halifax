@@ -4,11 +4,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Halifax.Api.Controllers;
 
+/// <summary>
+/// Assembly version information for a Halifax package.
+/// </summary>
+/// <param name="Name">The assembly name.</param>
+/// <param name="Version">The assembly version.</param>
 public record HalifaxAssemblyInfo(string Name, string Version);
 
+/// <summary>
+/// Exposes Halifax assembly version information.
+/// </summary>
 [AllowAnonymous]
 public class VersionController : Controller
 {
+    /// <summary>
+    /// Returns the version of all loaded Halifax assemblies.
+    /// </summary>
     [HttpGet("halifax/version")]
     public ApiResponse<List<HalifaxAssemblyInfo>> GetHalifaxVersion()
     {

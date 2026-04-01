@@ -2,6 +2,9 @@ using System.Text;
 
 namespace Halifax.Core.Helpers;
 
+/// <summary>
+/// Generates random short identifier strings.
+/// </summary>
 public static class ShortId
 {
     private static readonly Lock root = new();
@@ -11,6 +14,11 @@ public static class ShortId
     private const string numbers = "0123456789";
     private static readonly string pool = $"{smalls}{bigs}";
 
+    /// <summary>
+    /// Creates a random short ID string.
+    /// </summary>
+    /// <param name="useNumbers">Whether to include digits in the character pool.</param>
+    /// <param name="length">The length of the generated ID. Minimum is 7.</param>
     public static string Create(bool useNumbers = true, int length = 7)
     {
         if (length < 7)

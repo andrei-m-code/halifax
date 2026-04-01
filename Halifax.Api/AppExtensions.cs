@@ -12,8 +12,16 @@ using Scalar.AspNetCore;
 
 namespace Halifax.Api;
 
+/// <summary>
+/// Extension methods for registering and configuring Halifax API services and middleware.
+/// </summary>
 public static class AppExtensions
 {
+    /// <summary>
+    /// Registers Halifax services including controllers, CORS, OpenAPI, authentication, and exception handling.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configure">Optional builder action for customizing the Halifax configuration.</param>
     public static void AddHalifax(this IServiceCollection services, Action<HalifaxBuilder>? configure = null)
     {
         services.CleanupDefaultLogging();
@@ -66,6 +74,9 @@ public static class AppExtensions
         }
     }
 
+    /// <summary>
+    /// Configures the Halifax middleware pipeline including correlation IDs, CORS, routing, authentication, and OpenAPI.
+    /// </summary>
     public static void UseHalifax(this IApplicationBuilder app)
     {
         app.UseMiddleware<CorrelationIdMiddleware>();

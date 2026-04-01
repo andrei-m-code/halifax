@@ -5,8 +5,16 @@ using Microsoft.AspNetCore.Http;
 
 namespace Halifax.Api.Extensions;
 
+/// <summary>
+/// Extension methods for <see cref="HttpRequest"/>.
+/// </summary>
 public static class HttpExtensions
 {
+    /// <summary>
+    /// Reads the HTTP request details (method, path, headers, body) into a formatted string for logging.
+    /// </summary>
+    /// <param name="request">The HTTP request.</param>
+    /// <param name="maxLength">Maximum body length to include. Default is 5000.</param>
     public static async Task<string> GetRequestStringAsync(this HttpRequest request, int maxLength = 5000)
     {
         var stringBuilder = new StringBuilder();
