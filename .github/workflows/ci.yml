@@ -17,11 +17,23 @@ jobs:
         with:
           dotnet-version: '10.x'
 
-      - name: Restore
-        run: dotnet restore Halifax.sln
+      - name: Create local NuGet source
+        run: |
+          mkdir -p local-packages
+          dotnet nuget add source $(pwd)/local-packages --name local
+
+      - name: Build and pack Halifax.Domain
+        run: |
+          dotnet build Halifax.Domain/Halifax.Domain.csproj -c Release
+          dotnet pack Halifax.Domain/Halifax.Domain.csproj -c Release --no-build -o local-packages
+
+      - name: Build and pack Halifax.Core
+        run: |
+          dotnet build Halifax.Core/Halifax.Core.csproj -c Release
+          dotnet pack Halifax.Core/Halifax.Core.csproj -c Release --no-build -o local-packages
 
       - name: Build
-        run: dotnet build Halifax.sln --no-restore
+        run: dotnet build Halifax.sln -c Release
 
       - name: Test
-        run: dotnet test Halifax.sln --no-build
+        run: dotnet test Halifax.sln -c Release --no-build
