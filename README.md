@@ -1,6 +1,6 @@
 # Halifax Service Foundation
 
-Simplistic libraries for complex projects. Halifax eliminates boilerplate in .NET API services — standardized responses, JWT auth, configuration, logging, and more — so you can focus on business logic.
+Simple libraries for complex projects. Halifax eliminates boilerplate in .NET API services — standardized responses, JWT auth, configuration, logging, and more — so you can focus on business logic.
 
 [![CI](https://github.com/andrei-m-code/halifax/actions/workflows/ci.yml/badge.svg)](https://github.com/andrei-m-code/halifax/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/Halifax.Api.svg?label=Halifax.Api)](https://www.nuget.org/packages/Halifax.Api/)
@@ -32,7 +32,7 @@ Simplistic libraries for complex projects. Halifax eliminates boilerplate in .NE
 
 ## Quick Start
 
-```
+```bash
 dotnet add package Halifax.Api
 ```
 
@@ -276,7 +276,7 @@ services.AddHalifaxHttpClientBuilder<PaymentClient>(
 
 ## Excel & CSV
 
-```
+```bash
 dotnet add package Halifax.Excel
 ```
 
@@ -352,8 +352,8 @@ Halifax exposes a built-in `GET /halifax/version` endpoint that returns the load
 ```json
 {
   "data": [
-    { "name": "Halifax.Api", "version": "5.2.1" },
-    { "name": "Halifax.Core", "version": "5.1.1" }
+    { "name": "Halifax.Api", "version": "5.3.0" },
+    { "name": "Halifax.Core", "version": "5.2.0" }
   ],
   "success": true
 }
@@ -389,7 +389,7 @@ All packages target **.NET 10** with nullable reference types enabled.
 
 ## MIT License
 
-Copyright (c) 2020 Andrei M
+Copyright (c) 2020–2026 Andrei M
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
