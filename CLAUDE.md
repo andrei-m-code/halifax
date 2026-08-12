@@ -37,9 +37,15 @@ use `<FrameworkReference Include="Microsoft.AspNetCore.App" />`.
   This is why CI packs Domain + Core into a **local NuGet feed** before building the solution
   (see below). The old `ProjectReference` lines are left commented out in the csproj.
 - **Nullable reference types enabled** everywhere (`<Nullable>enable</Nullable>`).
+- **XML docs are generated and packaged.** Every packable project sets
+  `<GenerateDocumentationFile>true</GenerateDocumentationFile>`, so the `Halifax.*.xml`
+  doc file ships inside each NuGet package (consumer IntelliSense). This makes `CS1591`
+  (missing XML comment on a public member) an active warning — the repo is kept at
+  **0 CS1591**, so document every new public type/member or the build warns.
 - **Pre-existing build warnings** (not introduced by dep bumps, safe to ignore):
-  `CS8603` in `Halifax.Http/HalifaxHttpClient.cs:57`, and `SYSLIB0060` (obsolete
-  `Rfc2898DeriveBytes` ctor) in `Halifax.Core/Helpers/Crypto.cs:23,44`.
+  `CS8603` in `Halifax.Http/HalifaxHttpClient.cs` (the `SendAsync<TModel>` return; line
+  number drifts as docs change), and `SYSLIB0060` (obsolete `Rfc2898DeriveBytes` ctor) in
+  `Halifax.Core/Helpers/Crypto.cs`. Expect **3 warnings total** on a clean solution build.
 
 ## Versioning & releases
 
