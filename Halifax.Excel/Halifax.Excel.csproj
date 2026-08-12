@@ -13,9 +13,9 @@
         <Summary>Halifax Service Foundation Excel/CSV library</Summary>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>0.4.0</AssemblyVersion>
-        <FileVersion>0.4.0</FileVersion>
-        <Version>0.4.0</Version>
+        <AssemblyVersion>0.4.1</AssemblyVersion>
+        <FileVersion>0.4.1</FileVersion>
+        <Version>0.4.1</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -29,6 +29,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id excel csv base</PackageTags>
 
         <PackageReleaseNotes>
+            v0.4.1 - Ship XML documentation in the package, enrich API docs, dependency updates
             v0.4.0 - Package dependency updates, pin System.Security.Cryptography.Xml to patch transitive vulnerability
             v0.3.2 - Package dependency updates, NPOI license acceptance
             v0.3.1 - Bug fixes, DateTime support, comprehensive tests
