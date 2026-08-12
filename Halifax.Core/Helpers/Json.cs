@@ -4,8 +4,16 @@ using System.Text.Json.Serialization;
 namespace Halifax.Core.Helpers;
 
 /// <summary>
-/// Serialize or deserialize objects to and from JSON
+/// Serialize or deserialize objects to and from JSON using a shared set of defaults
+/// (camelCase names, case-insensitive matching, string enums, and UTC date handling).
 /// </summary>
+/// <remarks>The defaults are applied by <see cref="ConfigureOptions"/> and can be replaced to change behavior globally.</remarks>
+/// <example>
+/// <code>
+/// var json = Json.Serialize(user);
+/// var user = Json.Deserialize&lt;User&gt;(json);
+/// </code>
+/// </example>
 public static class Json
 {
     static Json()
@@ -78,8 +86,12 @@ public static class Json
     }
 
     /// <summary>
-    /// Attempts to deserialize a JSON string. Returns false on failure.
+    /// Attempts to deserialize a JSON string using the default options, returning <see langword="false"/> on failure.
     /// </summary>
+    /// <param name="jsonString">The JSON string to deserialize.</param>
+    /// <param name="result">When this method returns <see langword="true"/>, the deserialized object; otherwise <see langword="null"/>.</param>
+    /// <typeparam name="TObject">Object type.</typeparam>
+    /// <returns><see langword="true"/> when deserialization succeeded; otherwise <see langword="false"/>.</returns>
     public static bool TryDeserialize<TObject>(string jsonString, out TObject? result) where TObject : class
     {
         var options = new JsonSerializerOptions();
@@ -88,8 +100,13 @@ public static class Json
     }
 
     /// <summary>
-    /// Attempts to deserialize a JSON string with custom options. Returns false on failure.
+    /// Attempts to deserialize a JSON string with custom options, returning <see langword="false"/> on failure.
     /// </summary>
+    /// <param name="jsonString">The JSON string to deserialize.</param>
+    /// <param name="options">JSON serializer options.</param>
+    /// <param name="result">When this method returns <see langword="true"/>, the deserialized object; otherwise <see langword="null"/>.</param>
+    /// <typeparam name="TObject">Object type.</typeparam>
+    /// <returns><see langword="true"/> when deserialization succeeded; otherwise <see langword="false"/>.</returns>
     public static bool TryDeserialize<TObject>(string jsonString, JsonSerializerOptions options, out TObject? result) where TObject : class
     {
         try
@@ -108,7 +125,7 @@ public static class Json
     /// Deserialize object from JSON
     /// </summary>
     /// <param name="utf8Stream">UTF8 encoded json stream</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">Token used to cancel the asynchronous read.</param>
     /// <typeparam name="TObject">Object type</typeparam>
     /// <returns>An object that was serialized to JSON</returns>
     public static async Task<TObject?> DeserializeAsync<TObject>(
@@ -140,7 +157,8 @@ public static class Json
     }
 
     /// <summary>
-    /// Default serializer options factory method
+    /// Callback that applies the default serializer options to a fresh <see cref="JsonSerializerOptions"/>
+    /// instance before each (de)serialization. Replace it to change the JSON behavior globally.
     /// </summary>
     public static Action<JsonSerializerOptions> ConfigureOptions { get; set; }
 }

@@ -42,6 +42,11 @@ public record Paging<TObject> : PagingBase<TObject>
     /// <param name="skip">Number of items skipped.</param>
     /// <param name="take">Number of items requested.</param>
     /// <param name="total">Total number of items across all pages.</param>
+    /// <example>
+    /// <code>
+    /// var page = new Paging&lt;User&gt;(users, skip: 0, take: 10, total: 42);
+    /// </code>
+    /// </example>
     public Paging(List<TObject> items, int skip, int take, int total)
     {
         Items = items;
@@ -56,10 +61,13 @@ public record Paging<TObject> : PagingBase<TObject>
     public int Total { get; init; }
 
     /// <summary>
-    /// Projects items to a different type while preserving pagination metadata.
+    /// Projects each item to a different type while preserving <see cref="PagingBase{TObject}.Skip"/>,
+    /// <see cref="PagingBase{TObject}.Take"/> and <see cref="Total"/>.
     /// </summary>
-    /// <typeparam name="TDestination">The target type.</typeparam>
-    /// <param name="map">The mapping function.</param>
+    /// <typeparam name="TDestination">The type to project items to.</typeparam>
+    /// <param name="map">The projection applied to each item in <see cref="PagingBase{TObject}.Items"/>.</param>
+    /// <returns>A new <see cref="Paging{TDestination}"/> with mapped items and the same pagination metadata.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
     public Paging<TDestination> Map<TDestination>(Func<TObject, TDestination> map)
     {
         return new Paging<TDestination>
@@ -106,10 +114,13 @@ public record PagingMore<TObject> : PagingBase<TObject>
     public bool HasMore { get; init; }
 
     /// <summary>
-    /// Projects items to a different type while preserving pagination metadata.
+    /// Projects each item to a different type while preserving <see cref="PagingBase{TObject}.Skip"/>,
+    /// <see cref="PagingBase{TObject}.Take"/> and <see cref="HasMore"/>.
     /// </summary>
-    /// <typeparam name="TDestination">The target type.</typeparam>
-    /// <param name="map">The mapping function.</param>
+    /// <typeparam name="TDestination">The type to project items to.</typeparam>
+    /// <param name="map">The projection applied to each item in <see cref="PagingBase{TObject}.Items"/>.</param>
+    /// <returns>A new <see cref="PagingMore{TDestination}"/> with mapped items and the same pagination metadata.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="map"/> is <see langword="null"/>.</exception>
     public PagingMore<TDestination> Map<TDestination>(Func<TObject, TDestination> map)
     {
         return new PagingMore<TDestination>

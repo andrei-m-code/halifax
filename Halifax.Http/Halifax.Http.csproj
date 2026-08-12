@@ -4,6 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>true</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
         <Title>Halifax Service Foundation - HttpClient</Title>
@@ -47,7 +48,7 @@ v1.0.x - Initial release
 
     <ItemGroup>
         <PackageReference Include="Halifax.Core" Version="5.2.0" />
-        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.7.0" />
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.9.0" />
     </ItemGroup>
 
     <ItemGroup>

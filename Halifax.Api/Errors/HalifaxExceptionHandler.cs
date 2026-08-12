@@ -8,13 +8,24 @@ using Microsoft.AspNetCore.Http;
 namespace Halifax.Api.Errors;
 
 /// <summary>
-/// Global exception handler that maps Halifax exceptions to HTTP status codes and logs error details.
+/// Global <see cref="IExceptionHandler"/> that maps unhandled Halifax exceptions to HTTP status codes,
+/// logs the failing request, and writes a standardized <see cref="ApiResponse"/> error body.
 /// </summary>
+/// <remarks>
+/// Registered by default during <see cref="AppExtensions.AddHalifax"/> unless disabled via
+/// <see cref="App.HalifaxBuilder.ConfigureExceptionHandler"/>. Exceptions map as follows:
+/// <see cref="HalifaxNotFoundException"/> to 404, <see cref="HalifaxUnauthorizedException"/> to 401, any other
+/// <see cref="HalifaxException"/> to 400, and everything else to 500.
+/// </remarks>
 public class HalifaxExceptionHandler : IExceptionHandler
 {
     /// <summary>
-    /// Logs the error request details. Override to customize error logging behavior.
+    /// Logs the failing request (its formatted details) together with the exception. Override to customize
+    /// error logging behavior.
     /// </summary>
+    /// <param name="context">The HTTP context of the request that failed.</param>
+    /// <param name="exception">The exception that was thrown while processing the request.</param>
+    /// <returns>A task that completes once the request and exception have been logged.</returns>
     protected virtual async Task LogErrorRequestAsync(HttpContext context, Exception exception)
     {
         var requestString = await context.Request.GetRequestStringAsync();

@@ -55,34 +55,56 @@ public static class L
     }
     
     /// <summary>Logs an information message with a single property value.</summary>
+    /// <typeparam name="TPropertyValue">The type of the property value.</typeparam>
+    /// <param name="messageTemplate">The message template with a single placeholder.</param>
+    /// <param name="propertyValue">The value to substitute into the template.</param>
     public static void Info<TPropertyValue>(string messageTemplate, TPropertyValue propertyValue) =>
         Log.Information(messageTemplate, propertyValue);
-    
+
     /// <summary>Logs an information message.</summary>
+    /// <param name="messageTemplate">The message template.</param>
+    /// <param name="propertyValues">The values to substitute into the template placeholders.</param>
     public static void Info(string messageTemplate, params object[] propertyValues) =>
         Log.Information(messageTemplate, propertyValues);
 
     /// <summary>Logs a warning message.</summary>
+    /// <param name="messageTemplate">The message template.</param>
+    /// <param name="propertyValues">The values to substitute into the template placeholders.</param>
     public static void Warning(string messageTemplate, params object[] propertyValues) =>
         Log.Warning(messageTemplate, propertyValues);
-    
+
     /// <summary>Logs a warning message with an exception.</summary>
+    /// <param name="exception">The exception associated with the warning.</param>
+    /// <param name="messageTemplate">The message template.</param>
+    /// <param name="propertyValues">The values to substitute into the template placeholders.</param>
     public static void Warning(Exception exception, string messageTemplate, params object[] propertyValues) =>
         Log.Warning(exception, messageTemplate, propertyValues);
-    
+
     /// <summary>Logs an error message.</summary>
+    /// <param name="messageTemplate">The message template.</param>
+    /// <param name="propertyValues">The values to substitute into the template placeholders.</param>
     public static void Error(string messageTemplate, params object[] propertyValues) =>
         Log.Error(messageTemplate, propertyValues);
-    
+
     /// <summary>Logs an error message with an exception.</summary>
+    /// <param name="exception">The exception associated with the error.</param>
+    /// <param name="messageTemplate">The message template.</param>
+    /// <param name="propertyValues">The values to substitute into the template placeholders.</param>
     public static void Error(Exception exception, string messageTemplate, params object[] propertyValues) =>
         Log.Error(exception, messageTemplate, propertyValues);
 
     /// <summary>Logs a fatal error message.</summary>
+    /// <param name="messageTemplate">The message template.</param>
+    /// <param name="propertyValues">The values to substitute into the template placeholders.</param>
+    /// <remarks>Currently writes at the <c>Error</c> level.</remarks>
     public static void Fatal(string messageTemplate, params object[] propertyValues) =>
         Log.Error(messageTemplate, propertyValues);
-    
+
     /// <summary>Logs a fatal error message with an exception.</summary>
+    /// <param name="exception">The exception associated with the fatal error.</param>
+    /// <param name="messageTemplate">The message template.</param>
+    /// <param name="propertyValues">The values to substitute into the template placeholders.</param>
+    /// <remarks>Currently writes at the <c>Error</c> level.</remarks>
     public static void Fatal(Exception exception, string messageTemplate, params object[] propertyValues) =>
         Log.Error(exception, messageTemplate, propertyValues);
 }
@@ -93,8 +115,10 @@ public static class L
 public static class ServicesExtensions
 {
     /// <summary>
-    /// Cleanup default Microsoft and System logging
+    /// Raises the minimum log level for the <c>Microsoft</c> and <c>System</c> categories to
+    /// <see cref="LogLevel.Critical"/>, silencing their noisy framework logs.
     /// </summary>
+    /// <param name="services">The service collection to configure.</param>
     public static void CleanupDefaultLogging(this IServiceCollection services)
     {
         services.AddLogging(logging => logging

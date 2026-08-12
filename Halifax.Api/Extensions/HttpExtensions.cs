@@ -11,10 +11,17 @@ namespace Halifax.Api.Extensions;
 public static class HttpExtensions
 {
     /// <summary>
-    /// Reads the HTTP request details (method, path, headers, body) into a formatted string for logging.
+    /// Reads the HTTP request details into a formatted, human-readable string for logging: the method and
+    /// path (including query string), any <c>X-</c> prefixed headers, and the request body.
     /// </summary>
-    /// <param name="request">The HTTP request.</param>
-    /// <param name="maxLength">Maximum body length to include. Default is 5000.</param>
+    /// <param name="request">The HTTP request to summarize.</param>
+    /// <param name="maxLength">Maximum number of body characters to include; longer bodies are truncated. Defaults to 5000.</param>
+    /// <returns>A multi-line string describing the request, suitable for diagnostic logging.</returns>
+    /// <remarks>
+    /// The request body is only included when its stream is readable; enable buffering (as
+    /// <see cref="AppExtensions.UseHalifax"/> does) beforehand so the body can be read here without consuming
+    /// it for downstream handlers. The stream position is reset to the start before reading.
+    /// </remarks>
     public static async Task<string> GetRequestStringAsync(this HttpRequest request, int maxLength = 5000)
     {
         var stringBuilder = new StringBuilder();

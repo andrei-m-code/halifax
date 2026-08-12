@@ -55,18 +55,34 @@ public record ApiResponse
     }
 
     /// <summary>
-    /// Empty API response
+    /// Gets an empty successful response carrying no data.
     /// </summary>
+    /// <value>A new successful <see cref="ApiResponse"/> with no <see cref="Error"/>.</value>
     public static ApiResponse Empty => new();
 
     /// <summary>
-    /// Return API response with the data provided
+    /// Creates a successful response wrapping the supplied data.
     /// </summary>
+    /// <typeparam name="TData">The type of the response data.</typeparam>
+    /// <param name="data">The payload to return to the caller.</param>
+    /// <returns>A successful <see cref="ApiResponse{TData}"/> whose <see cref="ApiResponse{TData}.Data"/> is <paramref name="data"/>.</returns>
+    /// <example>
+    /// <code>
+    /// return ApiResponse.With(user);
+    /// </code>
+    /// </example>
     public static ApiResponse<TData> With<TData>(TData data) => new(data);
 
     /// <summary>
-    /// Return API response with exception info
+    /// Creates a failed response describing the supplied exception.
     /// </summary>
+    /// <param name="exception">The exception to surface as <see cref="Error"/>.</param>
+    /// <returns>An <see cref="ApiResponse"/> with <see cref="Success"/> set to <see langword="false"/> and <see cref="Error"/> populated from <paramref name="exception"/>.</returns>
+    /// <example>
+    /// <code>
+    /// return ApiResponse.With(new HalifaxNotFoundException("User not found"));
+    /// </code>
+    /// </example>
     public static ApiResponse With(Exception exception) => new()
     {
         Success = false,

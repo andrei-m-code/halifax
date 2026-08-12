@@ -4,6 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>true</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
         <Title>Halifax Service Foundation - API</Title>
@@ -53,9 +54,9 @@ v0.x.x - Initial release
     <ItemGroup>
         <PackageReference Include="Halifax.Core" Version="5.2.0" />
 
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
-        <PackageReference Include="Scalar.AspNetCore" Version="2.16.11" />
+        <PackageReference Include="Scalar.AspNetCore" Version="2.16.18" />
     </ItemGroup>
 
     <ItemGroup>

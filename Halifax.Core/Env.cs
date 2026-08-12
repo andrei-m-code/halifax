@@ -1,14 +1,15 @@
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Halifax.Core;
 
 /// <summary>
-/// Setup environment variables and get config sections using this class
+/// Loads environment variables from a file and binds them to strongly-typed configuration sections.
 /// </summary>
 public static partial class Env
 {
-    private static readonly Dictionary<Type, object> sections = [];
+    private static readonly ConcurrentDictionary<Type, object> sections = [];
     private static readonly List<Type> supportedTypes =
     [
         typeof(Guid), typeof(Guid?),
@@ -17,10 +18,12 @@ public static partial class Env
     ];
 
     /// <summary>
-    /// Load environment variables from file (usually for local execution)
+    /// Loads environment variables from a file (usually for local execution).
     /// </summary>
-    /// <param name="envFilename">Env variables file path with Variable=Value lines</param>
-    /// <param name="swallowErrors">Should it ignore all possible errors such as file not found or parsing issue</param>
+    /// <param name="envFilename">Path to a file with <c>Variable=Value</c> lines. Relative paths are searched for from the current directory upward. Blank lines and lines starting with <c>#</c> are ignored.</param>
+    /// <param name="swallowErrors">When <see langword="true"/> (the default), file-not-found and parsing errors are ignored; when <see langword="false"/>, they are rethrown.</param>
+    /// <exception cref="FileNotFoundException">Thrown when the file cannot be found and <paramref name="swallowErrors"/> is <see langword="false"/>.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when a line is malformed (missing <c>=</c> or an invalid variable name) and <paramref name="swallowErrors"/> is <see langword="false"/>.</exception>
     public static void Load(string envFilename = ".env", bool swallowErrors = true)
     {
         try
@@ -85,8 +88,18 @@ public static partial class Env
     }
 
     /// <summary>
-    /// Get object representation of a configuration section from env. variables.
+    /// Builds a strongly-typed configuration object from environment variables, binding each member
+    /// from a variable named <c>{section}__{member}</c>. The result is cached per type.
     /// </summary>
+    /// <typeparam name="TSection">The configuration type to construct and populate.</typeparam>
+    /// <param name="section">The section prefix for variable names; defaults to the type name of <typeparamref name="TSection"/>.</param>
+    /// <returns>The populated configuration instance (cached after the first call).</returns>
+    /// <exception cref="NotSupportedException">Thrown when a bound member has a type that cannot be parsed from a string.</exception>
+    /// <remarks>
+    /// The constructor with the most parameters is used; any remaining settable properties of a
+    /// supported type are then bound. Values are read via <see cref="Environment.GetEnvironmentVariable(string)"/>,
+    /// so call <see cref="Load"/> first when using an env file.
+    /// </remarks>
     public static TSection GetSection<TSection>(string? section = null)
     {
         var configType = typeof(TSection);
@@ -125,9 +138,7 @@ public static partial class Env
                 });
         }
 
-        sections.Add(configType, instance!);
-
-        return instance!;
+        return (TSection)sections.GetOrAdd(configType, instance!);
     }
 
     private static object? GetPropertyParameter(string section, object instance, PropertyInfo property)

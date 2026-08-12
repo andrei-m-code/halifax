@@ -15,11 +15,18 @@ public static class Jwt
     public const string ExpirationClaimType = "exp";
 
     /// <summary>
-    /// Creates a signed JWT token.
+    /// Creates a JWT signed with symmetric HMAC-SHA256 using the supplied secret.
     /// </summary>
     /// <param name="secret">The signing secret. Must be at least 16 characters.</param>
     /// <param name="claims">The claims to include in the token.</param>
-    /// <param name="expiration">The token expiration time.</param>
+    /// <param name="expiration">The absolute token expiration time.</param>
+    /// <returns>The serialized (compact) JWT string.</returns>
+    /// <exception cref="HalifaxException">Thrown when <paramref name="secret"/> is <see langword="null"/> or shorter than 16 characters.</exception>
+    /// <example>
+    /// <code>
+    /// var token = Jwt.Create(secret, new[] { new Claim("sub", userId) }, DateTime.UtcNow.AddHours(1));
+    /// </code>
+    /// </example>
     public static string Create(string secret, IEnumerable<Claim> claims, DateTime expiration)
     {
         Guard.NotNull(secret, nameof(secret));
@@ -40,14 +47,22 @@ public static class Jwt
     }
 
     /// <summary>
-    /// Reads and validates a JWT token, returning its claims.
+    /// Reads and validates a JWT, returning its claims.
     /// </summary>
     /// <param name="secret">The signing secret used to validate the token.</param>
     /// <param name="jwt">The JWT string to read.</param>
-    /// <param name="throwUnauthorized">Whether to throw on invalid tokens. If false, returns an empty list.</param>
+    /// <param name="throwUnauthorized">Whether to throw on invalid tokens. If <see langword="false"/>, an empty list is returned instead.</param>
     /// <param name="validateAudience">Whether to validate the audience claim.</param>
     /// <param name="validateIssuer">Whether to validate the issuer claim.</param>
     /// <param name="validateLifetime">Whether to validate the token expiration.</param>
+    /// <returns>The token's claims, or an empty list when the token is invalid and <paramref name="throwUnauthorized"/> is <see langword="false"/>.</returns>
+    /// <exception cref="HalifaxUnauthorizedException">Thrown when the token is invalid, expired, or fails validation and <paramref name="throwUnauthorized"/> is <see langword="true"/>.</exception>
+    /// <remarks>Validation failures are logged as warnings via <see cref="L"/> before the method throws or returns an empty list.</remarks>
+    /// <example>
+    /// <code>
+    /// var claims = Jwt.Read(secret, token, validateLifetime: true);
+    /// </code>
+    /// </example>
     public static List<Claim> Read(string secret, string jwt,
         bool throwUnauthorized = true,
         bool validateAudience = false,

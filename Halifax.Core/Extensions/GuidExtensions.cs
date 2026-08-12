@@ -1,5 +1,9 @@
 namespace Halifax.Core.Extensions;
 
+/// <summary>
+/// Extension methods for working with <see cref="Guid"/> values, such as substituting a fresh
+/// value for an empty or missing one.
+/// </summary>
 public static class GuidExtensions
 {
     /// <summary>
