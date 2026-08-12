@@ -29,6 +29,7 @@ Simple libraries for complex projects. Halifax eliminates boilerplate in .NET AP
 - **Cryptography** — AES-256 encrypt/decrypt helpers
 - **Short IDs** — thread-safe random ID generation
 - **Nullable reference types** — fully annotated across all packages
+- **IntelliSense-ready** — full XML documentation shipped with every package
 
 ## Quick Start
 
