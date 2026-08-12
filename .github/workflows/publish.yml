@@ -32,6 +32,9 @@ jobs:
           dotnet pack Halifax.Core/Halifax.Core.csproj -c Release --no-build -o out
           cp out/Halifax.Core.*.nupkg local-packages/
 
+      - name: Test
+        run: dotnet test Halifax.sln -c Release
+
       - name: Build and pack Halifax.Api
         run: |
           dotnet build Halifax.Api/Halifax.Api.csproj -c Release

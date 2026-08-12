@@ -67,9 +67,11 @@ gh release create vX.Y.Z --target main \
   --title "vX.Y.Z — <summary>" --notes "<release notes>"
 ```
 
-Use the new **Halifax.Api** version for `X.Y.Z`. The workflow packs all packages in
-dependency order and pushes to NuGet with `--skip-duplicate` (so unchanged packages that
-keep their version are simply skipped). Watch it with:
+Use the new **Halifax.Api** version for `X.Y.Z`. The workflow packs Domain + Core into a
+local feed, **runs the full test suite (`dotnet test Halifax.sln`) and aborts before
+pushing if any test fails**, then packs the remaining packages in dependency order and
+pushes to NuGet with `--skip-duplicate` (so unchanged packages that keep their version are
+simply skipped). Watch it with:
 
 ```bash
 gh run list --workflow=publish.yml -L 1
