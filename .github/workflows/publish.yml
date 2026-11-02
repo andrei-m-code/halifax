@@ -25,13 +25,13 @@ jobs:
 
       - name: Build and pack Halifax.Domain
         run: |
-          dotnet build Halifax.Domain/Halifax.Domain.csproj -c Release
+          dotnet build Halifax.Domain/Halifax.Domain.csproj -c Release -p:ContinuousIntegrationBuild=true
           dotnet pack Halifax.Domain/Halifax.Domain.csproj -c Release --no-build -o out
           cp out/Halifax.Domain.*.nupkg local-packages/
 
       - name: Build and pack Halifax.Core
         run: |
-          dotnet build Halifax.Core/Halifax.Core.csproj -c Release
+          dotnet build Halifax.Core/Halifax.Core.csproj -c Release -p:ContinuousIntegrationBuild=true
           dotnet pack Halifax.Core/Halifax.Core.csproj -c Release --no-build -o out
           cp out/Halifax.Core.*.nupkg local-packages/
 
@@ -40,17 +40,17 @@ jobs:
 
       - name: Build and pack Halifax.Api
         run: |
-          dotnet build Halifax.Api/Halifax.Api.csproj -c Release
+          dotnet build Halifax.Api/Halifax.Api.csproj -c Release -p:ContinuousIntegrationBuild=true
           dotnet pack Halifax.Api/Halifax.Api.csproj -c Release --no-build -o out
 
       - name: Build and pack Halifax.Http
         run: |
-          dotnet build Halifax.Http/Halifax.Http.csproj -c Release
+          dotnet build Halifax.Http/Halifax.Http.csproj -c Release -p:ContinuousIntegrationBuild=true
           dotnet pack Halifax.Http/Halifax.Http.csproj -c Release --no-build -o out
 
       - name: Build and pack Halifax.Excel
         run: |
-          dotnet build Halifax.Excel/Halifax.Excel.csproj -c Release
+          dotnet build Halifax.Excel/Halifax.Excel.csproj -c Release -p:ContinuousIntegrationBuild=true
           dotnet pack Halifax.Excel/Halifax.Excel.csproj -c Release --no-build -o out
 
       - name: NuGet login (trusted publishing)

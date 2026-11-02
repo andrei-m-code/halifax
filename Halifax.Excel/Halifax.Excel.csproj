@@ -8,14 +8,21 @@
         <AcceptNPOIOSMFLicense>true</AcceptNPOIOSMFLicense>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
+        <!-- Source debugging: Source Link + symbol package (build-time only, no runtime dependency) -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <Deterministic>true</Deterministic>
+
         <Title>Halifax Service Foundation - Excel/CSV</Title>
         <Description>Halifax Service Foundation Excel/CSV Parsing library</Description>
         <Summary>Halifax Service Foundation Excel/CSV library</Summary>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>0.4.4</AssemblyVersion>
-        <FileVersion>0.4.4</FileVersion>
-        <Version>0.4.4</Version>
+        <AssemblyVersion>0.4.5</AssemblyVersion>
+        <FileVersion>0.4.5</FileVersion>
+        <Version>0.4.5</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -29,6 +36,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id excel csv base</PackageTags>
 
         <PackageReleaseNotes>
+            v0.4.5 - Add Source Link and a symbol package (snupkg) for source-level debugging
             v0.4.4 - Package dependency updates
             v0.4.3 - Package dependency updates
             v0.4.2 - Package dependency updates, pin Microsoft.Build.Tasks.Git to patch transitive vulnerability
@@ -56,5 +64,9 @@
         <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.14" />
         <!-- Pin patched version to resolve transitive vulnerability from NPOI via Microsoft.SourceLink.GitHub 8.0.0 (GHSA-23fw-v26w-5fgq) -->
         <PackageReference Include="Microsoft.Build.Tasks.Git" Version="10.0.403" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.403" PrivateAssets="All" />
     </ItemGroup>
 </Project>
