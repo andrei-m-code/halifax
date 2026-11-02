@@ -78,6 +78,12 @@ gh run list --workflow=publish.yml -L 1
 gh run view <run-id>
 ```
 
+**Trusted publishing, no API key.** The push authenticates with nuget.org trusted
+publishing: `NuGet/login@v1` trades the job's GitHub OIDC token (`id-token: write`) for a
+one-hour API key, so the repo keeps no `NUGET_API_KEY` secret. The nuget.org policy belongs
+to `andrei.mikhalevich`, covers the five `Halifax.*` packages and is bound to `publish.yml`:
+renaming the workflow file breaks publishing until the policy is edited to match.
+
 NuGet indexing after a successful push takes a few minutes.
 
 ## CI
