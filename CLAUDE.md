@@ -42,6 +42,13 @@ use `<FrameworkReference Include="Microsoft.AspNetCore.App" />`.
   doc file ships inside each NuGet package (consumer IntelliSense). This makes `CS1591`
   (missing XML comment on a public member) an active warning — the repo is kept at
   **0 CS1591**, so document every new public type/member or the build warns.
+- **Source Link + symbol packages.** Every packable project references
+  `Microsoft.SourceLink.GitHub` (`PrivateAssets="All"`, build-time only, never a package
+  dependency) and sets `PublishRepositoryUrl`, `EmbedUntrackedSources`, `IncludeSymbols`,
+  `SymbolPackageFormat=snupkg` and `Deterministic`, so each `.nupkg` ships with a `.snupkg`
+  that lets consumers step into the real source. `publish.yml` builds with
+  `-p:ContinuousIntegrationBuild=true`; `dotnet nuget push out/*.nupkg` pushes the matching
+  `.snupkg` automatically. Bump Source Link with the other dependencies.
 - **Pre-existing build warnings** (not introduced by dep bumps, safe to ignore):
   `CS8603` in `Halifax.Http/HalifaxHttpClient.cs` (the `SendAsync<TModel>` return; line
   number drifts as docs change), and `SYSLIB0060` (obsolete `Rfc2898DeriveBytes` ctor) in
