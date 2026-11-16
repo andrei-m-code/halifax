@@ -432,28 +432,28 @@ public class ExcelConverterReadAsyncTests
     }
 
     [Test]
-    public void ReadAsync_UnsupportedContentType_Throws()
+    public async Task ReadAsync_UnsupportedContentType_Throws()
     {
         var converter = new ExcelConverter<PersonClass>();
         using var stream = new MemoryStream();
-        Assert.ThrowsAsync<NotSupportedException>(() =>
+        await Assert.ThrowsAsync<NotSupportedException>(() =>
             converter.ReadAsync(stream, "application/json"));
     }
 
     [Test]
-    public void ReadAsync_NullStream_Throws()
+    public async Task ReadAsync_NullStream_Throws()
     {
         var converter = new ExcelConverter<PersonClass>();
-        Assert.ThrowsAsync<ArgumentNullException>(() =>
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
             converter.ReadAsync(null!, "text/csv"));
     }
 
     [Test]
-    public void ReadAsync_NullContentType_Throws()
+    public async Task ReadAsync_NullContentType_Throws()
     {
         var converter = new ExcelConverter<PersonClass>();
         using var stream = new MemoryStream();
-        Assert.ThrowsAsync<ArgumentNullException>(() =>
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
             converter.ReadAsync(stream, null!));
     }
 
@@ -573,5 +573,51 @@ public class ExcelConverterCustomSheetTests
         Assert.That(result, Has.Count.EqualTo(1000));
         Assert.That(result[0].Name, Is.EqualTo("Person 0"));
         Assert.That(result[999].Name, Is.EqualTo("Person 999"));
+    }
+}
+
+public class ExcelConverterCsvFormatTests
+{
+    [Test]
+    public async Task WriteCsv_QuotesSpecialAndWhitespaceFields()
+    {
+        var converter = new ExcelConverter<PersonClass>();
+        List<PersonClass> records =
+        [
+            new() { Name = "Smith, John", Age = 42, Company = "He said \"hi\"" },
+            new() { Name = " Lead", Age = -1, Company = "multi\nline" }
+        ];
+
+        var stream = new MemoryStream();
+        await converter.WriteCsvAsync(stream, records);
+        var csv = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+
+        Assert.That(csv, Is.EqualTo(
+            "Name,Age,Company\r\n" +
+            "\"Smith, John\",42,\"He said \"\"hi\"\"\"\r\n" +
+            "\" Lead\",-1,\"multi\nline\"\r\n"));
+    }
+
+    [Test]
+    public async Task ReadCsv_SemicolonsInText_StayInField()
+    {
+        var converter = new ExcelConverter<PersonClass>();
+        using var stream = new MemoryStream("Name,Age,Company\r\na;b,1,x;y\r\n"u8.ToArray());
+
+        var result = await converter.ReadCsvAsync(stream);
+
+        Assert.That(result, Has.Count.EqualTo(1));
+        Assert.That(result[0].Name, Is.EqualTo("a;b"));
+        Assert.That(result[0].Age, Is.EqualTo(1));
+        Assert.That(result[0].Company, Is.EqualTo("x;y"));
+    }
+
+    [Test]
+    public async Task ReadCsv_RowWithMissingFields_Throws()
+    {
+        var converter = new ExcelConverter<PersonClass>();
+        using var stream = new MemoryStream("Name,Age,Company\r\nBob,25\r\n"u8.ToArray());
+
+        await Assert.ThrowsAsync<IndexOutOfRangeException>(() => converter.ReadCsvAsync(stream));
     }
 }

@@ -31,6 +31,21 @@ Simple libraries for complex projects. Halifax eliminates boilerplate in .NET AP
 - **Nullable reference types** — fully annotated across all packages
 - **IntelliSense-ready** — full XML documentation shipped with every package
 
+## Compatibility
+
+Each Halifax major version targets one .NET major version. Pick the line that matches your app's target framework, and keep all `Halifax.*` packages in one app on the same major version.
+
+| Halifax.Api, .Core, .Domain, .Http | Halifax.Excel | .NET | Target framework |
+|---|---|---|---|
+| **6.x** | **6.x** | **.NET 11** | `net11.0` |
+| 5.x | 0.2.x to 0.4.x | .NET 10 | `net10.0` |
+| 4.x | 0.1.x | .NET 9 | `net9.0` |
+| 3.x | 0.0.6 to 0.0.11 | .NET 8 | `net8.0` |
+| 2.x | 0.0.1 to 0.0.5 | .NET 7 | `net7.0` |
+| 1.x | not available | .NET 6 | `net6.0` |
+
+Starting with 6.0.0, Halifax.Excel is stable and shares the major version with the other packages. Older lines stay on NuGet but get no further updates; new features and fixes go to the latest line only.
+
 ## Quick Start
 
 ```bash
@@ -386,7 +401,7 @@ builder.Services.AddHalifax(h => h
 | **Halifax.Http** | Halifax.Core, Microsoft.Extensions.Http.Resilience |
 | **Halifax.Excel** | CsvHelper, ExcelMapper, NPOI |
 
-All packages target **.NET 10** with nullable reference types enabled.
+All packages target **.NET 11** with nullable reference types enabled. For older .NET versions see [Compatibility](#compatibility).
 
 ## MIT License
 
