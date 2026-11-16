@@ -51,6 +51,11 @@ use `<FrameworkReference Include="Microsoft.AspNetCore.App" />`.
   that lets consumers step into the real source. `publish.yml` builds with
   `-p:ContinuousIntegrationBuild=true`; `dotnet nuget push out/*.nupkg` pushes the matching
   `.snupkg` automatically. Bump Source Link with the other dependencies.
+- **CSV runs on CsvHelper 34** (a rewrite: no `CsvContext`, `ClassMap` or `Configuration`).
+  `ExcelConverter` writes the header and fields itself and sets options that keep the
+  CsvHelper 33 behavior: separator from `CultureInfo.TextInfo.ListSeparator` (34 would
+  auto-detect), `CsvQuoting.WhenNeededOrWhitespace`, and `MissingField = Throw` (a short row
+  throws `IndexOutOfRangeException`). `ExcelConverterCsvFormatTests` pins the exact output.
 - **Pre-existing build warnings** (not introduced by dep bumps, safe to ignore):
   `CS8603` in `Halifax.Http/HalifaxHttpClient.cs` (the `SendAsync<TModel>` return; line
   number drifts as docs change), and `SYSLIB0060` (obsolete `Rfc2898DeriveBytes` ctor) in
@@ -122,7 +127,7 @@ directly to `main`** — CI and history are all direct-to-main.
    add an explicit top-level `<PackageReference>` pinning the patched version (match the
    target framework: net11 → 11.0.x) in `Halifax.Excel`.
 5. Build + test: `dotnet build -c Release && dotnet test --no-build -c Release`
-   (79 tests: 53 Core, 26 Excel).
+   (82 tests: 53 Core, 29 Excel).
 
 ### Validating internal-package version bumps locally
 

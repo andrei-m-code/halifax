@@ -36,7 +36,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id excel csv base</PackageTags>
 
         <PackageReleaseNotes>
-            v6.0.0 - First stable release, aligned with the Halifax 6 line. .NET 11 support, package dependency updates
+            v6.0.0 - First stable release, aligned with the Halifax 6 line. .NET 11 support, CSV moved to CsvHelper 34, package dependency updates
             v0.4.5 - Add Source Link and a symbol package (snupkg) for source-level debugging
             v0.4.4 - Package dependency updates
             v0.4.3 - Package dependency updates
@@ -58,7 +58,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CsvHelper" Version="33.1.0" />
+        <PackageReference Include="CsvHelper" Version="34.0.0" />
         <PackageReference Include="ExcelMapper" Version="6.0.712" />
         <PackageReference Include="NPOI" Version="2.8.1" />
         <!-- Pin patched version to resolve transitive vulnerability from NPOI (GHSA-37gx-xxp4-5rgx, GHSA-w3x6-4m5h-cxqf) -->

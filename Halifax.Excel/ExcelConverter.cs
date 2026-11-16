@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using CsvHelper;
-using CsvHelper.Configuration;
 using Ganss.Excel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -306,21 +305,25 @@ public class ExcelConverter<TObject>
     /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when no constructor of <typeparamref name="TObject"/>
     /// can be satisfied from the available columns.</exception>
+    /// <exception cref="IndexOutOfRangeException">Thrown when a data line has fewer fields than the header row.</exception>
     public async Task<List<TObject>> ReadCsvAsync(
         Stream stream,
         CancellationToken cancellationToken = default)
     {
-        using var streamReader = new StreamReader(stream);
-        using var csv = new CsvReader(streamReader, CultureInfo);
+        var options = new CsvReaderOptions
+        {
+            Separator = GetCsvSeparator(),
+            FormatProvider = CultureInfo,
+            MissingField = CsvMissingFieldHandling.Throw
+        };
 
-        ConfigureCsvContext(csv.Context);
+        await using var csv = CsvReader.Create(new StreamReader(stream), options);
         var records = new List<TObject>();
 
-        await csv.ReadAsync();
-        csv.ReadHeader();
-        var header = csv.HeaderRecord!;
+        await csv.ReadHeaderAsync(cancellationToken);
+        var header = csv.Headers.ToArray();
 
-        while (await csv.ReadAsync())
+        while (await csv.ReadAsync(cancellationToken))
         {
             var properties = new Dictionary<string, object>();
 
@@ -328,7 +331,7 @@ public class ExcelConverter<TObject>
             {
                 var mapping = mappings.FirstOrDefault(m => m.ColumnName == headerItem);
                 var propertyName = mapping?.PropertyName ?? headerItem;
-                properties.Add(propertyName, csv[headerItem]!);
+                properties.Add(propertyName, csv.GetString(headerItem));
             }
 
             var record = ObjectActivator.Activate<TObject>(properties);
@@ -350,26 +353,53 @@ public class ExcelConverter<TObject>
     /// </remarks>
     public async Task WriteCsvAsync(Stream stream, IEnumerable<TObject> records)
     {
-        await using var writer = new StreamWriter(stream);
-        await using var csvWriter = new CsvWriter(writer, CultureInfo);
-        ConfigureCsvContext(csvWriter.Context);
-        await csvWriter.WriteRecordsAsync(records);
-    }
-
-    private void ConfigureCsvContext(CsvContext context)
-    {
-        context.Configuration.HasHeaderRecord = true;
-        if (mappings.Count == 0) return;
-
-        var map = new DefaultClassMap<TObject>();
-        map.AutoMap(context.Configuration);
-
-        foreach (var mapping in mappings)
+        var options = new CsvWriterOptions
         {
-            map.Map((Expression<Func<TObject, object?>>)(object)mapping.Expression).Name(mapping.ColumnName);
+            Separator = GetCsvSeparator(),
+            FormatProvider = CultureInfo,
+            Quoting = CsvQuoting.WhenNeededOrWhitespace
+        };
+
+        await using var csvWriter = CsvWriter.Create(new StreamWriter(stream), options);
+
+        var properties = typeof(TObject)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.CanRead && p.GetIndexParameters().Length == 0)
+            .ToArray();
+
+        var header = properties
+            .Select(p => mappings.FirstOrDefault(m => m.PropertyName == p.Name)?.ColumnName ?? p.Name)
+            .ToArray();
+
+        csvWriter.WriteHeader(header);
+
+        foreach (var record in records)
+        {
+            foreach (var property in properties)
+            {
+                csvWriter.WriteField(FormatCsvValue(property.GetValue(record)));
+            }
+
+            await csvWriter.EndRecordAsync();
         }
 
-        context.RegisterClassMap(map);
+        await csvWriter.FlushAsync();
+    }
+
+    private string? FormatCsvValue(object? value) => value switch
+    {
+        null => null,
+        string text => text,
+        IFormattable formattable => formattable.ToString(null, CultureInfo),
+        _ => value.ToString()
+    };
+
+    // CSV uses the culture's list separator (a comma for the invariant culture), falling back to a
+    // comma when that separator is not a single ASCII character.
+    private char GetCsvSeparator()
+    {
+        var listSeparator = CultureInfo.TextInfo.ListSeparator;
+        return listSeparator.Length == 1 && char.IsAscii(listSeparator[0]) ? listSeparator[0] : ',';
     }
 
     #endregion
