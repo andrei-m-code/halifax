@@ -18,7 +18,10 @@ Packable libraries (each produces a NuGet package; `GeneratePackageOnBuild=true`
 
 Non-packable:
 
-- `Halifax.Core.Tests`, `Halifax.Excel.Tests` — NUnit 4 test projects (`IsPackable=false`).
+- `Halifax.Core.Tests`, `Halifax.Excel.Tests`, `Halifax.Api.Tests` — NUnit 5 test projects
+  (`IsPackable=false`). `Halifax.Api.Tests` boots `AddHalifax`/`UseHalifax` on an in-memory
+  `TestServer` (OpenAPI, Scalar, JWT, exception mapping, correlation ID); Halifax allows one
+  app per process, so its tests share one app from `[OneTimeSetUp]`.
 - `PeggysCove.Api` — sample/demo app that consumes the libraries via `ProjectReference`
   (not published, no version).
 
