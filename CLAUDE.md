@@ -27,9 +27,11 @@ use `<FrameworkReference Include="Microsoft.AspNetCore.App" />`.
 
 ## Key conventions
 
-- **Target framework:** `net10.0` across every project.
-- **SDK:** `global.json` pins SDK `8.0.0` with `rollForward: latestMajor` and
-  `allowPrerelease: true`, so a newer installed SDK (currently 10.x) is used.
+- **Target framework:** `net11.0` across every project. Single target, no multi-targeting:
+  each Halifax major follows one .NET major (see "Versioning & releases").
+- **SDK:** `global.json` sets SDK `11.0.100` as the minimum with `rollForward: latestMajor`
+  and `allowPrerelease: true`, so any newer installed SDK is used. CI and publish use
+  `setup-dotnet` `11.x`.
 - **No central package management.** There is no `Directory.Packages.props`; every
   version lives in the individual `.csproj` `<PackageReference>` elements.
 - **Internal packages are referenced as published NuGet packages, NOT ProjectReferences.**
@@ -64,6 +66,13 @@ use `<FrameworkReference Include="Microsoft.AspNetCore.App" />`.
 - **Pure dependency-update releases have historically been PATCH bumps** (e.g. "v5.1.3 -
   Package dependency updates"). On 2026-07-13 the user chose a **minor** bump instead — so
   confirm bump type with the user rather than assuming.
+- **A new .NET major means a new Halifax major for every package**, Excel included
+  (Halifax 6.x = .NET 11, 5.x = .NET 10, 4.x = .NET 9...). The target moves to the new .NET
+  only, no multi-targeting; older lines stay on NuGet without updates. The user adopts new
+  .NET majors at release (6.0.0 shipped with .NET 11 GA, 2026-11). Keep the README
+  "Compatibility" table in step when a new major ships.
+- **Halifax.Excel left 0.x at 6.0.0** and now shares the major version with the other
+  packages (minor/patch still independent).
 
 ### Cutting a release (this triggers NuGet publish)
 
@@ -110,8 +119,8 @@ directly to `main`** — CI and history are all direct-to-main.
 3. Bump only the ones behind (leave internal `Halifax.*` refs alone at this stage).
 4. `dotnet restore` — **watch for `NU1903` vulnerability warnings** on transitive deps.
    On this repo NPOI pulled in a vulnerable `System.Security.Cryptography.Xml`; the fix is to
-   add an explicit top-level `<PackageReference>` pinning the patched version (net10 → 10.0.x)
-   in `Halifax.Excel`.
+   add an explicit top-level `<PackageReference>` pinning the patched version (match the
+   target framework: net11 → 11.0.x) in `Halifax.Excel`.
 5. Build + test: `dotnet build -c Release && dotnet test --no-build -c Release`
    (79 tests: 53 Core, 26 Excel).
 

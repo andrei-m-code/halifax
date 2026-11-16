@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFramework>net11.0</TargetFramework>
         <ImplicitUsings>true</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -20,9 +20,9 @@
         <PackageDescription>Halifax Service Foundation API library</PackageDescription>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>5.3.5</AssemblyVersion>
-        <FileVersion>5.3.5</FileVersion>
-        <Version>5.3.5</Version>
+        <AssemblyVersion>6.0.0</AssemblyVersion>
+        <FileVersion>6.0.0</FileVersion>
+        <Version>6.0.0</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -35,7 +35,8 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
-            v5.3.5 - Add Source Link and a symbol package (snupkg) for source-level debugging
+            v6.0.0 - .NET 11 support, package dependency updates (JwtBearer 11, Swashbuckle 11, Scalar 3, Halifax.Core 6.0.0)
+v5.3.5 - Add Source Link and a symbol package (snupkg) for source-level debugging
             v5.3.4 - Package dependency updates
 v5.3.3 - Package dependency updates
 v5.3.2 - Package dependency updates
@@ -64,11 +65,11 @@ v0.x.x - Initial release
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Halifax.Core" Version="5.2.5" />
+        <PackageReference Include="Halifax.Core" Version="6.0.0" />
 
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.14" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.1" />
-        <PackageReference Include="Scalar.AspNetCore" Version="2.18.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="11.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="11.0.1" />
+        <PackageReference Include="Scalar.AspNetCore" Version="3.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -81,6 +82,6 @@ v0.x.x - Initial release
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.403" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="11.0.100" PrivateAssets="All" />
     </ItemGroup>
 </Project>

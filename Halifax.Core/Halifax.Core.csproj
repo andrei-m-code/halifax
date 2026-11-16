@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFramework>net11.0</TargetFramework>
         <ImplicitUsings>true</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -19,9 +19,9 @@
         <Summary>Halifax Service Foundation Core library</Summary>
         <Authors>andrei-m-code</Authors>
         
-        <AssemblyVersion>5.2.5</AssemblyVersion>
-        <FileVersion>5.2.5</FileVersion>
-        <Version>5.2.5</Version>
+        <AssemblyVersion>6.0.0</AssemblyVersion>
+        <FileVersion>6.0.0</FileVersion>
+        <Version>6.0.0</Version>
         
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -35,7 +35,8 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
-            v5.2.5 - Add Source Link and a symbol package (snupkg) for source-level debugging
+            v6.0.0 - .NET 11 support, package dependency updates (Microsoft.Extensions.Logging 11, Halifax.Domain 6.0.0)
+v5.2.5 - Add Source Link and a symbol package (snupkg) for source-level debugging
             v5.2.4 - Package dependency updates
 v5.2.3 - Package dependency updates
 v5.2.2 - Package dependency updates
@@ -59,13 +60,13 @@ v0.x.x - Initial release
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Halifax.Domain" Version="5.2.2" />
+        <PackageReference Include="Halifax.Domain" Version="6.0.0" />
 
         <PackageReference Include="Serilog" Version="4.4.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
         <PackageReference Include="Destructurama.Attributed" Version="5.3.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.23.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.14" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="11.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -74,6 +75,6 @@ v0.x.x - Initial release
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.403" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="11.0.100" PrivateAssets="All" />
     </ItemGroup>
 </Project>
