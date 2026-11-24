@@ -5,14 +5,14 @@ namespace Halifax.Excel;
 
 internal static class ObjectActivator
 {
-    public static TDestination Activate<TDestination>(Dictionary<string, object> data)
+    public static TDestination Activate<TDestination>(Dictionary<string, object?> data)
     {
         if (data == null)
             throw new ArgumentNullException(nameof(data));
 
         var targetType = typeof(TDestination);
         var comparer = StringComparer.OrdinalIgnoreCase;
-        var dict = new Dictionary<string, object>(comparer);
+        var dict = new Dictionary<string, object?>(comparer);
         foreach (var kvp in data)
             dict[kvp.Key] = kvp.Value;
 
@@ -67,7 +67,7 @@ internal static class ObjectActivator
         throw new InvalidOperationException($"No suitable constructor found for type {targetType.Name}");
     }
 
-    private static void SetPublicProperties<T>(T instance, Dictionary<string, object> dict, HashSet<string> usedKeys)
+    private static void SetPublicProperties<T>(T instance, Dictionary<string, object?> dict, HashSet<string> usedKeys)
     {
         var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.CanWrite);
@@ -92,7 +92,7 @@ internal static class ObjectActivator
         }
     }
 
-    private static object? ConvertValue(object value, Type targetType)
+    private static object? ConvertValue(object? value, Type targetType)
     {
         if (value == null)
             return targetType.IsValueType ? Activator.CreateInstance(targetType) : null;
