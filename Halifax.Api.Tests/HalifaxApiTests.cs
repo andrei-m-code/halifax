@@ -20,7 +20,7 @@ namespace Halifax.Api.Tests;
 public class TestController : ControllerBase
 {
     [HttpGet("test/ok")]
-    public ApiResponse<string> Ok() => ApiResponse.With("hello");
+    public ApiResponse<string> Hello() => ApiResponse.With("hello");
 
     [HttpGet("test/not-found")]
     public ApiResponse NotFoundError() => throw new HalifaxNotFoundException("Nothing here");
