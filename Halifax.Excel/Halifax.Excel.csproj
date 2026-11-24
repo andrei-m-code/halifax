@@ -20,9 +20,9 @@
         <Summary>Halifax Service Foundation Excel/CSV library</Summary>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>6.3.0</AssemblyVersion>
-        <FileVersion>6.3.0</FileVersion>
-        <Version>6.3.0</Version>
+        <AssemblyVersion>6.4.0</AssemblyVersion>
+        <FileVersion>6.4.0</FileVersion>
+        <Version>6.4.0</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -36,6 +36,7 @@
         <PackageTags>excel xlsx xls csv spreadsheet import export npoi service-foundation</PackageTags>
 
         <PackageReleaseNotes>
+            v6.4.0 - CsvFile.ReadAsync reads raw CSV records (header first) with the same parser as ExcelConverter, for your own column mapping
             v6.3.0 - CsvFile.WriteAsync writes dictionary and dynamic rows (e.g. Dapper's) as CSV, byte for byte what CsvHelper's defaults wrote for dynamic records
             v6.2.0 - CSV is read and written by Halifax itself: CsvHelper is no longer a dependency (NPOI is the only one left). Same results as 6.1.0 for every input, pinned by tests. Microsoft.Build.Tasks.Git is no longer listed as a package dependency; Excel-specific package tags; documentation
             v6.1.0 - Own Excel reader replaces ExcelMapper and needs no SkiaSharp (a number read into a text property no longer fails); headers match case-insensitively; a bad cell throws ExcelConversionException naming the row and column. New ExcelWorkbookWriter for several sheets in one workbook, Exclude, ExcelCell.GetText, ExcelContentType constants and ReadExcel by sheet name. Dates are written as date cells. Writes leave the stream open and rewound. NPOI's unusable native SkiaSharp libraries (10.6 MB on linux-x64) no longer reach consumers

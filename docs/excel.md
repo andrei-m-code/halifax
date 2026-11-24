@@ -87,6 +87,15 @@ await CsvFile.WriteAsync(file, rows.Cast<IDictionary<string, object?>>());
 await CsvFile.WriteAsync(stream, ["Id", "Name"], [[1, "Alice"], [2, "Bob"]]);   // header and values
 ```
 
+`CsvFile.ReadAsync` goes the other way: every record as its list of fields, header first, with the same parser as the converters. Use it to apply your own column rules:
+
+```csharp
+await foreach (var fields in CsvFile.ReadAsync(stream))
+{
+    // fields[0], fields[1], ... ; the first record is the header
+}
+```
+
 The header is the first row's keys; with no rows nothing is written. Output follows CsvHelper's defaults for dynamic records, byte for byte: fields quoted when they contain the separator, a quote or a line break, or start or end with a space; `byte[]` as `0x` and hex; values formatted with the culture (invariant by default).
 
 ## Content types

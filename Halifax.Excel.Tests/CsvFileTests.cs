@@ -114,11 +114,80 @@ public class CsvFileTests
         Assert.That(Encoding.UTF8.GetString(stream.ToArray()[2..]), Is.EqualTo("A\r\n1\r\n"));
     }
 
+    private static async Task<List<IReadOnlyList<string>>> Read(string csv, CultureInfo? culture = null)
+    {
+        var records = new List<IReadOnlyList<string>>();
+        await foreach (var record in CsvFile.ReadAsync(new MemoryStream(Encoding.UTF8.GetBytes(csv)), culture))
+        {
+            records.Add(record);
+        }
+
+        return records;
+    }
+
+    [Test]
+    public async Task Read_ReturnsTheHeaderThenEachRecord()
+    {
+        var records = await Read("\uFEFFFullName,Phone\r\n\"Walker, James\",\"+1 \"\"111\"\"\"\r\n\r\nAl,\"a\nb\"\nshort\n");
+
+        Assert.That(records, Has.Count.EqualTo(4));
+        Assert.That(records[0], Is.EqualTo(new[] { "FullName", "Phone" }));
+        Assert.That(records[1], Is.EqualTo(new[] { "Walker, James", "+1 \"111\"" }));
+        Assert.That(records[2], Is.EqualTo(new[] { "Al", "a\nb" }));
+        Assert.That(records[3], Is.EqualTo(new[] { "short" }));
+    }
+
+    [Test]
+    public async Task Read_EmptyInput_ReadsNothing()
+    {
+        Assert.That(await Read(""), Is.Empty);
+        Assert.That(await Read("\r\n\n"), Is.Empty);
+    }
+
+    [Test]
+    public async Task Read_UsesTheCultureSeparator()
+    {
+        var records = await Read("A;B\n1,5;x\n", new CultureInfo("de-DE"));
+
+        Assert.That(records[1], Is.EqualTo(new[] { "1,5", "x" }));
+    }
+
+    [Test]
+    public async Task Read_LeavesTheStreamOpen()
+    {
+        var stream = new MemoryStream("A\n1\n"u8.ToArray());
+
+        await foreach (var _ in CsvFile.ReadAsync(stream))
+        {
+        }
+
+        Assert.That(stream.CanRead, Is.True);
+    }
+
+    [Test]
+    public async Task ReadAfterWrite_RoundTrips()
+    {
+        var stream = new MemoryStream();
+        await CsvFile.WriteAsync(stream, rows);
+
+        var records = new List<IReadOnlyList<string>>();
+        await foreach (var record in CsvFile.ReadAsync(stream))
+        {
+            records.Add(record);
+        }
+
+        Assert.That(records, Has.Count.EqualTo(3));
+        Assert.That(records[1][8], Is.EqualTo("Smith, John"));
+        Assert.That(records[1][10], Is.EqualTo("a\r\nb"));
+        Assert.That(records[2][14], Is.EqualTo(" "));
+    }
+
     [Test]
     public async Task NullArguments_Throw()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() => CsvFile.WriteAsync(null!, rows));
         await Assert.ThrowsAsync<ArgumentNullException>(() => CsvFile.WriteAsync(new MemoryStream(), (IEnumerable<IDictionary<string, object?>>)null!));
         await Assert.ThrowsAsync<ArgumentNullException>(() => CsvFile.WriteAsync(new MemoryStream(), null!, []));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => { await foreach (var _ in CsvFile.ReadAsync(null!)) { } });
     }
 }

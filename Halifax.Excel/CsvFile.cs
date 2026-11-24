@@ -1,10 +1,12 @@
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace Halifax.Excel;
 
 /// <summary>
-/// Writes CSV from rows that have no C# type of their own: dictionaries, or <c>dynamic</c> rows such as Dapper's
-/// (which are dictionaries too). For typed records, use <see cref="ExcelConverter{TObject}.WriteCsvAsync"/>.
+/// Reads and writes CSV as plain records, for rows that have no C# type of their own: dictionaries, or <c>dynamic</c>
+/// rows such as Dapper's (which are dictionaries too), or your own column mapping on top of the raw fields. For typed
+/// records, use <see cref="ExcelConverter{TObject}.ReadCsvAsync"/> and <see cref="ExcelConverter{TObject}.WriteCsvAsync"/>.
 /// </summary>
 /// <remarks>
 /// The output follows CsvHelper's defaults for dynamic records, so it can replace
@@ -26,6 +28,37 @@ namespace Halifax.Excel;
 /// </example>
 public static class CsvFile
 {
+    /// <summary>
+    /// Reads every CSV record as its list of fields, the header row included as the first record.
+    /// </summary>
+    /// <param name="stream">The CSV stream, read asynchronously in chunks. A UTF-8 byte order mark is skipped. It is left open.</param>
+    /// <param name="culture">Picks the separator (its list separator; a comma for the invariant culture). Default is
+    /// <see cref="CultureInfo.InvariantCulture"/>.</param>
+    /// <param name="cancellationToken">Token that cancels the read.</param>
+    /// <returns>The records in file order; nothing for an empty input.</returns>
+    /// <remarks>
+    /// The same parser <see cref="ExcelConverter{TObject}.ReadCsvAsync"/> uses, which reads exactly as CsvHelper did:
+    /// records end at <c>\r\n</c>, <c>\n</c> or <c>\r</c>; empty lines are skipped; a field starting with a quote is
+    /// quoted (separators and line breaks inside it are data, <c>""</c> is a quote); nothing is trimmed. Records keep
+    /// their own field count, so check it against the header where a short row matters.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
+    public static async IAsyncEnumerable<IReadOnlyList<string>> ReadAsync(
+        Stream stream,
+        CultureInfo? culture = null,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+
+        using var text = new StreamReader(stream, leaveOpen: true);
+        var reader = new CsvRecordReader(text, Separator(culture ?? CultureInfo.InvariantCulture));
+
+        while (await reader.ReadAsync(cancellationToken) is { } fields)
+        {
+            yield return fields;
+        }
+    }
+
     /// <summary>
     /// Writes dictionary rows as CSV: the first row's keys as the header, then one record per row.
     /// </summary>
