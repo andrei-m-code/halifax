@@ -33,7 +33,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageDescription>Halifax Service Foundation Excel/CSV library</PackageDescription>
-        <PackageTags>api service-foundation services microservices serialization logging correlation-id excel csv base</PackageTags>
+        <PackageTags>excel xlsx xls csv spreadsheet import export npoi service-foundation</PackageTags>
 
         <PackageReleaseNotes>
             v6.1.0 - Own Excel reader replaces ExcelMapper and needs no SkiaSharp (a number read into a text property no longer fails); headers match case-insensitively; a bad cell throws ExcelConversionException naming the row and column. New ExcelWorkbookWriter for several sheets in one workbook, Exclude, ExcelCell.GetText, ExcelContentType constants and ReadExcel by sheet name. Dates are written as date cells. Writes leave the stream open and rewound. NPOI's unusable native SkiaSharp libraries (10.6 MB on linux-x64) no longer reach consumers
@@ -67,7 +67,7 @@
         <!-- Pin patched version to resolve transitive vulnerability from NPOI (GHSA-37gx-xxp4-5rgx, GHSA-w3x6-4m5h-cxqf) -->
         <PackageReference Include="System.Security.Cryptography.Xml" Version="11.0.0" />
         <!-- Pin patched version to resolve transitive vulnerability from NPOI via Microsoft.SourceLink.GitHub 8.0.0 (GHSA-23fw-v26w-5fgq) -->
-        <PackageReference Include="Microsoft.Build.Tasks.Git" Version="11.0.100" />
+        <PackageReference Include="Microsoft.Build.Tasks.Git" Version="11.0.100" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
