@@ -32,6 +32,7 @@ public static class Jwt
         Guard.NotNull(secret, nameof(secret));
         Guard.Length(secret, nameof(secret), lower: 16);
 
+        // ASCII bytes, as in every earlier version, so services that validate with them keep accepting new tokens.
         var key = Encoding.ASCII.GetBytes(secret);
         var handler = new JwtSecurityTokenHandler();
         var descriptor = new SecurityTokenDescriptor
@@ -71,12 +72,11 @@ public static class Jwt
     {
         try
         {
-            var key = Encoding.ASCII.GetBytes(secret);
             var handler = new JwtSecurityTokenHandler();
 
             handler.ValidateToken(jwt, new TokenValidationParameters
             {
-                IssuerSigningKey = new SymmetricSecurityKey(key),
+                IssuerSigningKeys = GetSigningKeys(secret),
                 ValidateAudience = validateAudience,
                 ValidateIssuer = validateIssuer,
                 ValidateLifetime = validateLifetime
@@ -97,5 +97,25 @@ public static class Jwt
         return throwUnauthorized 
             ? throw new HalifaxUnauthorizedException("Request is unauthorized") 
             : [];
+    }
+
+    /// <summary>
+    /// The keys a token for <paramref name="secret"/> is validated against. <see cref="Create"/> signs with the secret's
+    /// ASCII bytes (every non-ASCII character becomes <c>?</c>), while <c>ConfigureAuthentication</c> and most other JWT
+    /// code use its UTF-8 bytes. For an ASCII secret those are the same bytes and one key is returned; for a secret
+    /// with non-ASCII characters both keys are returned, so tokens from either side validate in <see cref="Read"/>
+    /// and in the authentication middleware.
+    /// </summary>
+    /// <param name="secret">The signing secret.</param>
+    /// <returns>One key for an ASCII secret; the ASCII and UTF-8 keys for a secret with non-ASCII characters.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="secret"/> is <see langword="null"/>.</exception>
+    public static IReadOnlyList<SecurityKey> GetSigningKeys(string secret)
+    {
+        ArgumentNullException.ThrowIfNull(secret);
+
+        var ascii = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
+        return Ascii.IsValid(secret)
+            ? [ascii]
+            : [ascii, new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))];
     }
 }

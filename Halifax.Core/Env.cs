@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
@@ -10,11 +11,14 @@ namespace Halifax.Core;
 public static partial class Env
 {
     private static readonly ConcurrentDictionary<Type, object> sections = [];
-    private static readonly List<Type> supportedTypes =
+    private static readonly HashSet<Type> parsableTypes =
     [
-        typeof(Guid), typeof(Guid?),
-        typeof(DateTime), typeof(DateTime?),
-        typeof(TimeSpan), typeof(TimeSpan?)
+        typeof(bool), typeof(char),
+        typeof(byte), typeof(sbyte), typeof(short), typeof(ushort),
+        typeof(int), typeof(uint), typeof(long), typeof(ulong),
+        typeof(float), typeof(double), typeof(decimal),
+        typeof(Guid),
+        typeof(DateTime), typeof(DateTimeOffset), typeof(DateOnly), typeof(TimeOnly), typeof(TimeSpan)
     ];
 
     /// <summary>
@@ -94,11 +98,18 @@ public static partial class Env
     /// <typeparam name="TSection">The configuration type to construct and populate.</typeparam>
     /// <param name="section">The section prefix for variable names; defaults to the type name of <typeparamref name="TSection"/>.</param>
     /// <returns>The populated configuration instance (cached after the first call).</returns>
-    /// <exception cref="NotSupportedException">Thrown when a bound member has a type that cannot be parsed from a string.</exception>
+    /// <exception cref="NotSupportedException">Thrown when a constructor parameter whose variable is set has a type that cannot be parsed from a string.</exception>
+    /// <exception cref="FormatException">Thrown when a variable's value cannot be parsed as its member's type. The message names the variable but not its value.</exception>
     /// <remarks>
-    /// The constructor with the most parameters is used; any remaining settable properties of a
-    /// supported type are then bound. Values are read via <see cref="Environment.GetEnvironmentVariable(string)"/>,
-    /// so call <see cref="Load"/> first when using an env file.
+    /// <para>The constructor with the most parameters is used; any remaining settable properties of a supported type
+    /// are then bound. A member whose variable is missing (or empty, for non-string members) keeps its default.
+    /// Values are read via <see cref="Environment.GetEnvironmentVariable(string)"/>, so call <see cref="Load"/> first
+    /// when using an env file.</para>
+    /// <para>Supported types: <see cref="string"/>, <see cref="bool"/> (<c>true</c>/<c>false</c>/<c>1</c>/<c>0</c>),
+    /// <see cref="char"/>, every integer type, <see cref="float"/>, <see cref="double"/>, <see cref="decimal"/>,
+    /// <see cref="Guid"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="DateOnly"/>,
+    /// <see cref="TimeOnly"/>, <see cref="TimeSpan"/>, enums (by name, case-insensitive, or number) and the nullable
+    /// versions of all of them. Values are parsed with <see cref="CultureInfo.InvariantCulture"/>.</para>
     /// </remarks>
     public static TSection GetSection<TSection>(string? section = null)
     {
@@ -172,23 +183,68 @@ public static partial class Env
         }
 
         if (type == typeof(string)) return val;
-        if (type == typeof(byte) || type == typeof(byte?)) return byte.Parse(val);
-        if (type == typeof(short) || type == typeof(short?)) return short.Parse(val);
-        if (type == typeof(int) || type == typeof(int?)) return int.Parse(val);
-        if (type == typeof(long) || type == typeof(long?)) return long.Parse(val);
-        if (type == typeof(double) || type == typeof(double?)) return double.Parse(val);
-        if (type == typeof(float) || type == typeof(float?)) return float.Parse(val);
-        if (type == typeof(decimal) || type == typeof(decimal?)) return decimal.Parse(val);
-        if (type == typeof(Guid) || type == typeof(Guid?)) return Guid.Parse(val);
-        if (type == typeof(DateTime) || type == typeof(DateTime?)) return DateTime.Parse(val);
-        if (type == typeof(TimeSpan) || type == typeof(TimeSpan?)) return TimeSpan.Parse(val);
+        if (val.Length == 0) return defaultValue;
 
-        throw new NotSupportedException($"The configuration property type {type.Name} is not supported");
+        var target = Nullable.GetUnderlyingType(type) ?? type;
+        if (!IsParsable(target))
+        {
+            throw new NotSupportedException($"The configuration property type {type.Name} is not supported");
+        }
+
+        try
+        {
+            return Parse(target, val);
+        }
+        catch (Exception e) when (e is FormatException or OverflowException or ArgumentException)
+        {
+            // The value is left out on purpose: settings often hold secrets.
+            throw new FormatException($"Environment variable {environmentKey} is not a valid {target.Name}", e);
+        }
     }
+
+    private static object Parse(Type type, string val)
+    {
+        var culture = CultureInfo.InvariantCulture;
+
+        if (type.IsEnum) return Enum.Parse(type, val, ignoreCase: true);
+        if (type == typeof(bool)) return ParseBool(val);
+        if (type == typeof(char)) return val.Length == 1 ? val[0] : throw new FormatException("Expected a single character");
+        if (type == typeof(byte)) return byte.Parse(val, culture);
+        if (type == typeof(sbyte)) return sbyte.Parse(val, culture);
+        if (type == typeof(short)) return short.Parse(val, culture);
+        if (type == typeof(ushort)) return ushort.Parse(val, culture);
+        if (type == typeof(int)) return int.Parse(val, culture);
+        if (type == typeof(uint)) return uint.Parse(val, culture);
+        if (type == typeof(long)) return long.Parse(val, culture);
+        if (type == typeof(ulong)) return ulong.Parse(val, culture);
+        if (type == typeof(float)) return float.Parse(val, culture);
+        if (type == typeof(double)) return double.Parse(val, culture);
+        if (type == typeof(decimal)) return decimal.Parse(val, culture);
+        if (type == typeof(Guid)) return Guid.Parse(val);
+        if (type == typeof(DateTime)) return DateTime.Parse(val, culture);
+        if (type == typeof(DateTimeOffset)) return DateTimeOffset.Parse(val, culture);
+        if (type == typeof(DateOnly)) return DateOnly.Parse(val, culture);
+        if (type == typeof(TimeOnly)) return TimeOnly.Parse(val, culture);
+        return TimeSpan.Parse(val, culture);
+    }
+
+    private static bool ParseBool(string val)
+    {
+        if (bool.TryParse(val, out var flag)) return flag;
+
+        return val switch
+        {
+            "1" => true,
+            "0" => false,
+            _ => throw new FormatException("Expected true, false, 1 or 0")
+        };
+    }
+
+    private static bool IsParsable(Type type) => type.IsEnum || parsableTypes.Contains(type);
 
     private static bool IsSupportedType(Type type)
     {
-        return type == typeof(string) || type.IsPrimitive || supportedTypes.Contains(type);
+        return type == typeof(string) || IsParsable(Nullable.GetUnderlyingType(type) ?? type);
     }
 
     [GeneratedRegex(@"^[a-zA-Z0-9_]*$", RegexOptions.Singleline)]

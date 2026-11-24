@@ -19,9 +19,9 @@
         <Summary>Halifax Service Foundation Domain library</Summary>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>6.0.0</AssemblyVersion>
-        <FileVersion>6.0.0</FileVersion>
-        <Version>6.0.0</Version>
+        <AssemblyVersion>6.2.0</AssemblyVersion>
+        <FileVersion>6.2.0</FileVersion>
+        <Version>6.2.0</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -35,6 +35,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
+v6.2.0 - ApiResponseError.IncludeTraceByDefault (true, as before) and ApiResponse.With(exception, includeTrace) to leave the stack trace out of errors
 v6.0.0 - .NET 11 support
 v5.2.2 - Add Source Link and a symbol package (snupkg) for source-level debugging
 v5.2.1 - Ship XML documentation in the package, enrich API docs

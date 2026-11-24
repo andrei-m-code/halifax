@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace Halifax.Core.Helpers;
 
 /// <summary>
@@ -19,8 +21,9 @@ public static class ShortId
     /// <returns>A random identifier of the requested length.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="length"/> is less than 7.</exception>
     /// <remarks>
-    /// Draws from <see cref="Random.Shared"/>, so the method is safe to call concurrently. IDs are not
-    /// guaranteed to be globally unique; use a <see cref="Guid"/> when uniqueness is required.
+    /// Characters come from <see cref="RandomNumberGenerator"/>, so IDs are unpredictable and the method is safe to
+    /// call concurrently. IDs are not guaranteed to be globally unique; use a <see cref="Guid"/> when uniqueness is
+    /// required.
     /// </remarks>
     /// <example>
     /// <code>
@@ -35,15 +38,8 @@ public static class ShortId
             throw new ArgumentException($"The specified length of {length} is less than the lower limit of 7.");
         }
 
-        // Random.Shared is thread-safe; a shared new Random() is not, and concurrent Next() calls
-        // can corrupt it into returning the same values.
+        // A cryptographic generator: thread-safe, and IDs used as codes or links cannot be predicted.
         var pool = useNumbers ? lettersAndNumbers : letters;
-        var output = new char[length];
-        for (var i = 0; i < length; i++)
-        {
-            output[i] = pool[Random.Shared.Next(pool.Length)];
-        }
-
-        return new string(output);
+        return new string(RandomNumberGenerator.GetItems<char>(pool, length));
     }
 }

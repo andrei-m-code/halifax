@@ -2,11 +2,13 @@ using Halifax.Api.App.Defaults;
 using Halifax.Core.Helpers;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 using System.Text.Json;
 using Halifax.Core;
+using Halifax.Domain;
 
 namespace Halifax.Api.App;
 
@@ -53,6 +55,7 @@ public class HalifaxBuilder
     internal TokenValidationParameters? TokenValidationParameters { get; set; }
 
     internal bool useDefaultExceptionHandler = true;
+    internal LogLevel FrameworkLogLevel { get; private set; } = LogLevel.Critical;
     internal Action<JsonSerializerOptions> ConfigureJsonOptions { get; set; } = Json.ConfigureOptions;
     internal Action<IMvcBuilder> ConfigureMvcBuilder { get; set; } = opts => { };
 
@@ -117,9 +120,13 @@ public class HalifaxBuilder
         bool validateIssuer = false,
         bool requireExpirationTime = false)
     {
+        var keys = Jwt.GetSigningKeys(jwtSecret);
         return ConfigureAuthentication(new TokenValidationParameters
         {
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+            // An ASCII secret gives one key, the same bytes as before. A non-ASCII secret also accepts the tokens
+            // Jwt.Create signs with its ASCII bytes, which this middleware used to reject.
+            IssuerSigningKey = keys.Count == 1 ? keys[0] : null,
+            IssuerSigningKeys = keys.Count == 1 ? null : keys,
             ValidateIssuerSigningKey = true,
             ValidateAudience = validateAudience,
             ValidateIssuer = validateIssuer,
@@ -151,6 +158,33 @@ public class HalifaxBuilder
     public HalifaxBuilder ConfigureExceptionHandler(bool useDefaultHalifaxExceptionHandler = true)
     {
         this.useDefaultExceptionHandler = useDefaultHalifaxExceptionHandler; 
+        return this;
+    }
+
+    /// <summary>Configures whether error responses written by <see cref="Errors.HalifaxExceptionHandler"/> carry the exception's stack trace.</summary>
+    /// <param name="includeTrace">
+    /// <see langword="true"/> (the default, as in earlier versions) to send the stack trace in <c>error.trace</c>;
+    /// <see langword="false"/> to send <c>"trace": null</c> instead. The response shape is the same either way, and the
+    /// full exception is still logged. Turn it off for APIs reachable by the public: a stack trace exposes code paths.
+    /// Applies process-wide, including custom exception handlers that call <c>ApiResponse.With(exception)</c>.
+    /// </param>
+    /// <returns>The same <see cref="HalifaxBuilder"/> instance so calls can be chained.</returns>
+    public HalifaxBuilder ConfigureErrorTrace(bool includeTrace)
+    {
+        ApiResponseError.IncludeTraceByDefault = includeTrace;
+        return this;
+    }
+
+    /// <summary>Configures the minimum level of the <c>Microsoft</c> and <c>System</c> log categories (ASP.NET Core and runtime logs).</summary>
+    /// <param name="minimumLevel">
+    /// The lowest level written for those categories. The default, <see cref="LogLevel.Critical"/>, keeps them quiet as in
+    /// earlier versions; use <see cref="LogLevel.Warning"/> or <see cref="LogLevel.Information"/> to see what ASP.NET Core
+    /// reports, e.g. while diagnosing startup, routing or authentication problems.
+    /// </param>
+    /// <returns>The same <see cref="HalifaxBuilder"/> instance so calls can be chained.</returns>
+    public HalifaxBuilder ConfigureFrameworkLogging(LogLevel minimumLevel)
+    {
+        FrameworkLogLevel = minimumLevel;
         return this;
     }
 
