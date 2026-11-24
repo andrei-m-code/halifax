@@ -148,9 +148,10 @@ internal static class CsvRecordWriter
 
     /// <summary>
     /// Joins fields into one record line. A field is quoted, with quotes doubled, when it contains the separator,
-    /// a quote or a line break, or starts or ends with whitespace; <see langword="null"/> writes an empty field.
+    /// a quote or a line break, or starts or ends with whitespace (only a space when <paramref name="spaceEdgesOnly"/>
+    /// is set, as CsvHelper's defaults do); <see langword="null"/> writes an empty field.
     /// </summary>
-    public static string Format(IEnumerable<string?> fields, char separator)
+    public static string Format(IEnumerable<string?> fields, char separator, bool spaceEdgesOnly = false)
     {
         var line = new StringBuilder();
         var first = true;
@@ -169,7 +170,7 @@ internal static class CsvRecordWriter
                 continue;
             }
 
-            if (NeedsQuotes(value, separator))
+            if (NeedsQuotes(value, separator, spaceEdgesOnly))
             {
                 line.Append('"').Append(value.Replace("\"", "\"\"")).Append('"');
             }
@@ -182,9 +183,10 @@ internal static class CsvRecordWriter
         return line.Append(NewLine).ToString();
     }
 
-    private static bool NeedsQuotes(string value, char separator) =>
+    private static bool NeedsQuotes(string value, char separator, bool spaceEdgesOnly) =>
         value.AsSpan().IndexOfAny(separator, '"', '\r') >= 0 ||
         value.Contains('\n') ||
-        char.IsWhiteSpace(value[0]) ||
-        char.IsWhiteSpace(value[^1]);
+        (spaceEdgesOnly
+            ? value[0] == ' ' || value[^1] == ' '
+            : char.IsWhiteSpace(value[0]) || char.IsWhiteSpace(value[^1]));
 }
