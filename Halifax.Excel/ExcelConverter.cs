@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
-using CsvHelper;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
@@ -464,33 +463,40 @@ public class ExcelConverter<TObject>
         Stream stream,
         CancellationToken cancellationToken = default)
     {
-        var options = new CsvReaderOptions
-        {
-            Separator = GetCsvSeparator(),
-            FormatProvider = CultureInfo,
-            MissingField = CsvMissingFieldHandling.Throw
-        };
+        ArgumentNullException.ThrowIfNull(stream);
 
-        await using var csv = CsvReader.Create(new StreamReader(stream, leaveOpen: true), options);
+        using var text = new StreamReader(stream, leaveOpen: true);
+        var csv = new CsvRecordReader(text, GetCsvSeparator());
         var records = new List<TObject>();
 
-        await csv.ReadHeaderAsync(cancellationToken);
-        var header = csv.Headers.ToArray();
-
-        while (await csv.ReadAsync(cancellationToken))
+        var header = await csv.ReadAsync(cancellationToken);
+        if (header == null)
         {
+            return records;
+        }
+
+        var line = 1;
+        while (await csv.ReadAsync(cancellationToken) is { } fields)
+        {
+            line++;
+            if (fields.Count < header.Count)
+            {
+                throw new IndexOutOfRangeException(
+                    $"CSV record {line} has {fields.Count} fields, but the header has {header.Count}");
+            }
+
             var properties = new Dictionary<string, object?>();
 
-            foreach (var headerItem in header)
+            for (var i = 0; i < header.Count; i++)
             {
-                var mapping = mappings.FirstOrDefault(m => m.ColumnName == headerItem);
-                var propertyName = mapping?.PropertyName ?? headerItem;
+                var mapping = mappings.FirstOrDefault(m => m.ColumnName == header[i]);
+                var propertyName = mapping?.PropertyName ?? header[i];
                 if (exclusions.Contains(propertyName))
                 {
                     continue;
                 }
 
-                properties.TryAdd(propertyName, csv.GetString(headerItem));
+                properties.TryAdd(propertyName, fields[i]);
             }
 
             var record = ObjectActivator.Activate<TObject>(properties);
@@ -517,32 +523,21 @@ public class ExcelConverter<TObject>
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(records);
 
-        var options = new CsvWriterOptions
-        {
-            Separator = GetCsvSeparator(),
-            FormatProvider = CultureInfo,
-            Quoting = CsvQuoting.WhenNeededOrWhitespace
-        };
-
+        var separator = GetCsvSeparator();
         var start = stream.CanSeek ? stream.Position : 0;
         var properties = GetWrittenProperties();
-        var header = properties.Select(GetColumnName).ToArray();
 
-        await using (var csvWriter = CsvWriter.Create(new StreamWriter(stream, leaveOpen: true), options))
+        await using (var writer = new StreamWriter(stream, leaveOpen: true))
         {
-            csvWriter.WriteHeader(header);
+            await writer.WriteAsync(CsvRecordWriter.Format(properties.Select(GetColumnName), separator));
 
             foreach (var record in records)
             {
-                foreach (var property in properties)
-                {
-                    csvWriter.WriteField(FormatCsvValue(property.GetValue(record)));
-                }
-
-                await csvWriter.EndRecordAsync();
+                var values = properties.Select(property => FormatCsvValue(property.GetValue(record)));
+                await writer.WriteAsync(CsvRecordWriter.Format(values, separator));
             }
 
-            await csvWriter.FlushAsync();
+            await writer.FlushAsync();
         }
 
         if (stream.CanSeek)
