@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
+using Halifax.Api.App;
 using Halifax.Api.Middleware;
 using Halifax.Core.Helpers;
 using Halifax.Domain;
@@ -12,6 +13,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
 namespace Halifax.Api.Tests;
@@ -167,6 +170,102 @@ public class HalifaxApiTests
 
         Assert.That(response.Headers.GetValues(CorrelationIdMiddleware.HeaderName).Single(),
             Is.EqualTo("test-correlation-123"));
+    }
+
+    [Test]
+    public async Task ErrorResponse_CarriesTheTraceByDefault()
+    {
+        var response = await client.GetAsync("/test/bad-request");
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var error = GetProperty(document.RootElement, "error");
+        Assert.That(GetProperty(error, "message").GetString(), Is.EqualTo("Bad input"));
+        Assert.That(GetProperty(error, "trace").GetString(), Does.Contain(nameof(TestController.BadRequestError)));
+    }
+
+    [Test]
+    public async Task ErrorTrace_CanBeTurnedOff_KeepingTheShape()
+    {
+        HalifaxBuilder.Instance!.ConfigureErrorTrace(false);
+        try
+        {
+            var response = await client.GetAsync("/test/bad-request");
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+            using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            var error = GetProperty(document.RootElement, "error");
+            Assert.That(GetProperty(error, "type").GetString(), Is.EqualTo("HalifaxException"));
+            Assert.That(GetProperty(error, "message").GetString(), Is.EqualTo("Bad input"));
+            Assert.That(GetProperty(error, "trace").ValueKind, Is.EqualTo(JsonValueKind.Null));
+        }
+        finally
+        {
+            HalifaxBuilder.Instance!.ConfigureErrorTrace(true);
+        }
+    }
+
+    [Test]
+    public void FrameworkLogging_DefaultsToCritical()
+    {
+        var rules = app.Services.GetRequiredService<IOptions<LoggerFilterOptions>>().Value.Rules;
+
+        Assert.That(rules.Last(r => r.CategoryName == "Microsoft").LogLevel, Is.EqualTo(LogLevel.Critical));
+        Assert.That(rules.Last(r => r.CategoryName == "System").LogLevel, Is.EqualTo(LogLevel.Critical));
+    }
+
+    [Test]
+    public void FrameworkLogging_LevelCanBeLowered()
+    {
+        var services = new ServiceCollection();
+        services.CleanupDefaultLogging(LogLevel.Warning);
+
+        using var provider = services.BuildServiceProvider();
+        var rules = provider.GetRequiredService<IOptions<LoggerFilterOptions>>().Value.Rules;
+
+        Assert.That(rules.Last(r => r.CategoryName == "Microsoft").LogLevel, Is.EqualTo(LogLevel.Warning));
+        Assert.That(rules.Last(r => r.CategoryName == "System").LogLevel, Is.EqualTo(LogLevel.Warning));
+    }
+
+    [Test]
+    public void ApiResponseError_TraceIsOptional()
+    {
+        var exception = CaughtException();
+
+        Assert.That(ApiResponseError.IncludeTraceByDefault, Is.True);
+        Assert.That(ApiResponse.With(exception).Error!.Trace, Is.Not.Null);
+        Assert.That(ApiResponse.With(exception, includeTrace: true).Error!.Trace, Is.Not.Null);
+        Assert.That(ApiResponse.With(exception, includeTrace: false).Error!.Trace, Is.Null);
+        Assert.That(ApiResponse.With(exception, includeTrace: false).Error!.Message, Is.EqualTo("boom"));
+    }
+
+    [Test]
+    public void ErrorTraceSetting_ReachesCustomHandlersToo()
+    {
+        // Custom handlers (e.g. a 409 handler) build their body with ApiResponse.With(exception).
+        HalifaxBuilder.Instance!.ConfigureErrorTrace(false);
+        try
+        {
+            Assert.That(ApiResponse.With(CaughtException()).Error!.Trace, Is.Null);
+            Assert.That(new ApiResponseError(CaughtException()).Trace, Is.Null);
+        }
+        finally
+        {
+            HalifaxBuilder.Instance!.ConfigureErrorTrace(true);
+        }
+
+        Assert.That(ApiResponse.With(CaughtException()).Error!.Trace, Is.Not.Null);
+    }
+
+    private static Exception CaughtException()
+    {
+        try
+        {
+            throw new HalifaxException("boom");
+        }
+        catch (Exception e)
+        {
+            return e;
+        }
     }
 
     private static JsonElement GetProperty(JsonElement element, string name)

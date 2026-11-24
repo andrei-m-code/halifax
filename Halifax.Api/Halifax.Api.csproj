@@ -20,9 +20,9 @@
         <PackageDescription>Halifax Service Foundation API library</PackageDescription>
         <Authors>andrei-m-code</Authors>
 
-        <AssemblyVersion>6.0.0</AssemblyVersion>
-        <FileVersion>6.0.0</FileVersion>
-        <Version>6.0.0</Version>
+        <AssemblyVersion>6.2.0</AssemblyVersion>
+        <FileVersion>6.2.0</FileVersion>
+        <Version>6.2.0</Version>
 
         <RepositoryUrl>https://github.com/andrei-m-code/halifax</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -35,6 +35,7 @@
         <PackageTags>api service-foundation services microservices serialization logging correlation-id base</PackageTags>
 
         <PackageReleaseNotes>
+            v6.2.0 - ConfigureErrorTrace(false) leaves the stack trace out of error responses (default unchanged: included). ConfigureFrameworkLogging(level) shows ASP.NET Core's own logs (default unchanged: Critical). With a non-ASCII secret, ConfigureAuthentication also accepts the tokens Jwt.Create signs. Halifax.Core 6.2.0
             v6.0.0 - .NET 11 support, package dependency updates (JwtBearer 11, Swashbuckle 11, Scalar 3, Halifax.Core 6.0.0)
 v5.3.5 - Add Source Link and a symbol package (snupkg) for source-level debugging
             v5.3.4 - Package dependency updates
@@ -61,11 +62,15 @@ v0.x.x - Initial release
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="Halifax.Api.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Halifax.Core" Version="6.0.0" />
+        <PackageReference Include="Halifax.Core" Version="6.2.0" />
 
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="11.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="11.0.1" />

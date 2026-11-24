@@ -14,7 +14,7 @@ Packable libraries (each produces a NuGet package; `GeneratePackageOnBuild=true`
 | Halifax.Core | Halifax.Core | JWT, config, validation, crypto, logging, JSON. Depends on Domain. |
 | Halifax.Api | Halifax.Api | ASP.NET Core integration, middleware, Swagger/Scalar. Depends on Core. |
 | Halifax.Http | Halifax.Http | Typed HttpClient with resilience. Depends on Core. |
-| Halifax.Excel | Halifax.Excel | Excel/CSV import/export (NPOI, CsvHelper). Standalone. |
+| Halifax.Excel | Halifax.Excel | Excel/CSV import/export (NPOI only; CSV is built in). Standalone. |
 
 Non-packable:
 
@@ -30,6 +30,16 @@ use `<FrameworkReference Include="Microsoft.AspNetCore.App" />`.
 
 ## Key conventions
 
+- **Backward compatibility comes first.** Production services with thousands of customers run on Halifax
+  (the truckmore APIs among them). In a minor or patch release, anything a running service would notice
+  keeps its old behavior as the default: response shapes, stored or exchanged formats (encrypted values,
+  tokens), settings values, logging. New behavior is opt-in through a builder method or setting, and old
+  stored data must keep working forever (decrypt old ciphertexts, validate old tokens). Prove it with golden
+  values produced by the previous release (`CryptoCompatibilityTests`, `JwtCompatibilityTests`), and before
+  releasing, build and test the dependents against a locally packed version.
+- **Docs: README.md is the overview, `docs/` has one page per area** (setup, errors, configuration,
+  authentication, http-client, logging, excel, utilities). README.md is packed into every NuGet package,
+  so its links to `docs/` are absolute GitHub URLs. Keep both in step with the code.
 - **Target framework:** `net11.0` across every project. Single target, no multi-targeting:
   each Halifax major follows one .NET major (see "Versioning & releases").
 - **SDK:** `global.json` sets SDK `11.0.100` as the minimum with `rollForward: latestMajor`
@@ -54,11 +64,13 @@ use `<FrameworkReference Include="Microsoft.AspNetCore.App" />`.
   that lets consumers step into the real source. `publish.yml` builds with
   `-p:ContinuousIntegrationBuild=true`; `dotnet nuget push out/*.nupkg` pushes the matching
   `.snupkg` automatically. Bump Source Link with the other dependencies.
-- **CSV runs on CsvHelper 34** (a rewrite: no `CsvContext`, `ClassMap` or `Configuration`).
-  `ExcelConverter` writes the header and fields itself and sets options that keep the
-  CsvHelper 33 behavior: separator from `CultureInfo.TextInfo.ListSeparator` (34 would
-  auto-detect), `CsvQuoting.WhenNeededOrWhitespace`, and `MissingField = Throw` (a short row
-  throws `IndexOutOfRangeException`). `ExcelConverterCsvFormatTests` pins the exact output.
+- **CSV is built in (6.2.0): `CsvRecords.cs`, no CsvHelper.** A streaming async reader and a writer that
+  reproduce exactly what Halifax.Excel 6.1.0 did through CsvHelper 34: separator from
+  `CultureInfo.TextInfo.ListSeparator`, quoting when a field has the separator, a quote, a line break or
+  leading/trailing whitespace, `\r\n` line ends, blank lines skipped, a short row throws
+  `IndexOutOfRangeException`. `CsvCompatibilityTests` records 6.1.0's output for every edge case (quotes,
+  line endings, BOM, buffer boundaries) and `ExcelConverterCsvFormatTests` pins the exact output: change the
+  parser only with those passing.
 - **Halifax.Excel must never need SkiaSharp** (kept lean on purpose, 6.1.0). NPOI 2.8 types number-format
   colours as SkiaSharp's `SKColor`, so anything that runs NPOI's `DataFormatter` (`FormatCellValue`,
   `FormatRawCellContents`, `ToString()` on .xls cells) loads `SkiaSharp.dll`, which NPOI ships without runtime
@@ -70,10 +82,10 @@ use `<FrameworkReference Include="Microsoft.AspNetCore.App" />`.
   managed DLL), so the NPOI reference has `ExcludeAssets="native"` to keep it out of consumers.
 - **Writes never close the caller's stream.** Excel and CSV writes leave it open and rewind a seekable stream
   to where the output starts; CSV reads leave it open too.
-- **Pre-existing build warnings** (not introduced by dep bumps, safe to ignore):
-  `CS8603` in `Halifax.Http/HalifaxHttpClient.cs` (the `SendAsync<TModel>` return; line
-  number drifts as docs change), and `SYSLIB0060` (obsolete `Rfc2898DeriveBytes` ctor) in
-  `Halifax.Core/Helpers/Crypto.cs`. Expect **3 warnings total** on a clean solution build.
+- **Pre-existing build warning** (safe to ignore): `CS8603` in `Halifax.Http/HalifaxHttpClient.cs`
+  (the `SendAsync<TModel>` return; line number drifts as docs change). Expect **1 warning** on a clean
+  solution build. The `SYSLIB0060` warnings went away in 6.2.0, when the legacy crypto moved to
+  `Rfc2898DeriveBytes.Pbkdf2` with byte-identical output.
 
 ## Versioning & releases
 
@@ -94,7 +106,7 @@ use `<FrameworkReference Include="Microsoft.AspNetCore.App" />`.
   packages (minor/patch still independent).
 - **A release that changes only Halifax.Excel is tagged with the Excel version** (`v6.1.0` shipped Excel
   6.1.0 while Api stayed 6.0.0). `--skip-duplicate` skips the unchanged packages. The next Api release then
-  picks a version above the latest tag.
+  picks a version above the latest tag, which is why Domain/Core/Api/Http went from 6.0.0 to 6.2.0.
 
 ### Cutting a release (this triggers NuGet publish)
 
@@ -144,7 +156,7 @@ directly to `main`** — CI and history are all direct-to-main.
    add an explicit top-level `<PackageReference>` pinning the patched version (match the
    target framework: net11 → 11.0.x) in `Halifax.Excel`.
 5. Build + test: `dotnet build -c Release && dotnet test --no-build -c Release`
-   (174 tests: 53 Core, 112 Excel, 9 Api).
+   (217 tests: 91 Core, 112 Excel, 14 Api).
 
 ### Validating internal-package version bumps locally
 

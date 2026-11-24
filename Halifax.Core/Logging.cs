@@ -119,11 +119,19 @@ public static class ServicesExtensions
     /// <see cref="LogLevel.Critical"/>, silencing their noisy framework logs.
     /// </summary>
     /// <param name="services">The service collection to configure.</param>
-    public static void CleanupDefaultLogging(this IServiceCollection services)
+    public static void CleanupDefaultLogging(this IServiceCollection services) =>
+        services.CleanupDefaultLogging(LogLevel.Critical);
+
+    /// <summary>
+    /// Sets the minimum level of the <c>Microsoft</c> and <c>System</c> log categories.
+    /// </summary>
+    /// <param name="services">The service collection to configure.</param>
+    /// <param name="minimumLevel">The lowest level written for those categories; <see cref="LogLevel.Critical"/> silences them.</param>
+    public static void CleanupDefaultLogging(this IServiceCollection services, LogLevel minimumLevel)
     {
         services.AddLogging(logging => logging
-            .AddFilter("Microsoft", LogLevel.Critical)
-            .AddFilter("System", LogLevel.Critical));
+            .AddFilter("Microsoft", minimumLevel)
+            .AddFilter("System", minimumLevel));
     }
 }
 

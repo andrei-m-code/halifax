@@ -53,8 +53,6 @@ public static class AppExtensions
     /// </example>
     public static void AddHalifax(this IServiceCollection services, Action<HalifaxBuilder>? configure = null)
     {
-        services.CleanupDefaultLogging();
-
         L.Info("Starting up Halifax");
 
         // Load .env configuration
@@ -62,6 +60,8 @@ public static class AppExtensions
 
         var builder = new HalifaxBuilder(services);
         configure?.Invoke(builder);
+
+        services.CleanupDefaultLogging(builder.FrameworkLogLevel);
 
         Json.ConfigureOptions = builder.ConfigureJsonOptions;
 
