@@ -156,7 +156,7 @@ directly to `main`** — CI and history are all direct-to-main.
    add an explicit top-level `<PackageReference>` pinning the patched version (match the
    target framework: net11 → 11.0.x) in `Halifax.Excel`.
 5. Build + test: `dotnet build -c Release && dotnet test --no-build -c Release`
-   (217 tests: 91 Core, 112 Excel, 14 Api).
+   (270 tests: 92 Core, 163 Excel, 15 Api).
 
 ### Validating internal-package version bumps locally
 

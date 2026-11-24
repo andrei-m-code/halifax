@@ -75,6 +75,20 @@ writer.Write(stream);
 
 Each sheet uses its own converter for mappings, exclusions, widths and date formats. Sheet names must be unique, at most 31 characters, and free of `: \ / ? * [ ]`.
 
+## Rows without a type
+
+`CsvFile` writes CSV from dictionaries or `dynamic` rows, such as the rows Dapper returns, which have no C# type for a converter:
+
+```csharp
+var rows = await connection.QueryAsync(sql);   // IEnumerable<dynamic>
+await using var file = File.Create(path);
+await CsvFile.WriteAsync(file, rows.Cast<IDictionary<string, object?>>());
+
+await CsvFile.WriteAsync(stream, ["Id", "Name"], [[1, "Alice"], [2, "Bob"]]);   // header and values
+```
+
+The header is the first row's keys; with no rows nothing is written. Output follows CsvHelper's defaults for dynamic records, byte for byte: fields quoted when they contain the separator, a quote or a line break, or start or end with a space; `byte[]` as `0x` and hex; values formatted with the culture (invariant by default).
+
 ## Content types
 
 `ExcelContentType.Xlsx`, `ExcelContentType.Xls` and `ExcelContentType.Csv` hold the MIME types for responses and attachments.
