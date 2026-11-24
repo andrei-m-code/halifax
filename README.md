@@ -299,16 +299,29 @@ dotnet add package Halifax.Excel
 ```csharp
 var converter = new ExcelConverter<Person>();
 converter.AddMapping("Full Name", p => p.Name);
-converter.AddMapping("Age", p => p.Age);
+converter.Exclude(p => p.InternalId);   // leave a property out of the file
 
-// Write
-using var stream = new MemoryStream();
-await converter.WriteExcelAsync(stream, people, "Sheet1");
-await converter.WriteCsvAsync(stream, people);
+// Read .xlsx, .xls or CSV (format picked from the content type)
+var records = await converter.ReadAsync(file.OpenReadStream(), file.ContentType);
 
-// Read (auto-detects format from content type)
-var records = await converter.ReadAsync(fileStream, contentType);
+// Write: the stream stays open and is rewound, ready to return or upload
+var stream = new MemoryStream();
+await converter.WriteExcelAsync(stream, people, "People");
+return File(stream, ExcelContentType.Xlsx, "People.xlsx");   // FileStreamResult disposes it
 ```
+
+Several sheets with different record types go into one workbook with `ExcelWorkbookWriter`; each sheet takes its own converter for mappings and exclusions:
+
+```csharp
+using var writer = new ExcelWorkbookWriter();
+writer.AddSheet("People", people, converter)
+      .AddSheet("Orders", orders);
+writer.Write(stream);
+```
+
+Reading matches headers case-insensitively, skips blank rows and fills constructor-only records. A cell that cannot be converted throws `ExcelConversionException` with the row and column, ready to show to whoever uploaded the file. Dates are written as real date cells (`DateTimeFormat`, `DateFormat`).
+
+Halifax.Excel reads and writes without SkiaSharp. NPOI's own number formatting (`DataFormatter`, and `ToString()` on .xls cells) loads SkiaSharp at runtime, which NPOI does not ship; `ExcelCell.GetText(cell)` is a drop-in for `cell?.ToString()` that does not.
 
 ## Utilities
 
