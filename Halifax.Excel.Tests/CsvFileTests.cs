@@ -165,6 +165,37 @@ public class CsvFileTests
     }
 
     [Test]
+    public async Task Read_FollowsTheParserRules()
+    {
+        // A lone \r ends a record; text after a closing quote is appended; an unclosed quote runs to the end.
+        var records = await Read("A,B\r\"ab\"c,x\r  y  ,\"open\nend");
+
+        Assert.That(records, Has.Count.EqualTo(3));
+        Assert.That(records[1], Is.EqualTo(new[] { "abc", "x" }));
+        Assert.That(records[2], Is.EqualTo(new[] { "  y  ", "open\nend" }));
+    }
+
+    [Test]
+    public async Task Read_HonorsTheCancellationToken()
+    {
+        using var cancelled = new CancellationTokenSource();
+        cancelled.Cancel();
+
+        await Assert.CatchAsync<OperationCanceledException>(async () =>
+        {
+            await foreach (var _ in CsvFile.ReadAsync(new MemoryStream("A\n1\n"u8.ToArray()), cancellationToken: cancelled.Token))
+            {
+            }
+        });
+        await Assert.CatchAsync<OperationCanceledException>(async () =>
+        {
+            await foreach (var _ in CsvFile.ReadAsync(new MemoryStream("A\n1\n"u8.ToArray())).WithCancellation(cancelled.Token))
+            {
+            }
+        });
+    }
+
+    [Test]
     public async Task ReadAfterWrite_RoundTrips()
     {
         var stream = new MemoryStream();
