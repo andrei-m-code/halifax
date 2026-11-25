@@ -363,6 +363,131 @@ public class ExcelWorkbookWriterTests
     }
 }
 
+public class ExcelWorkbookWriterRowsTests
+{
+    private static XSSFWorkbook Write(Action<ExcelWorkbookWriter> add)
+    {
+        using var writer = new ExcelWorkbookWriter();
+        add(writer);
+        var stream = new MemoryStream();
+        writer.Write(stream);
+        return new XSSFWorkbook(stream);
+    }
+
+    private static object? Value(ICell? cell) => cell?.CellType switch
+    {
+        null => null,
+        CellType.String => cell.StringCellValue,
+        CellType.Numeric => cell.NumericCellValue,
+        CellType.Boolean => cell.BooleanCellValue,
+        CellType.Blank => "",
+        var other => other.ToString()
+    };
+
+    [Test]
+    public void AddRows_LooksLikeATypedSheetOfTheSameData()
+    {
+        var morning = new DateTime(2026, 11, 24, 9, 30, 0);
+        var day = new DateOnly(2026, 11, 25);
+        var stamp = new DateTimeOffset(morning, TimeSpan.FromHours(-5));
+        using var workbook = Write(w => w
+            .AddSheet("Typed", [new DatedRow { Name = "Alice Longname-Smith", When = morning, Day = day, OptionalDay = null, Stamp = stamp }])
+            .AddRows("Rows", ["Name", "When", "Day", "OptionalDay", "Stamp"], [["Alice Longname-Smith", morning, day, null, stamp]]));
+
+        var typed = workbook.GetSheet("Typed");
+        var rows = workbook.GetSheet("Rows");
+        for (var c = 0; c < 5; c++)
+        {
+            Assert.That(rows.GetColumnWidth(c), Is.EqualTo(typed.GetColumnWidth(c)), $"width of column {c}");
+            for (var r = 0; r <= 1; r++)
+            {
+                ICell expected = typed.GetRow(r).GetCell(c), actual = rows.GetRow(r).GetCell(c);
+                Assert.That(actual.CellType, Is.EqualTo(expected.CellType), $"type at {r},{c}");
+                Assert.That(actual.CellStyle.Index, Is.EqualTo(expected.CellStyle.Index), $"style at {r},{c}");
+                Assert.That(Value(actual), Is.EqualTo(Value(expected)), $"value at {r},{c}");
+            }
+        }
+
+        Assert.That(rows.GetRow(0).GetCell(0).CellStyle.GetFont(workbook).IsBold, Is.True);
+        Assert.That(rows.GetRow(1).GetCell(1).CellStyle.GetDataFormatString(), Is.EqualTo("yyyy-mm-dd hh:mm:ss"));
+    }
+
+    [Test]
+    public void AddRows_WritesNumbersBooleansAndTextAsTheirCellTypes()
+    {
+        var id = Guid.Parse("0b9f6f0e-6a53-4c1e-9d8b-2f1a3c4d5e6f");
+        using var workbook = Write(w => w.AddRows("S", ["Int", "Decimal", "Bool", "Text", "Guid", "Enum"],
+            [[42, 1.5m, true, "x, \"y\"", id, DayOfWeek.Friday]]));
+
+        var row = workbook.GetSheet("S").GetRow(1);
+        Assert.That(Enumerable.Range(0, 6).Select(c => Value(row.GetCell(c))),
+            Is.EqualTo(new object[] { 42d, 1.5d, true, "x, \"y\"", id.ToString(), "Friday" }));
+    }
+
+    [Test]
+    public void AddRows_ShortRowsAreEmptyToTheEnd_LongRowsStopAtTheHeader()
+    {
+        using var workbook = Write(w => w.AddRows("S", ["A", "B", "C"], [["1"], ["1", "2", "3", "4"], null, [null, "2"]]));
+
+        var sheet = workbook.GetSheet("S");
+        Assert.That(sheet.LastRowNum, Is.EqualTo(4));
+        Assert.That(Enumerable.Range(0, 3).Select(c => Value(sheet.GetRow(1).GetCell(c))), Is.EqualTo(new object[] { "1", "", "" }));
+        Assert.That(sheet.GetRow(2).LastCellNum, Is.EqualTo(3));
+        Assert.That(Enumerable.Range(0, 3).Select(c => Value(sheet.GetRow(3).GetCell(c))), Is.EqualTo(new object[] { "", "", "" }));
+        Assert.That(Enumerable.Range(0, 3).Select(c => Value(sheet.GetRow(4).GetCell(c))), Is.EqualTo(new object[] { "", "2", "" }));
+    }
+
+    [Test]
+    public void AddRows_NoRows_WritesTheHeaderOnly()
+    {
+        using var workbook = Write(w => w.AddRows("S", ["Name", "Email"], []));
+
+        var sheet = workbook.GetSheet("S");
+        Assert.That(sheet.LastRowNum, Is.EqualTo(0));
+        Assert.That(Value(sheet.GetRow(0).GetCell(1)), Is.EqualTo("Email"));
+    }
+
+    [Test]
+    public void AddRows_UsesTheConvertersWidthsAndDateFormat()
+    {
+        var converter = new ExcelConverter<object> { DateTimeFormat = "dd/mm/yyyy", MinCellWidth = 6000 };
+        using var workbook = Write(w => w.AddRows("S", ["When"], [[new DateTime(2026, 1, 2)]], converter));
+
+        var sheet = workbook.GetSheet("S");
+        Assert.That(sheet.GetRow(1).GetCell(0).CellStyle.GetDataFormatString(), Is.EqualTo("dd/mm/yyyy"));
+        Assert.That(sheet.GetColumnWidth(0), Is.EqualTo(6000));
+    }
+
+    [Test]
+    public void AddRows_ReadsBackWithAConverter()
+    {
+        var stream = new MemoryStream();
+        using (var writer = new ExcelWorkbookWriter())
+        {
+            writer.AddRows("People", ["Name", "Years", "Company"], [["Ann", 31, "Acme, Inc"]]).Write(stream);
+        }
+
+        var converter = new ExcelConverter<PersonClass>();
+        converter.AddMapping("Years", p => p.Age);
+        var person = converter.ReadExcel(stream, "People").Single();
+
+        Assert.That((person.Name, person.Age, person.Company), Is.EqualTo(("Ann", 31, "Acme, Inc")));
+    }
+
+    [Test]
+    public void AddRows_InvalidUse_Throws()
+    {
+        using var writer = new ExcelWorkbookWriter();
+        writer.AddSheet("Report", new List<PersonClass>());
+
+        Assert.Throws<ArgumentException>(() => writer.AddRows("report", ["A"], []));
+        Assert.Throws<ArgumentException>(() => writer.AddRows(" ", ["A"], []));
+        Assert.Throws<ArgumentNullException>(() => writer.AddRows("S", null!, []));
+        Assert.Throws<ArgumentNullException>(() => writer.AddRows("S", ["A"], null!));
+        Assert.That(writer.SheetCount, Is.EqualTo(1));
+    }
+}
+
 public class ExcelContentTypeTests
 {
     [Test]

@@ -165,7 +165,7 @@ await converter.WriteExcelAsync(stream, people, "People");   // stream stays ope
 return File(stream, ExcelContentType.Xlsx, "People.xlsx");
 ```
 
-`ExcelWorkbookWriter` puts several sheets of different types into one workbook, and `CsvFile` writes CSV from dictionary or `dynamic` rows. A bad cell throws `ExcelConversionException` with its row and column. Halifax.Excel does not need SkiaSharp. [More](https://github.com/andrei-m-code/halifax/blob/main/docs/excel.md)
+`ExcelWorkbookWriter` puts several sheets of different types into one workbook (or rows whose columns are known only at run time), and `CsvFile` writes CSV from dictionary or `dynamic` rows. A bad cell throws `ExcelConversionException` with its row and column. Halifax.Excel does not need SkiaSharp. [More](https://github.com/andrei-m-code/halifax/blob/main/docs/excel.md)
 
 ## Utilities
 

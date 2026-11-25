@@ -72,6 +72,45 @@ public sealed class ExcelWorkbookWriter : IDisposable
     }
 
     /// <summary>
+    /// Adds a sheet of rows that have no C# type of their own (columns known only at run time, such as
+    /// per-customer fields), after the sheets already added. It looks like a typed sheet: the header bold on a
+    /// light-yellow fill, columns sized to their widest value, numbers and booleans as Excel values, dates as
+    /// date cells.
+    /// </summary>
+    /// <param name="sheetName">The worksheet name. Must be unique in the workbook, at most 31 characters,
+    /// and free of <c>: \ / ? * [ ]</c>.</param>
+    /// <param name="header">The column names, in order.</param>
+    /// <param name="rows">The rows, each its values in header order. A row shorter than the header leaves the
+    /// remaining cells empty; values past the header are not written. A <see langword="null"/> row or value is
+    /// empty. An empty sequence writes the header row only.</param>
+    /// <param name="converter">Supplies the column widths and date formats. When omitted, the defaults apply.
+    /// Its mappings and exclusions are not used: <paramref name="header"/> names the columns.</param>
+    /// <returns>This writer, so sheets can be chained.</returns>
+    /// <exception cref="ArgumentException">The sheet name is empty, invalid or already used.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="header"/> or <paramref name="rows"/> is
+    /// <see langword="null"/>.</exception>
+    public ExcelWorkbookWriter AddRows(
+        string sheetName,
+        IReadOnlyList<string> header,
+        IEnumerable<IEnumerable<object?>?> rows,
+        ExcelConverter<object>? converter = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(sheetName);
+        ArgumentNullException.ThrowIfNull(header);
+        ArgumentNullException.ThrowIfNull(rows);
+
+        if (workbook.GetSheet(sheetName) != null)
+        {
+            throw new ArgumentException($"The workbook already has a sheet named '{sheetName}'", nameof(sheetName));
+        }
+
+        var values = rows.Select(row => row?.ToArray() ?? []).ToList();
+        var sheet = workbook.CreateSheet(sheetName);
+        (converter ?? new ExcelConverter<object>()).WriteTable(sheet, styles, header, values);
+        return this;
+    }
+
+    /// <summary>
     /// Writes the workbook to <paramref name="stream"/>. The stream is left open and, when seekable,
     /// rewound to where the workbook starts.
     /// </summary>

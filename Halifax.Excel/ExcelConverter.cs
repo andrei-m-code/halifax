@@ -238,16 +238,24 @@ public class ExcelConverter<TObject>
             .Select(record => properties.Select(p => p.GetValue(record)).ToArray())
             .ToList();
 
+        WriteTable(sheet, styles, properties.Select(GetColumnName).ToArray(), rows);
+    }
+
+    /// <summary>
+    /// Writes a header row and the rows under it, with this converter's widths and date formats. A row shorter
+    /// than the header leaves the remaining cells empty; values past the header are not written.
+    /// </summary>
+    internal void WriteTable(ISheet sheet, ExcelStyles styles, IReadOnlyList<string> headers, IReadOnlyList<object?[]> rows)
+    {
         var headerRow = sheet.CreateRow(0);
-        for (var colIndex = 0; colIndex < properties.Length; colIndex++)
+        for (var colIndex = 0; colIndex < headers.Count; colIndex++)
         {
-            var property = properties[colIndex];
-            var header = GetColumnName(property);
+            var header = headers[colIndex];
             var cell = headerRow.CreateCell(colIndex);
             cell.SetCellValue(header);
             cell.CellStyle = styles.Header;
 
-            var maxLength = rows.Count > 0 ? rows.Max(values => GetDisplayLength(values[colIndex])) : 0;
+            var maxLength = rows.Count > 0 ? rows.Max(values => GetDisplayLength(ValueAt(values, colIndex))) : 0;
             var width = Math.Max(maxLength, header.Length) * WidthToStringLengthFactor;
             if (MinCellWidth > 0) width = Math.Max(width, MinCellWidth);
             if (MaxCellWidth > 0) width = Math.Min(width, MaxCellWidth);
@@ -258,9 +266,9 @@ public class ExcelConverter<TObject>
         {
             var row = sheet.CreateRow(rowIndex + 1);
             var values = rows[rowIndex];
-            for (var colIndex = 0; colIndex < properties.Length; colIndex++)
+            for (var colIndex = 0; colIndex < headers.Count; colIndex++)
             {
-                SetCellValue(row.CreateCell(colIndex), values[colIndex], styles);
+                SetCellValue(row.CreateCell(colIndex), ValueAt(values, colIndex), styles);
             }
         }
     }
@@ -356,6 +364,8 @@ public class ExcelConverter<TObject>
 
         return records;
     }
+
+    private static object? ValueAt(object?[] values, int index) => index < values.Length ? values[index] : null;
 
     private void SetCellValue(ICell cell, object? value, ExcelStyles styles)
     {

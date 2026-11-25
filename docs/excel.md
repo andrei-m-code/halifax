@@ -75,6 +75,14 @@ writer.Write(stream);
 
 Each sheet uses its own converter for mappings, exclusions, widths and date formats. Sheet names must be unique, at most 31 characters, and free of `: \ / ? * [ ]`.
 
+When the columns are only known at run time (per-customer fields, say), `AddRows` takes a header and the rows' values in header order. The sheet looks like a typed one: styled header, sized columns, numbers and dates as Excel values.
+
+```csharp
+writer.AddRows("Users", ["Name", "Email", "Signed up", ..customFields], users.Select(u => u.Values));
+```
+
+A row shorter than the header leaves the rest of its cells empty; values past the header are not written.
+
 ## Rows without a type
 
 `CsvFile` writes CSV from dictionaries or `dynamic` rows, such as the rows Dapper returns, which have no C# type for a converter:
